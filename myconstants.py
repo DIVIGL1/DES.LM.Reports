@@ -30,13 +30,20 @@ RESULT_DATA_COLUMNS = [
                         "ProjectManager", 
                         "PlanFTE",
                         "FactFTE",
-                        "Pdr_Proj_User_Month",
-                        "Pdr_User_Proj_Month",
+                        "FN_Proj",
+                        "FN_Proj_Month",
+                        "FN_Proj_User",
+                        "FN_Proj_User_Month",
+                        "Pdr_User",
                         "Pdr_User_Month",
-                        "Pdr_Proj_Month",
+                        "Pdr_User_Proj",
+                        "Pdr_User_Proj_Month",
+                        "ProjMang_Proj",
                         "ProjMang_Proj_Month",
+                        "ProjMang_Proj_User",
                         "ProjMang_Proj_User_Month"
                       ]
+
 RAW_DATA_DROP_COLUMNS = ["MVZ", "KoBo", "Contract", "Unnamed15", "Unnamed16"]
 DONT_REPLACE_ENTER = ["Month"]
 
@@ -60,6 +67,7 @@ OTHER_PROJECT_SUB_TYPE = "_Прочее"
 REPORT_FILE_PREFFIX = "Отчет - "
 EXCEL_FILES_ENDS = ".xlsx"
 RAW_DATA_SHEET_NAME = "ИсходныеДанные"
+UNIQE_LISTS_SHEET_NAME = "УникальныеСписки"
 VACANCY_NAME_TEXT = "Вакансия"
 TEXT_LINES_SEPARATOR = "-" * 110
 PARAMETER_FILENAME_OF_LAST_REPORT = "Последний сформированный отчёт"

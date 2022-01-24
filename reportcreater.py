@@ -103,11 +103,23 @@ def add_combine_columns(df):
     # ПМ + Проект + Месяц
     # ПМ + Проект + ФИО + Месяц
     df["ShortProject"] = df["Project"].str[:7]
-    df["Pdr_Proj_User_Month"] = df["Division"] + "#" + df["ShortProject"] + "#" + df["User"] + "#" + df["Month"]
-    df["Pdr_User_Proj_Month"] = df["Division"] + "#" + df["User"] + "#" + df["ShortProject"] + "#" + df["Month"]
+    
+    df["FN_Proj"] = df["FN"] + "#" + df["ShortProject"]
+    df["FN_Proj_Month"] = df["FN"] + "#" + df["ShortProject"] + "#" + df["Month"]
+    
+    df["FN_Proj_User"] = df["FN"] + "#" + df["ShortProject"] + "#" + df["User"]
+    df["FN_Proj_User_Month"] = df["FN"] + "#" + df["ShortProject"] + "#" + df["User"] + "#" + df["Month"]
+    
+    df["Pdr_User"] = df["Division"] + "#" + df["User"]
     df["Pdr_User_Month"] = df["Division"] + "#" + df["User"] + "#" + df["Month"]
-    df["Pdr_Proj_Month"] = df["Division"] + "#" + df["ShortProject"] + "#" + df["Month"]
+    
+    df["Pdr_User_Proj"] = df["Division"] + "#" + df["User"] + "#" + df["ShortProject"]
+    df["Pdr_User_Proj_Month"] = df["Division"] + "#" + df["User"] + "#" + df["ShortProject"] + "#" + df["Month"]
+    
+    df["ProjMang_Proj"] = df["ProjectManager"] + "#" + df["ShortProject"]
     df["ProjMang_Proj_Month"] = df["ProjectManager"] + "#" + df["ShortProject"] + "#" + df["Month"]
+    
+    df["ProjMang_Proj_User"] = df["ProjectManager"] + "#" + df["ShortProject"] + "#" + df["User"]
     df["ProjMang_Proj_User_Month"] = df["ProjectManager"] + "#" + df["ShortProject"] + "#" + df["User"] + "#" + df["Month"]
 
 def prepare_data(raw_file_name, p_delete_vacation, ui_handle):
@@ -217,9 +229,19 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.enable_buttons()
         return
+    elif (myconstants.UNIQE_LISTS_SHEET_NAME not in wb.sheetnames):
+        ui_handle.set_status("")
+        ui_handle.set_status("")
+        ui_handle.set_status("[Ошибка в структуре отчета]")
+        ui_handle.set_status("")
+        ui_handle.set_status("В файле для выбранной формы отчёта отсутствует необходимый лист для уникальных списков.")
+        ui_handle.set_status("Формирование отчёта не возможно.")
+        save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
+        ui_handle.enable_buttons()
+        return
     else:
         ui_handle.set_status("Ошибок не найдено.")
-        
+
     ui_handle.set_status("Файл Excel с формой отчёта подгружен.")
     
     report_df = prepare_data(raw_file_name, p_delete_vacation, ui_handle)
@@ -236,6 +258,42 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
 
     ui_handle.set_status("Строки в Excel скопированы.")
 
+    ui_handle.set_status("Формируем списки с уникальными значениями.")
+    # Запоним списки уникальными значениями
+    column = 0
+    values_dict = dict()
+    while True:
+        try:
+            element = wb[myconstants.UNIQE_LISTS_SHEET_NAME][1][column].value
+            values_dict[element] = column
+            column += 1
+        except:
+            break
+
+    full_column_list = report_df.columns.tolist()
+    columns_4_unique_list = [column for column in values_dict.keys() if column in full_column_list]
+    if len(columns_4_unique_list)==0:
+        ui_handle.set_status("")
+        ui_handle.set_status("")
+        ui_handle.set_status("[Ошибка в структуре отчета]")
+        ui_handle.set_status("")
+        ui_handle.set_status("В файле для выбранной формы на листе для уникальных списков не указано ничего.")
+        ui_handle.set_status("Формирование отчёта остановлено.")
+        save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
+        ui_handle.enable_buttons()
+        return
+
+    
+    ui_handle.set_status(f"Всего списков: {len(columns_4_unique_list)} шт.")
+    ui_handle.set_status(f"")
+    for index, one_column in enumerate(columns_4_unique_list):
+        unique_elements_list = sorted(report_df[one_column].unique())
+        ui_handle.change_last_status_line(f"{index+1} из {len(columns_4_unique_list)} ({one_column}): {len(unique_elements_list)}")
+        xls_column_num = values_dict[one_column]
+        for xls_row, uvalue in enumerate(unique_elements_list):
+            wb[myconstants.UNIQE_LISTS_SHEET_NAME][2 + xls_row][xls_column_num].value = uvalue
+    ui_handle.change_last_status_line("Собраны и сохранениы списки с уникальными значениями.")
+                
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
     ui_handle.set_status(f"Для сохранения выбран файл: {report_prepared_name}")
     ui_handle.set_status(f"Начинаем сохранение ....")
