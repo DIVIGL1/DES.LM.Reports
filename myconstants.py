@@ -41,7 +41,13 @@ RESULT_DATA_COLUMNS = [
                         "ProjMang_Proj",
                         "ProjMang_Proj_Month",
                         "ProjMang_Proj_User",
-                        "ProjMang_Proj_User_Month"
+                        "ProjMang_Proj_User_Month",
+                        "ShortProject",
+                        "ShortProject_Month",
+                        "Division_Month",
+                        "User_Month",
+                        "ProjectType_Month",
+                        "ProjectManager_Month"
                       ]
 
 RAW_DATA_DROP_COLUMNS = ["MVZ", "KoBo", "Contract", "Unnamed15", "Unnamed16"]

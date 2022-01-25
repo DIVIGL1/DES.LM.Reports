@@ -48,9 +48,8 @@ def load_raw_data(raw_file, ui_handle):
     # Загружаем сырые данные
     ui_handle.set_status("Начинаем загружать исходные данные.")
     df = pd.read_excel(raw_file, engine='openpyxl')
-    ui_handle.set_status("Удаляем 'na'.")
+    ui_handle.set_status("Удаляем 'na'. Переименовываем столбцы и удаляем лишние.")
     df.dropna(how='all', inplace=True)
-    ui_handle.set_status("Переименовываем столбцы и удаляем лишние.")
     df.rename(columns=myconstants.RAW_DATA_COLUMNS, inplace=True)
     exist_drop_columns_list = list(set(myconstants.RAW_DATA_DROP_COLUMNS) & set(df.dtypes.keys()))
     df.drop(columns=exist_drop_columns_list, inplace=True)
@@ -102,25 +101,33 @@ def add_combine_columns(df):
     # Подразделение + Проект + Месяц
     # ПМ + Проект + Месяц
     # ПМ + Проект + ФИО + Месяц
-    df["ShortProject"] = df["Project"].str[:7]
+    df["Project7Letters"] = df["Project"].str[:7]
     
-    df["FN_Proj"] = df["FN"] + "#" + df["ShortProject"]
-    df["FN_Proj_Month"] = df["FN"] + "#" + df["ShortProject"] + "#" + df["Month"]
+    df["FN_Proj"] = df["FN"] + "#" + df["Project7Letters"]
+    df["FN_Proj_Month"] = df["FN"] + "#" + df["Project7Letters"] + "#" + df["Month"]
     
-    df["FN_Proj_User"] = df["FN"] + "#" + df["ShortProject"] + "#" + df["User"]
-    df["FN_Proj_User_Month"] = df["FN"] + "#" + df["ShortProject"] + "#" + df["User"] + "#" + df["Month"]
+    df["FN_Proj_User"] = df["FN"] + "#" + df["Project7Letters"] + "#" + df["User"]
+    df["FN_Proj_User_Month"] = df["FN"] + "#" + df["Project7Letters"] + "#" + df["User"] + "#" + df["Month"]
     
     df["Pdr_User"] = df["Division"] + "#" + df["User"]
     df["Pdr_User_Month"] = df["Division"] + "#" + df["User"] + "#" + df["Month"]
     
-    df["Pdr_User_Proj"] = df["Division"] + "#" + df["User"] + "#" + df["ShortProject"]
-    df["Pdr_User_Proj_Month"] = df["Division"] + "#" + df["User"] + "#" + df["ShortProject"] + "#" + df["Month"]
+    df["Pdr_User_Proj"] = df["Division"] + "#" + df["User"] + "#" + df["Project7Letters"]
+    df["Pdr_User_Proj_Month"] = df["Division"] + "#" + df["User"] + "#" + df["Project7Letters"] + "#" + df["Month"]
     
-    df["ProjMang_Proj"] = df["ProjectManager"] + "#" + df["ShortProject"]
-    df["ProjMang_Proj_Month"] = df["ProjectManager"] + "#" + df["ShortProject"] + "#" + df["Month"]
+    df["ProjMang_Proj"] = df["ProjectManager"] + "#" + df["Project7Letters"]
+    df["ProjMang_Proj_Month"] = df["ProjectManager"] + "#" + df["Project7Letters"] + "#" + df["Month"]
     
-    df["ProjMang_Proj_User"] = df["ProjectManager"] + "#" + df["ShortProject"] + "#" + df["User"]
-    df["ProjMang_Proj_User_Month"] = df["ProjectManager"] + "#" + df["ShortProject"] + "#" + df["User"] + "#" + df["Month"]
+    df["ProjMang_Proj_User"] = df["ProjectManager"] + "#" + df["Project7Letters"] + "#" + df["User"]
+    df["ProjMang_Proj_User_Month"] = df["ProjectManager"] + "#" + df["Project7Letters"] + "#" + df["User"] + "#" + df["Month"]
+
+    df["ShortProject"] = df["Project"].str[:7]
+    df["ShortProject_Month"] = df["Project"].str[:7] + "#" + df["Month"]
+
+    df["Division_Month"] = df["Division"] + "#" + df["Month"]
+    df["User_Month"] = df["User"] + "#" + df["Month"]
+    df["ProjectType_Month"] = df["ProjectType"] + "#" + df["Month"]
+    df["ProjectManager_Month"] = df["ProjectManager"] + "#" + df["Month"]
 
 def prepare_data(raw_file_name, p_delete_vacation, ui_handle):
     data_df = load_raw_data(raw_file_name, ui_handle)
@@ -217,7 +224,7 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
     ui_handle.set_status(f"Вакансии : {'удалить из отчета.' if p_delete_vacation else 'оставить в отчете.'}")
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
 
-    ui_handle.set_status("Проверим структуру файла с формой отчёта.")
+    ui_handle.set_status("Проверим структуру файла, содержащего форму отчёта.")
     wb = load_workbook(report_file_name)
     if (myconstants.RAW_DATA_SHEET_NAME not in wb.sheetnames):
         ui_handle.set_status("")
@@ -283,8 +290,7 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         ui_handle.enable_buttons()
         return
 
-    
-    ui_handle.set_status(f"Всего списков: {len(columns_4_unique_list)} шт.")
+    ui_handle.set_status(f"Всего списков c уникальными данными: {len(columns_4_unique_list)} шт.")
     ui_handle.set_status(f"")
     for index, one_column in enumerate(columns_4_unique_list):
         unique_elements_list = sorted(report_df[one_column].unique())
@@ -292,11 +298,14 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         xls_column_num = values_dict[one_column]
         for xls_row, uvalue in enumerate(unique_elements_list):
             wb[myconstants.UNIQE_LISTS_SHEET_NAME][2 + xls_row][xls_column_num].value = uvalue
-    ui_handle.change_last_status_line("Собраны и сохранениы списки с уникальными значениями.")
+    if len(columns_4_unique_list)==1:
+        ui_handle.change_last_status_line(f"Значений в списке {len(unique_elements_list)} шт.")
+    else:
+        ui_handle.change_last_status_line("Собраны и сохранениы списки с уникальными значениями.")
                 
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
-    ui_handle.set_status(f"Для сохранения выбран файл: {report_prepared_name}")
-    ui_handle.set_status(f"Начинаем сохранение ....")
+    ui_handle.set_status(f"Сохраняем в файл: {report_prepared_name}")
+
     try:
         wb.save(report_prepared_name)
         ui_handle.change_last_status_line(f"Данные сохранены.")
