@@ -2,8 +2,9 @@ from asyncio.proactor_events import constants
 import pandas as pd
 import datetime as dt
 import sys
-import threading
 import subprocess
+import threading
+import time
 
 from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl import load_workbook
@@ -53,7 +54,6 @@ def load_raw_data(raw_file, ui_handle):
     df.rename(columns=myconstants.RAW_DATA_COLUMNS, inplace=True)
     exist_drop_columns_list = list(set(myconstants.RAW_DATA_DROP_COLUMNS) & set(df.dtypes.keys()))
     df.drop(columns=exist_drop_columns_list, inplace=True)
-    ui_handle.set_status("Исходные данные загружены в слабообработанном виде.")
 
     return (df)
 
@@ -82,7 +82,10 @@ def calc_fact_fte(FactHour, Northern, CHour, NHour, Project, PlanFTE):
         fact_fte = PlanFTE
     else:
         month_hours = NHour if Northern else CHour
-        fact_fte = round(FactHour / month_hours, myconstants.ROUND_FTE_VALUE)
+        if myconstants.ROUND_FTE_VALUE != -1:
+            fact_fte = round(FactHour / month_hours, myconstants.ROUND_FTE_VALUE)
+        else:
+            fact_fte = FactHour / month_hours
     return(fact_fte)
 
 def add_combine_columns(df):
@@ -195,6 +198,7 @@ def prepare_data(raw_file_name, p_delete_vacation, ui_handle):
 
 @thread
 def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
+    start_prog_time = time.time()
     p_delete_vacation = load_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, True)
     p_open_in_excel = load_param(myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL, False)
     
@@ -221,7 +225,8 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
     ui_handle.set_status(f"Выбран отчет: {report_file_name}")
     ui_handle.set_status(f"файл с данными: {raw_file_name}")
-    ui_handle.set_status(f"Вакансии : {'удалить из отчета.' if p_delete_vacation else 'оставить в отчете.'}")
+    ui_handle.set_status(f"Вакансии: {'удалить из отчета.' if p_delete_vacation else 'оставить в отчете.'}")
+    ui_handle.set_status(f"Округление до: {myconstants.ROUND_FTE_VALUE}-го знака после запятой")
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
 
     ui_handle.set_status("Проверим структуру файла, содержащего форму отчёта.")
@@ -306,6 +311,9 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
     ui_handle.set_status(f"Сохраняем в файл: {report_prepared_name}")
 
+    end_prog_time = time.time()
+    duration_in_seconds = int(end_prog_time - start_prog_time)
+    ui_handle.set_status("Время выполнения: {0:0>2}:{1:0>2}".format(duration_in_seconds//60,duration_in_seconds%60))
     try:
         wb.save(report_prepared_name)
         ui_handle.change_last_status_line(f"Данные сохранены.")
@@ -320,8 +328,13 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
 
     if p_open_in_excel:
         subprocess.Popen(report_prepared_name, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+
+    end_prog_time = time.time()
+    duration_in_seconds = int(end_prog_time - start_prog_time)
+    ui_handle.set_status("Время выполнения: {0:0>2}:{1:0>2}".format(duration_in_seconds//60,duration_in_seconds%60))
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
     ui_handle.enable_buttons()
+
 
 
 if __name__ == "__main__":
