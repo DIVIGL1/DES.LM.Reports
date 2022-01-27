@@ -47,7 +47,9 @@ RESULT_DATA_COLUMNS = [
                         "Division_Month",
                         "User_Month",
                         "ProjectType_Month",
-                        "ProjectManager_Month"
+                        "ProjectManager_Month",
+                        "Pdr_User_ProjType",
+                        "Pdr_User_ProjType_Month"
                       ]
 
 RAW_DATA_DROP_COLUMNS = ["MVZ", "KoBo", "Contract", "Unnamed15", "Unnamed16"]
@@ -79,4 +81,5 @@ TEXT_LINES_SEPARATOR = "-" * 110
 PARAMETER_FILENAME_OF_LAST_REPORT = "Последний сформированный отчёт"
 PARAMETER_SAVED_VALUE_DELETE_VAC = "Удалять ли вакансии из отчёта?"
 PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL = "Открывать ли сформированный отчет в Excel?"
+PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS = "Сохранять отчёт без формул?"
 PARAMETER_SAVED_SELECTED_REPORT = "Номер последнего выбранного отчёта"

@@ -51,7 +51,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>502</y>
+      <y>493</y>
       <width>251</width>
       <height>17</height>
      </rect>
@@ -114,9 +114,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>30</y>
+      <y>20</y>
       <width>271</width>
-      <height>171</height>
+      <height>251</height>
      </rect>
     </property>
     <property name="editTriggers">
@@ -127,7 +127,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>13</y>
+      <y>3</y>
       <width>261</width>
       <height>16</height>
      </rect>
@@ -161,9 +161,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>227</y>
+      <y>290</y>
       <width>271</width>
-      <height>271</height>
+      <height>201</height>
      </rect>
     </property>
     <property name="editTriggers">
@@ -174,7 +174,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>210</y>
+      <y>273</y>
       <width>271</width>
       <height>16</height>
      </rect>
@@ -186,7 +186,7 @@
      </font>
     </property>
     <property name="text">
-     <string>Данные для отчета:</string>
+     <string>Выгрузка данных из DES.LM:</string>
     </property>
     <property name="textFormat">
      <enum>Qt::AutoText</enum>
@@ -211,9 +211,9 @@
     <property name="geometry">
      <rect>
       <x>288</x>
-      <y>30</y>
+      <y>20</y>
       <width>500</width>
-      <height>541</height>
+      <height>551</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -227,7 +227,7 @@
     <property name="geometry">
      <rect>
       <x>298</x>
-      <y>13</y>
+      <y>3</y>
       <width>481</width>
       <height>16</height>
      </rect>
@@ -264,7 +264,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>520</y>
+      <y>521</y>
       <width>251</width>
       <height>17</height>
      </rect>
@@ -310,6 +310,34 @@
      <bool>false</bool>
     </property>
     <property name="flat">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxSaveWithOutFotmulas">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>507</y>
+      <width>251</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="text">
+     <string>Сохранить только значения</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+    <property name="autoRepeat">
      <bool>false</bool>
     </property>
    </widget>

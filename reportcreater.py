@@ -132,6 +132,9 @@ def add_combine_columns(df):
     df["ProjectType_Month"] = df["ProjectType"] + "#" + df["Month"]
     df["ProjectManager_Month"] = df["ProjectManager"] + "#" + df["Month"]
 
+    df["Pdr_User_ProjType"] = df["Division"] + "#" + df["User"] + "#" + df["ProjectType"]
+    df["Pdr_User_ProjType_Month"] = df["Division"] + "#" + df["User"] + "#" + df["ProjectType"] + "#" + df["Month"]
+
 def prepare_data(raw_file_name, p_delete_vacation, ui_handle):
     data_df = load_raw_data(raw_file_name, ui_handle)
     
@@ -198,8 +201,20 @@ def prepare_data(raw_file_name, p_delete_vacation, ui_handle):
 
 @thread
 def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
+    if report_file_name == None:
+        save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
+        ui_handle.set_status("Необходимо выбрать отчётную форму.")
+        ui_handle.enable_buttons()
+        return
+    if raw_file_name == None:
+        save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
+        ui_handle.set_status("Необходимо выбрать файл, выгруженный из DES.LM для формирования отчёта.")
+        ui_handle.enable_buttons()
+        return
+    
     start_prog_time = time.time()
     p_delete_vacation = load_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, True)
+    p_save_without_formulas = load_param(myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS, False)
     p_open_in_excel = load_param(myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL, False)
     
     save_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT,ui_handle.reports_list.index(report_file_name) + 1)
@@ -326,6 +341,9 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         ui_handle.set_status("Файл не доступен, возможно, он уже открыт.")
         e = sys.exc_info()[1]
 
+    if p_save_without_formulas:
+        pass
+    
     if p_open_in_excel:
         subprocess.Popen(report_prepared_name, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
 
