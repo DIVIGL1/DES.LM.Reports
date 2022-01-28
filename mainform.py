@@ -135,7 +135,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "DES.LM.Reporter"))
         self.checkBoxDeleteVac.setText(_translate("MainWindow", "Вакансии из отчета необходимо удалить"))
-        self.pushButtonClose.setText(_translate("MainWindow", "Отменить"))
+        self.pushButtonClose.setText(_translate("MainWindow", "Закрыть"))
         self.pushButtonDoIt.setText(_translate("MainWindow", "Сформировать"))
         self.label.setText(_translate("MainWindow", "Список доступных отчетов:"))
         self.label_2.setText(_translate("MainWindow", "Выгрузка данных из DES.LM:"))

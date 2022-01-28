@@ -77,15 +77,15 @@ def udata_2_date(data):
     
     return(ret_date)
 
-def calc_fact_fte(FactHour, Northern, CHour, NHour, Project, PlanFTE):
+def calc_fact_fte(FactHours, Northern, CHour, NHour, Project, PlanFTE):
     if Project.find(myconstants.FACT_IS_PLAN_MARKER) >= 0:
         fact_fte = PlanFTE
     else:
         month_hours = NHour if Northern else CHour
         if myconstants.ROUND_FTE_VALUE != -1:
-            fact_fte = round(FactHour / month_hours, myconstants.ROUND_FTE_VALUE)
+            fact_fte = round(FactHours / month_hours, myconstants.ROUND_FTE_VALUE)
         else:
-            fact_fte = FactHour / month_hours
+            fact_fte = FactHours / month_hours
     return(fact_fte)
 
 def add_combine_columns(df):
@@ -158,7 +158,7 @@ def prepare_data(raw_file_name, p_delete_vacation, ui_handle):
     
     ui_handle.set_status("... начинаем пересчет фактичеких часов в FTE.")
     data_df["FactFTE"] = \
-        data_df[["FactHour", "Northern", "CHour", "NHour", "Project", "PlanFTE"]].apply( \
+        data_df[["FactHours", "Northern", "CHour", "NHour", "Project", "PlanFTE"]].apply( \
             lambda param: calc_fact_fte(*param), axis=1)
     ui_handle.set_status(f"Пересчитано (всего строк данных: {data_df.shape[0]})")
 

@@ -13,7 +13,7 @@ RAW_DATA_COLUMNS = {
                     "Кол-во штатных единиц" : "KoBo",
                     "План, FTE" : "PlanFTE",
                     "Договор" : "Contract",
-                    "Фактические трудозатраты (час.) (Сумма)" : "FactHour",
+                    "Фактические трудозатраты (час.) (Сумма)" : "FactHours",
                     "Unnamed: 15" : "Unnamed15",
                     "Unnamed: 16" : "Unnamed16"
                     }
@@ -49,7 +49,8 @@ RESULT_DATA_COLUMNS = [
                         "ProjectType_Month",
                         "ProjectManager_Month",
                         "Pdr_User_ProjType",
-                        "Pdr_User_ProjType_Month"
+                        "Pdr_User_ProjType_Month",
+                        "FactHours"
                       ]
 
 RAW_DATA_DROP_COLUMNS = ["MVZ", "KoBo", "Contract", "Unnamed15", "Unnamed16"]

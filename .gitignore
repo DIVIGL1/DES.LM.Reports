@@ -2,6 +2,7 @@
 .vscode/*
 .ipynb_checkpoints/*
 _tmp_*.*
+~_tmp_*.*
 _local_*.*
 __pycache__
 __pycache__/*.*
