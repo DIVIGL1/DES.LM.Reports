@@ -50,7 +50,10 @@ RESULT_DATA_COLUMNS = [
                         "ProjectManager_Month",
                         "Pdr_User_ProjType",
                         "Pdr_User_ProjType_Month",
-                        "FactHours"
+                        "FactHours",
+                        "ProjectTypeDescription",
+                        "ProjectSubTypeDescription",
+                        "ProjectSubTypeDescription_Month"
                       ]
 
 RAW_DATA_DROP_COLUMNS = ["MVZ", "KoBo", "Contract", "Unnamed15", "Unnamed16"]
@@ -68,7 +71,10 @@ REPORTS_PREPARED_SECTION_NAME = "ReportsPrepared"
 MONTH_WORKING_HOURS_TABLE = "WHours.xlsx"
 DIVISIONS_NAMES_TABLE = "ShortDivisionNames.xlsx"
 FNS_NAMES_TABLE = "ShortFNNames.xlsx"
+
+PROJECTS_TYPES_DESCR = "ProjectsTypesDescriptions.xlsx"
 PROJECTS_SUB_TYPES_TABLE = "ProjectsSubTypes.xlsx"
+PROJECTS_SUB_TYPES_DESCR = "ProjectsSubTypesDescriptions.xlsx"
 
 ROUND_FTE_VALUE = 5
 FACT_IS_PLAN_MARKER = "(факт=плану)"
@@ -88,3 +94,4 @@ PARAMETER_SAVED_SELECTED_REPORT = "Номер последнего выбран�
 PARAMETER_MAX_ROWS_TEST_IN_REPORT = 50000
 EXCEL_MANUAL_CALC = -4135
 EXCEL_AUTOMATIC_CALC = -4105
+DELETE_ROW_MARKER = "delete"

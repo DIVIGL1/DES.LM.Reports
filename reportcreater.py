@@ -138,6 +138,8 @@ def add_combine_columns(df):
     df["Pdr_User_ProjType"] = df["Division"] + "#" + df["User"] + "#" + df["ProjectType"]
     df["Pdr_User_ProjType_Month"] = df["Division"] + "#" + df["User"] + "#" + df["ProjectType"] + "#" + df["Month"]
 
+    df["ProjectSubTypeDescription_Month"] = df["ProjectSubTypeDescription"] + "#" + df["Month"]
+
 def prepare_data(raw_file_name, p_delete_vacation, ui_handle):
     data_df = load_raw_data(raw_file_name, ui_handle)
     
@@ -145,6 +147,9 @@ def prepare_data(raw_file_name, p_delete_vacation, ui_handle):
     divisions_names_df = load_parameter_table(myconstants.DIVISIONS_NAMES_TABLE)
     fns_names_df = load_parameter_table(myconstants.FNS_NAMES_TABLE)
     projects_sub_types_df = load_parameter_table(myconstants.PROJECTS_SUB_TYPES_TABLE)
+    projects_types_descr_df = load_parameter_table(myconstants.PROJECTS_TYPES_DESCR)
+    projects_sub_types_descr_df = load_parameter_table(myconstants.PROJECTS_SUB_TYPES_DESCR)
+
     ui_handle.set_status(f"Загружены таблицы с параметрами (всего строк данных: {data_df.shape[0]})")
 
     for column_name in set(data_df.dtypes.keys()) - set(myconstants.DONT_REPLACE_ENTER):
@@ -179,14 +184,18 @@ def prepare_data(raw_file_name, p_delete_vacation, ui_handle):
     data_df["ProjectType"] = \
         data_df[["Project", "ProjectType"]].apply(
             lambda param: "S" if param[0].find(myconstants.FACT_IS_PLAN_MARKER) >= 0 else param[1], axis=1)
+    data_df = data_df.merge(projects_types_descr_df, left_on="ProjectType", right_on="ProjectTypeName", how="left")
     ui_handle.set_status(f"Уточнены типы проектов (всего строк данных: {data_df.shape[0]})")
 
     data_df = data_df.merge(projects_sub_types_df, left_on="Project", right_on="ProjectName", how="left")
     data_df["ProjectSubType"] = \
         data_df[["ProjectType", "ProjectSubTypePart"]].apply(
             lambda param: param[0] + myconstants.OTHER_PROJECT_SUB_TYPE if pd.isna(param[1]) else param[1], axis=1)
-    ui_handle.set_status(f"... и типы ПОДпроектов (всего строк данных: {data_df.shape[0]})")
 
+    data_df = data_df.merge(projects_sub_types_descr_df, left_on="ProjectSubType", right_on="ProjectSubTypeName", how="left")
+
+    ui_handle.set_status(f"... и типы ПОДпроектов (всего строк данных: {data_df.shape[0]})")
+    
     if p_delete_vacation:
         vacancy_text = myconstants.VACANCY_NAME_TEXT
         vacancy_text = vacancy_text.lower()
@@ -245,20 +254,29 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
     
     ui_handle.clear_status()
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
-    ui_handle.set_status(f"Выбран отчет: {report_file_name}")
-    ui_handle.set_status(f"файл с данными: {raw_file_name}")
+    ui_handle.set_status(f"Выбран отчет:>\n  {report_file_name}")
+    ui_handle.set_status(f"Файл с данными:>\n  {raw_file_name}")
     ui_handle.set_status(f"Вакансии: {'удалить из отчета.' if p_delete_vacation else 'оставить в отчете.'}")
     ui_handle.set_status(f"Округление до: {myconstants.ROUND_FTE_VALUE}-го знака после запятой")
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
 
     ui_handle.set_status("Проверим структуру файла, содержащего форму отчёта.")
+
+    try:
+        shutil.copyfile(report_file_name, report_prepared_name)
+    except:
+        ui_handle.set_status("Не удалось скопировать файл с формой отчёта.")
+        ui_handle.set_status("Формирование отчёта не возможно.")
+        save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
+        ui_handle.enable_buttons()
+        return
+
     pythoncom.CoInitializeEx(0)
     oExcel = win32com.client.Dispatch("Excel.Application")
     oExcel.visible = False
+#    oExcel.visible = True
     oExcel.DisplayAlerts = False
-    
-    
-    shutil.copyfile(report_file_name, report_prepared_name)
+        
     report_file_name = report_prepared_name
     wb = oExcel.Workbooks.Open(report_file_name)
     n_save_excel_calc_status = oExcel.Calculation
@@ -349,40 +367,40 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
     ui_handle.set_status(f"Сохраняем в файл: {report_prepared_name}")
 
     # -----------------------------------
-    oExcel.Calculation = n_save_excel_calc_status
-    
-
     oExcel.Calculation = myconstants.EXCEL_AUTOMATIC_CALC
     oExcel.Calculation = myconstants.EXCEL_MANUAL_CALC
-    row_counter = 0
-    first_row_with_del = 0
-    p_found_first_row = False
-    last_row_4_test = myconstants.PARAMETER_MAX_ROWS_TEST_IN_REPORT
-    range_from_excel = wb.Sheets["Отчет"].Range(wb.Sheets["Отчет"].Cells(1,1), wb.Sheets["Отчет"].Cells(last_row_4_test,1)).Value
-
-    # Ищем первый признак 'delete'
-    for row_counter in range(len(range_from_excel)):
-        row_del_flag_value = range_from_excel[row_counter][0]
-        if row_del_flag_value == None:
+    for curr_sheet_name in [one_sheet.Name for one_sheet in wb.Sheets]:
+        if curr_sheet_name not in myconstants.SHEETS_DONT_DELETE_FORMULAS:
+            row_counter = 0
+            first_row_with_del = 0
+            last_row_with_del = 0
             p_found_first_row = False
-            break
-        
-        row_del_flag_value = row_del_flag_value.replace(" ","")
-        if row_del_flag_value == "delete":
-            p_found_first_row = True
-            break
+            last_row_4_test = myconstants.PARAMETER_MAX_ROWS_TEST_IN_REPORT
+            range_from_excel = wb.Sheets[curr_sheet_name].Range(wb.Sheets[curr_sheet_name].Cells(1,1), wb.Sheets[curr_sheet_name].Cells(last_row_4_test,1)).Value
 
-    if p_found_first_row:
-        first_row_with_del = row_counter + 1
-        last_row_with_del = row_counter
-        while last_row_with_del < len(range_from_excel):
-            row_del_flag_value = range_from_excel[last_row_with_del][0]
-            if row_del_flag_value == None or row_del_flag_value.replace(" ","") != "delete":
-                break
-            last_row_with_del += 1
+            # Ищем первый признак 'delete'
+            for row_counter in range(len(range_from_excel)):
+                row_del_flag_value = range_from_excel[row_counter][0]
+                if row_del_flag_value == None:
+                    p_found_first_row = False
+                    break
+                
+                row_del_flag_value = row_del_flag_value.replace(" ","")
+                if row_del_flag_value == myconstants.DELETE_ROW_MARKER:
+                    p_found_first_row = True
+                    break
 
-        wb.Sheets["Отчет"].Range(wb.Sheets["Отчет"].Cells( \
-                    first_row_with_del, 1), wb.Sheets["Отчет"].Cells(last_row_with_del, 1)).Rows.EntireRow.Delete()
+            if p_found_first_row:
+                first_row_with_del = row_counter + 1
+                last_row_with_del = row_counter
+                while last_row_with_del < len(range_from_excel):
+                    row_del_flag_value = range_from_excel[last_row_with_del][0]
+                    if row_del_flag_value == None or row_del_flag_value.replace(" ","") != myconstants.DELETE_ROW_MARKER:
+                        break
+                    last_row_with_del += 1
+
+                wb.Sheets[curr_sheet_name].Range(wb.Sheets[curr_sheet_name].Cells( \
+                            first_row_with_del, 1), wb.Sheets[curr_sheet_name].Cells(last_row_with_del, 1)).Rows.EntireRow.Delete()
     # -----------------------------------
 
     oExcel.Calculation = n_save_excel_calc_status
@@ -393,7 +411,7 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
                 wb.Sheets[curr_sheet_name].UsedRange.Value = wb.Sheets[curr_sheet_name].UsedRange.Value
         
         wb.Save()
-    ui_handle.change_last_status_line(f"Отчёт сохранён.")
+    ui_handle.set_status(f"Отчёт сохранён.")
     
     save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, report_prepared_name)
     
