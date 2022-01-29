@@ -54,6 +54,7 @@ RESULT_DATA_COLUMNS = [
                       ]
 
 RAW_DATA_DROP_COLUMNS = ["MVZ", "KoBo", "Contract", "Unnamed15", "Unnamed16"]
+SHEETS_DONT_DELETE_FORMULAS = ["ИсходныеДанные", "УникальныеСписки", "Настройки"]
 DONT_REPLACE_ENTER = ["Month"]
 
 BOOLEAN_VALUES_SUBST = {"ЛОЖЬ": 0, "ИСТИНА": 1}
@@ -84,3 +85,6 @@ PARAMETER_SAVED_VALUE_DELETE_VAC = "Удалять ли вакансии из о
 PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL = "Открывать ли сформированный отчет в Excel?"
 PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS = "Сохранять отчёт без формул?"
 PARAMETER_SAVED_SELECTED_REPORT = "Номер последнего выбранного отчёта"
+PARAMETER_MAX_ROWS_TEST_IN_REPORT = 50000
+EXCEL_MANUAL_CALC = -4135
+EXCEL_AUTOMATIC_CALC = -4105

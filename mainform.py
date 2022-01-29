@@ -186,7 +186,6 @@ class Ui_MainWindow(object):
         report_file_name = self.listView.currentIndex().data()
         raw_file_name = self.listViewRawData.currentIndex().data()
 
-#        reportcreater.send_df_2_xls(report_file_name, raw_file_name, self.checkBoxDeleteVac.isChecked(), self.checkBoxOpenExcel.isChecked(), self)
         reportcreater.send_df_2_xls(report_file_name, raw_file_name, self)
 
     def on_click_Close(self):

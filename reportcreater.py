@@ -1,16 +1,18 @@
-from asyncio.proactor_events import constants
-import pandas as pd
 import datetime as dt
-import sys
-import subprocess
+import os
+import shutil
 import threading
 import time
+import warnings
+#from asyncio.proactor_events import constants
 
-from openpyxl.utils.dataframe import dataframe_to_rows
-from openpyxl import load_workbook
+import pandas as pd
+import pythoncom
+import win32com.client
 
 import myconstants
-from myutils import get_files_list, save_param, load_param
+from myutils import get_files_list, load_param, save_param
+
 
 def thread(my_func):
     """
@@ -25,6 +27,7 @@ class ReportCreater(object):
     def __init__(self, *args):
         super(ReportCreater, self).__init__(*args)
         self.reports_list = get_files_list(get_parameter_value(myconstants.REPORTS_SECTION_NAME), myconstants.REPORT_FILE_PREFFIX, ".xlsx")
+        warnings.filterwarnings("ignore")
     
     def get_reports_list(self):
         return(self.reports_list)
@@ -155,6 +158,7 @@ def prepare_data(raw_file_name, p_delete_vacation, ui_handle):
     data_df['Northern'].replace(myconstants.BOOLEAN_VALUES_SUBST, inplace=True)
     data_df = data_df.merge(month_hours_df, left_on="FDate", right_on="FirstDate", how="inner")
     ui_handle.set_status(f"Проведено объединение с таблицей с рабочими часами (всего строк данных: {data_df.shape[0]})")
+    data_df["FDate"] = data_df["FDate"].dt.strftime('%Y_%m')
     
     ui_handle.set_status("... начинаем пересчет фактичеких часов в FTE.")
     data_df["FactFTE"] = \
@@ -222,19 +226,22 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
     myconstants.ROUND_FTE_VALUE = get_parameter_value(myconstants.ROUND_FTE_SECTION_NAME)
     
     report_prepared_name = \
-        get_parameter_value(myconstants.REPORTS_PREPARED_SECTION_NAME) + "/" + \
-        report_file_name + raw_file_name + myconstants.EXCEL_FILES_ENDS
-
+            os.path.join( \
+                os.path.join(os.getcwd(), get_parameter_value(myconstants.REPORTS_PREPARED_SECTION_NAME)), \
+                    raw_file_name + "__" + report_file_name + myconstants.EXCEL_FILES_ENDS)
+    report_prepared_name = report_prepared_name.replace("\\","/")
+    
     report_file_name = \
-        get_parameter_value(myconstants.REPORTS_SECTION_NAME) + "/" + \
-        myconstants.REPORT_FILE_PREFFIX + \
-        report_file_name + \
-        myconstants.EXCEL_FILES_ENDS
+            os.path.join( \
+                os.path.join(os.getcwd(), get_parameter_value(myconstants.REPORTS_SECTION_NAME)), \
+                    myconstants.REPORT_FILE_PREFFIX + report_file_name + myconstants.EXCEL_FILES_ENDS)
+    report_file_name = report_file_name.replace("\\","/")
     
     raw_file_name = \
-        get_parameter_value(myconstants.RAW_DATA_SECTION_NAME) + "/" + \
-        raw_file_name + \
-        myconstants.EXCEL_FILES_ENDS
+            os.path.join( \
+                os.path.join(os.getcwd(), get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)), \
+                    raw_file_name + myconstants.EXCEL_FILES_ENDS)
+    raw_file_name = raw_file_name.replace("\\","/")
     
     ui_handle.clear_status()
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
@@ -245,8 +252,19 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
 
     ui_handle.set_status("Проверим структуру файла, содержащего форму отчёта.")
-    wb = load_workbook(report_file_name)
-    if (myconstants.RAW_DATA_SHEET_NAME not in wb.sheetnames):
+    pythoncom.CoInitializeEx(0)
+    oExcel = win32com.client.Dispatch("Excel.Application")
+    oExcel.visible = False
+    oExcel.DisplayAlerts = False
+    
+    
+    shutil.copyfile(report_file_name, report_prepared_name)
+    report_file_name = report_prepared_name
+    wb = oExcel.Workbooks.Open(report_file_name)
+    n_save_excel_calc_status = oExcel.Calculation
+    oExcel.Calculation = myconstants.EXCEL_MANUAL_CALC
+    
+    if (myconstants.RAW_DATA_SHEET_NAME not in [one_sheet.Name for one_sheet in wb.Sheets]):
         ui_handle.set_status("")
         ui_handle.set_status("")
         ui_handle.set_status("[Ошибка в структуре отчета]")
@@ -255,8 +273,10 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         ui_handle.set_status("Формирование отчёта не возможно.")
         save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.enable_buttons()
+        oExcel.Calculation = n_save_excel_calc_status
+        oExcel.Quit()
         return
-    elif (myconstants.UNIQE_LISTS_SHEET_NAME not in wb.sheetnames):
+    elif (myconstants.UNIQE_LISTS_SHEET_NAME not in [one_sheet.Name for one_sheet in wb.Sheets]):
         ui_handle.set_status("")
         ui_handle.set_status("")
         ui_handle.set_status("[Ошибка в структуре отчета]")
@@ -265,6 +285,8 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         ui_handle.set_status("Формирование отчёта не возможно.")
         save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.enable_buttons()
+        oExcel.Calculation = n_save_excel_calc_status
+        oExcel.Quit()
         return
     else:
         ui_handle.set_status("Ошибок не найдено.")
@@ -275,26 +297,24 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
     ui_handle.set_status(f"Таблица для загрузки полностью подготовлена (всего строк данных: {report_df.shape[0]})")
 
     ui_handle.set_status("Начинаем перенос строк в Excel:")
-    ui_handle.set_status("--")
-    counter = 0
-    str_rows_in_df = " --> " + str(report_df.shape[0])
-    for one_row in dataframe_to_rows(report_df, index=False, header=False):
-        counter += 1
-        ui_handle.change_last_status_line(str(counter) + str_rows_in_df)
-        wb[myconstants.RAW_DATA_SHEET_NAME].append(one_row)
+    data_sheet = wb.Sheets[myconstants.RAW_DATA_SHEET_NAME]
+    ulist_sheet = wb.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME]
 
+    data_array = report_df.to_numpy()
+    data_sheet.Range(data_sheet.Cells(2,1), data_sheet.Cells(len(data_array)+1, len(data_array[0]))).Value = data_array    
+    
     ui_handle.set_status("Строки в Excel скопированы.")
 
     ui_handle.set_status("Формируем списки с уникальными значениями.")
     # Запоним списки уникальными значениями
-    column = 0
+    column = 1
     values_dict = dict()
     while True:
-        try:
-            element = wb[myconstants.UNIQE_LISTS_SHEET_NAME][1][column].value
-            values_dict[element] = column
+        uniq_col_name = ulist_sheet.Cells(1, column).value
+        if uniq_col_name != None and uniq_col_name.replace(" ","") != "":
+            values_dict[uniq_col_name] = column
             column += 1
-        except:
+        else:
             break
 
     full_column_list = report_df.columns.tolist()
@@ -308,16 +328,18 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         ui_handle.set_status("Формирование отчёта остановлено.")
         save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.enable_buttons()
+        oExcel.Quit()
         return
 
     ui_handle.set_status(f"Всего списков c уникальными данными: {len(columns_4_unique_list)} шт.")
     ui_handle.set_status(f"")
     for index, one_column in enumerate(columns_4_unique_list):
         unique_elements_list = sorted(report_df[one_column].unique())
-        ui_handle.change_last_status_line(f"{index+1} из {len(columns_4_unique_list)} ({one_column}): {len(unique_elements_list)}")
-        xls_column_num = values_dict[one_column]
-        for xls_row, uvalue in enumerate(unique_elements_list):
-            wb[myconstants.UNIQE_LISTS_SHEET_NAME][2 + xls_row][xls_column_num].value = uvalue
+        ui_handle.change_last_status_line(f"{index + 1} из {len(columns_4_unique_list)} ({one_column}): {len(unique_elements_list)}")
+
+        data_array = [[one_uelement] for one_uelement in unique_elements_list]
+        ulist_sheet.Range(ulist_sheet.Cells(2,1), ulist_sheet.Cells(len(data_array) + 1, index + 1)).Value = data_array
+        
     if len(columns_4_unique_list)==1:
         ui_handle.change_last_status_line(f"Значений в списке {len(unique_elements_list)} шт.")
     else:
@@ -326,32 +348,69 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
     ui_handle.set_status(f"Сохраняем в файл: {report_prepared_name}")
 
-    end_prog_time = time.time()
-    duration_in_seconds = int(end_prog_time - start_prog_time)
-    ui_handle.set_status("Время выполнения: {0:0>2}:{1:0>2}".format(duration_in_seconds//60,duration_in_seconds%60))
-    try:
-        wb.save(report_prepared_name)
-        ui_handle.change_last_status_line(f"Данные сохранены.")
-        save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, report_prepared_name)
-        if p_open_in_excel:
-            ui_handle.set_status(f"Открываем сформированный файл в Excel.")
-    except:
-        p_open_in_excel = False
-        save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
-        ui_handle.set_status("Файл не доступен, возможно, он уже открыт.")
-        e = sys.exc_info()[1]
-
-    if p_save_without_formulas:
-        pass
+    # -----------------------------------
+    oExcel.Calculation = n_save_excel_calc_status
     
-    if p_open_in_excel:
-        subprocess.Popen(report_prepared_name, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
 
+    oExcel.Calculation = myconstants.EXCEL_AUTOMATIC_CALC
+    oExcel.Calculation = myconstants.EXCEL_MANUAL_CALC
+    row_counter = 0
+    first_row_with_del = 0
+    p_found_first_row = False
+    last_row_4_test = myconstants.PARAMETER_MAX_ROWS_TEST_IN_REPORT
+    range_from_excel = wb.Sheets["Отчет"].Range(wb.Sheets["Отчет"].Cells(1,1), wb.Sheets["Отчет"].Cells(last_row_4_test,1)).Value
+
+    # Ищем первый признак 'delete'
+    for row_counter in range(len(range_from_excel)):
+        row_del_flag_value = range_from_excel[row_counter][0]
+        if row_del_flag_value == None:
+            p_found_first_row = False
+            break
+        
+        row_del_flag_value = row_del_flag_value.replace(" ","")
+        if row_del_flag_value == "delete":
+            p_found_first_row = True
+            break
+
+    if p_found_first_row:
+        first_row_with_del = row_counter + 1
+        last_row_with_del = row_counter
+        while last_row_with_del < len(range_from_excel):
+            row_del_flag_value = range_from_excel[last_row_with_del][0]
+            if row_del_flag_value == None or row_del_flag_value.replace(" ","") != "delete":
+                break
+            last_row_with_del += 1
+
+        wb.Sheets["Отчет"].Range(wb.Sheets["Отчет"].Cells( \
+                    first_row_with_del, 1), wb.Sheets["Отчет"].Cells(last_row_with_del, 1)).Rows.EntireRow.Delete()
+    # -----------------------------------
+
+    oExcel.Calculation = n_save_excel_calc_status
+    wb.Save()
+    if p_save_without_formulas:
+        for curr_sheet_name in [one_sheet.Name for one_sheet in wb.Sheets]:
+            if curr_sheet_name not in myconstants.SHEETS_DONT_DELETE_FORMULAS:
+                wb.Sheets[curr_sheet_name].UsedRange.Value = wb.Sheets[curr_sheet_name].UsedRange.Value
+        
+        wb.Save()
+    ui_handle.change_last_status_line(f"Отчёт сохранён.")
+    
+    save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, report_prepared_name)
+    
     end_prog_time = time.time()
     duration_in_seconds = int(end_prog_time - start_prog_time)
     ui_handle.set_status("Время выполнения: {0:0>2}:{1:0>2}".format(duration_in_seconds//60,duration_in_seconds%60))
+
+    if p_open_in_excel:
+        oExcel.visible = True
+    else:
+        pass
+        oExcel.Quit()
+
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
     ui_handle.enable_buttons()
+
+
 
 
 
