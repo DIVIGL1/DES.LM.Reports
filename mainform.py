@@ -196,7 +196,7 @@ class Ui_MainWindow(object):
 
     def on_dblClick_Reports_List(self):
         #save_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT, self.checkBoxDeleteVac.isChecked())
-        pass
+        self.on_click_DoIt()
 
     def on_click_OpenLastReport(self):
         last_report_filename = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT)
@@ -221,6 +221,7 @@ class Ui_MainWindow(object):
         self.checkBoxOpenExcel.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxSaveWithOutFotmulas.clicked.connect(self.on_click_CheckBoxes)
         self.listView.doubleClicked.connect(self.on_dblClick_Reports_List)
+        self.listViewRawData.doubleClicked.connect(self.on_dblClick_Reports_List)
         
         self.checkBoxDeleteVac.setChecked(load_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, True))
         self.checkBoxSaveWithOutFotmulas.setChecked(load_param(myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS, False))
