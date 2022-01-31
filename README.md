@@ -6,7 +6,15 @@ Utility settings allow you to specify the location of directories with substitut
 
 When processing "raw" data, a list of sequentially executed commands and their status is displayed in a separate field.
 
+***
+Данная утилита позволяет обработать "сырые" данные выгружаемые из системы учёта трудозатрат DES.LM и оформить отчёт в виде электронной таблицы.
 
+Настройки утилиты позволяют указать расположение справочников со строками подстановки, "сырыми" данными, форматами отчетных форм и конечными сформированными отчетами.
+
+При обработке "сырых" данных в отдельном поле отображается список последовательно выполняемых команд и их статус.
+
+
+***
 The main form of the utility:
 ![Main form](https://github.com/DIVIGL1/DES.LM.Reports/blob/main/DES.LM.ReporterMainForm.png)
 

@@ -140,6 +140,9 @@ def add_combine_columns(df):
 
     df["ProjectSubTypeDescription_Month"] = df["ProjectSubTypeDescription"] + "#" + df["Month"]
 
+def df_strio(df):
+    all_columns = df.columns.tolist()
+    
 def prepare_data(raw_file_name, p_delete_vacation, ui_handle):
     data_df = load_raw_data(raw_file_name, ui_handle)
     
@@ -155,6 +158,7 @@ def prepare_data(raw_file_name, p_delete_vacation, ui_handle):
     for column_name in set(data_df.dtypes.keys()) - set(myconstants.DONT_REPLACE_ENTER):
         if data_df.dtypes[column_name] == type(str):
             data_df[column_name] = data_df[column_name].str.replace("\n", "")
+            data_df[column_name] = data_df[column_name].str.strip()
     ui_handle.set_status(f"Удалены переносы строк (всего строк данных: {data_df.shape[0]})")
     
     data_df["FDate"] = data_df["FDate"].apply(lambda param: udata_2_date(param))
@@ -206,7 +210,6 @@ def prepare_data(raw_file_name, p_delete_vacation, ui_handle):
         data_df = data_df[data_df["User"] != vacancy_text]
         ui_handle.set_status(f"Удалены вакансии (всего строк данных: {data_df.shape[0]})")
     
-   
     add_combine_columns(data_df)
     ui_handle.set_status(f"Добавленны производные столбцы (конкатинация) (всего строк данных: {data_df.shape[0]})")
     
@@ -356,7 +359,9 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         ui_handle.change_last_status_line(f"{index + 1} из {len(columns_4_unique_list)} ({one_column}): {len(unique_elements_list)}")
 
         data_array = [[one_uelement] for one_uelement in unique_elements_list]
-        ulist_sheet.Range(ulist_sheet.Cells(2,1), ulist_sheet.Cells(len(data_array) + 1, index + 1)).Value = data_array
+        ulist_sheet.Range(\
+            ulist_sheet.Cells(2, values_dict[one_column]), ulist_sheet.Cells(len(data_array) + 1, values_dict[one_column])\
+                        ).Value = data_array
         
     if len(columns_4_unique_list)==1:
         ui_handle.change_last_status_line(f"Значений в списке {len(unique_elements_list)} шт.")

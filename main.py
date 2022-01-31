@@ -16,4 +16,4 @@ if __name__ == "__main__":
 
     mainwindow.show()
     sys.exit(app.exec_())
-    
+
