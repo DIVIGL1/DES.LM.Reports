@@ -27,7 +27,7 @@ def load_param(param_name, default="", filename="saved.pkl"):
     
     return(params_dict.get(param_name, default))
 
-def get_files_list(path2files="", files_starts="", files_ends=".xlsx"):
+def get_files_list(path2files="", files_starts="", files_ends=".xlsx", reverse=True):
     files_list = \
         [one_file[len(files_starts):][:-len(files_ends)] \
             for one_file \
@@ -35,7 +35,7 @@ def get_files_list(path2files="", files_starts="", files_ends=".xlsx"):
                     if (one_file.lower().startswith(files_starts.lower()) and \
                         one_file.lower().endswith(files_ends.lower()))]
     
-#    return(sorted(files_list, reverse=True))
+    files_list = sorted(files_list, reverse=reverse)
     return(files_list)
 
 

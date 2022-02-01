@@ -53,6 +53,9 @@ RESULT_DATA_COLUMNS = [
                         "FactHours",
                         "ProjectTypeDescription",
                         "ProjectSubTypeDescription",
+                        "ProjectSubType_Month",
+                        "Pdr_User_ProjSubType",
+                        "Pdr_User_ProjSubType_Month",
                         "ProjectSubTypeDescription_Month"
                       ]
 
@@ -82,8 +85,11 @@ OTHER_PROJECT_SUB_TYPE = "_Прочее"
 
 REPORT_FILE_PREFFIX = "Отчет - "
 EXCEL_FILES_ENDS = ".xlsx"
+
 RAW_DATA_SHEET_NAME = "ИсходныеДанные"
 UNIQE_LISTS_SHEET_NAME = "УникальныеСписки"
+SETTINGS_SHEET_NAME = "Настройки"
+
 VACANCY_NAME_TEXT = "Вакансия"
 TEXT_LINES_SEPARATOR = "-" * 110
 PARAMETER_FILENAME_OF_LAST_REPORT = "Последний сформированный отчёт"
@@ -95,3 +101,8 @@ PARAMETER_MAX_ROWS_TEST_IN_REPORT = 50000
 EXCEL_MANUAL_CALC = -4135
 EXCEL_AUTOMATIC_CALC = -4105
 DELETE_ROW_MARKER = "delete"
+HIDE_MARKER = "hide"
+MAXIMIZED = -4137
+NUM_ROWS_FOR_HIDE = 20
+NUM_COLUMNS_FOR_HIDE = 50
+

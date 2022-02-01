@@ -63,7 +63,7 @@
      </sizepolicy>
     </property>
     <property name="text">
-     <string>Вакансии из отчета необходимо удалить</string>
+     <string>Удалить вакансии из отчёта</string>
     </property>
     <property name="checked">
      <bool>true</bool>

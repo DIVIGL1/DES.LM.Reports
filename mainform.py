@@ -134,12 +134,12 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "DES.LM.Reporter"))
-        self.checkBoxDeleteVac.setText(_translate("MainWindow", "Вакансии из отчета необходимо удалить"))
+        self.checkBoxDeleteVac.setText(_translate("MainWindow", "Удалить вакансии из отчёта"))
         self.pushButtonClose.setText(_translate("MainWindow", "Закрыть"))
         self.pushButtonDoIt.setText(_translate("MainWindow", "Сформировать"))
         self.label.setText(_translate("MainWindow", "Список доступных отчетов:"))
         self.label_2.setText(_translate("MainWindow", "Выгрузка данных из DES.LM:"))
-        self.plainTextEdit.setPlainText(_translate("MainWindow", "> Ожидание выбора пользователя."))
+        self.plainTextEdit.setPlainText(_translate("MainWindow", ">>   Ожидание выбора пользователя."))
         self.label_3.setText(_translate("MainWindow", "Прогресс выполнения обработки данных и подготовки отчета:"))
         self.checkBoxOpenExcel.setText(_translate("MainWindow", "Сразу открыть отчет в Excel"))
         self.pushButtonOpenLastReport.setText(_translate("MainWindow", "Открыть последний сформированный отчет в Excel"))

@@ -26,7 +26,12 @@ def thread(my_func):
 class ReportCreater(object):
     def __init__(self, *args):
         super(ReportCreater, self).__init__(*args)
-        self.reports_list = get_files_list(get_parameter_value(myconstants.REPORTS_SECTION_NAME), myconstants.REPORT_FILE_PREFFIX, ".xlsx")
+        self.reports_list = get_files_list(\
+                                get_parameter_value(myconstants.REPORTS_SECTION_NAME),\
+                                myconstants.REPORT_FILE_PREFFIX,\
+                                ".xlsx",\
+                                reverse=False\
+                                        )
         warnings.filterwarnings("ignore")
     
     def get_reports_list(self):
@@ -139,6 +144,11 @@ def add_combine_columns(df):
     df["Pdr_User_ProjType_Month"] = df["Division"] + "#" + df["User"] + "#" + df["ProjectType"] + "#" + df["Month"]
 
     df["ProjectSubTypeDescription_Month"] = df["ProjectSubTypeDescription"] + "#" + df["Month"]
+
+    df["ProjectSubType_Month"] = df["ProjectSubType"] + "#" + df["Month"]
+    df["Pdr_User_ProjSubType"] = df["Division"] + "#" + df["User"] + "#" + df["ProjectSubType"]
+    df["Pdr_User_ProjSubType_Month"] = df["Division"] + "#" + df["User"] + "#" + df["ProjectSubType"] + "#" + df["Month"]
+
 
 def df_strio(df):
     all_columns = df.columns.tolist()
@@ -257,10 +267,10 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
     
     ui_handle.clear_status()
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
-    ui_handle.set_status(f"Выбран отчет:>\n  {report_file_name}")
-    ui_handle.set_status(f"Файл с данными:>\n  {raw_file_name}")
-    ui_handle.set_status(f"Вакансии: {'удалить из отчета.' if p_delete_vacation else 'оставить в отчете.'}")
-    ui_handle.set_status(f"Округление до: {myconstants.ROUND_FTE_VALUE}-го знака после запятой")
+    ui_handle.set_status(f"1. Выбран отчет:\n>>   {report_file_name}")
+    ui_handle.set_status(f"2. Выбран файл с данными:\n>>   {raw_file_name}")
+    ui_handle.set_status(f"3. Вакансии: {'удалить из отчета.' if p_delete_vacation else 'оставить в отчете.'}")
+    ui_handle.set_status(f"4. Округление до: {myconstants.ROUND_FTE_VALUE}-го знака после запятой")
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
 
     ui_handle.set_status("Проверим структуру файла, содержащего форму отчёта.")
@@ -269,6 +279,7 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         shutil.copyfile(report_file_name, report_prepared_name)
     except:
         ui_handle.set_status("Не удалось скопировать файл с формой отчёта.")
+        ui_handle.set_status(f"проверьте, пожалуйста. не открыт ли у Вас файл: \n>>   {report_prepared_name}")
         ui_handle.set_status("Формирование отчёта не возможно.")
         save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.enable_buttons()
@@ -276,8 +287,8 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
 
     pythoncom.CoInitializeEx(0)
     oExcel = win32com.client.Dispatch("Excel.Application")
-    oExcel.visible = False
-#    oExcel.visible = True
+    oExcel.Visible = oExcel.WorkBooks.Count > 0
+#    oExcel.Visible = True
     oExcel.DisplayAlerts = False
         
     report_file_name = report_prepared_name
@@ -303,6 +314,18 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         ui_handle.set_status("[Ошибка в структуре отчета]")
         ui_handle.set_status("")
         ui_handle.set_status("В файле для выбранной формы отчёта отсутствует необходимый лист для уникальных списков.")
+        ui_handle.set_status("Формирование отчёта не возможно.")
+        save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
+        ui_handle.enable_buttons()
+        oExcel.Calculation = n_save_excel_calc_status
+        oExcel.Quit()
+        return
+    elif (myconstants.SETTINGS_SHEET_NAME not in [one_sheet.Name for one_sheet in wb.Sheets]):
+        ui_handle.set_status("")
+        ui_handle.set_status("")
+        ui_handle.set_status("[Ошибка в структуре отчета]")
+        ui_handle.set_status("")
+        ui_handle.set_status("В файле для выбранной формы отчёта отсутствует необходимый лист c настройками.")
         ui_handle.set_status("Формирование отчёта не возможно.")
         save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.enable_buttons()
@@ -407,6 +430,22 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
                 wb.Sheets[curr_sheet_name].Range(wb.Sheets[curr_sheet_name].Cells( \
                             first_row_with_del, 1), wb.Sheets[curr_sheet_name].Cells(last_row_with_del, 1)).Rows.EntireRow.Delete()
     # -----------------------------------
+            # Скрываем строки и столбцы с признаком 'hide'
+            for curr_sheet_name in [one_sheet.Name for one_sheet in wb.Sheets]:
+                if curr_sheet_name not in [myconstants.RAW_DATA_SHEET_NAME, myconstants.UNIQE_LISTS_SHEET_NAME, myconstants.SETTINGS_SHEET_NAME]:
+                    # Скрываем строки с признаком 'hide'
+                    for curr_row in range(1, myconstants.NUM_ROWS_FOR_HIDE + 1):
+                        cell_value = wb.Sheets[curr_sheet_name].Cells(curr_row, 1).Value
+                        if type(cell_value) == str and cell_value != None and cell_value.replace(" ", "") == myconstants.HIDE_MARKER:
+                            pass
+                            wb.Sheets[curr_sheet_name].Rows(curr_row).Hidden = True
+                    # Скрываем столбцы с признаком 'hide'
+                    for curr_col in range(1, myconstants.NUM_ROWS_FOR_HIDE + 1):
+                        cell_value = wb.Sheets[curr_sheet_name].Cells(1, curr_col).Value
+                        if type(cell_value) == str and cell_value != None and cell_value.replace(" ", "") == myconstants.HIDE_MARKER:
+                            pass
+                            wb.Sheets[curr_sheet_name].Columns(curr_col).Hidden = True
+    # -----------------------------------
 
     oExcel.Calculation = n_save_excel_calc_status
     wb.Save()
@@ -425,7 +464,13 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
     ui_handle.set_status("Время выполнения: {0:0>2}:{1:0>2}".format(duration_in_seconds//60,duration_in_seconds%60))
 
     if p_open_in_excel:
-        oExcel.visible = True
+        # Скроем вспомогательные листы
+        wb.Sheets[myconstants.RAW_DATA_SHEET_NAME]. Visible = False
+        wb.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME]. Visible = False
+        wb.Sheets[myconstants.SETTINGS_SHEET_NAME]. Visible = False
+            
+        oExcel.Visible = True
+        oExcel.WindowState = myconstants.MAXIMIZED
     else:
         pass
         oExcel.Quit()
