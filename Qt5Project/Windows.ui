@@ -50,9 +50,9 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>493</y>
-      <width>251</width>
+      <x>50</x>
+      <y>479</y>
+      <width>221</width>
       <height>17</height>
      </rect>
     </property>
@@ -116,7 +116,7 @@
       <x>10</x>
       <y>20</y>
       <width>271</width>
-      <height>251</height>
+      <height>221</height>
      </rect>
     </property>
     <property name="editTriggers">
@@ -161,7 +161,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>290</y>
+      <y>277</y>
       <width>271</width>
       <height>201</height>
      </rect>
@@ -174,7 +174,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>273</y>
+      <y>260</y>
       <width>271</width>
       <height>16</height>
      </rect>
@@ -263,9 +263,9 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>50</x>
       <y>521</y>
-      <width>251</width>
+      <width>221</width>
       <height>17</height>
      </rect>
     </property>
@@ -319,9 +319,9 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>50</x>
       <y>507</y>
-      <width>251</width>
+      <width>221</width>
       <height>17</height>
      </rect>
     </property>
@@ -333,6 +333,34 @@
     </property>
     <property name="text">
      <string>Сохранить только значения</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+    <property name="autoRepeat">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxAddVFTE">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>493</y>
+      <width>221</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="text">
+     <string>Добавить искусственные FTE</string>
     </property>
     <property name="checked">
      <bool>true</bool>

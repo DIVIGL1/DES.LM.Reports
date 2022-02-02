@@ -56,7 +56,18 @@ def get_parameter_value(paramname):
 def load_raw_data(raw_file, ui_handle):
     # Загружаем сырые данные
     ui_handle.set_status("Начинаем загружать исходные данные.")
-    df = pd.read_excel(raw_file, engine='openpyxl')
+    if load_param(myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE, myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE_DEFVALUE):
+        virtual_fte_file = \
+                os.path.join( \
+                    os.path.join(os.getcwd(), get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)), \
+                        myconstants.VIRTUAL_FTE_FILE_NAME)
+        df = pd.concat(\
+                        [pd.read_excel(raw_file, engine='openpyxl'), pd.read_excel(virtual_fte_file, engine='openpyxl')],\
+                        sort=False, axis=0, ignore_index=True\
+                        )
+    else:
+        df = pd.read_excel(raw_file, engine='openpyxl')
+
     ui_handle.set_status("Удаляем 'na'. Переименовываем столбцы и удаляем лишние.")
     df.dropna(how='all', inplace=True)
     df.rename(columns=myconstants.RAW_DATA_COLUMNS, inplace=True)
@@ -239,9 +250,12 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         return
     
     start_prog_time = time.time()
-    p_delete_vacation = load_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, True)
-    p_save_without_formulas = load_param(myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS, False)
-    p_open_in_excel = load_param(myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL, False)
+    p_delete_vacation =\
+        load_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC_DEFVALUE)
+    p_save_without_formulas =\
+        load_param(myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS, myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS_DEFVALUE)
+    p_open_in_excel =\
+        load_param(myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL, myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL_DEFVALUE)
     
     save_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT,ui_handle.reports_list.index(report_file_name) + 1)
     
@@ -465,7 +479,7 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
 
     if p_open_in_excel:
         # Скроем вспомогательные листы
-        wb.Sheets[myconstants.RAW_DATA_SHEET_NAME]. Visible = False
+        #wb.Sheets[myconstants.RAW_DATA_SHEET_NAME]. Visible = False
         wb.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME]. Visible = False
         wb.Sheets[myconstants.SETTINGS_SHEET_NAME]. Visible = False
             

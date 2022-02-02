@@ -1,3 +1,6 @@
+from pickle import TRUE
+
+
 RAW_DATA_COLUMNS = {
                     "Дата" : "FDate",
                     "Функциональное направление" : "FNRaw",
@@ -74,6 +77,7 @@ REPORTS_PREPARED_SECTION_NAME = "ReportsPrepared"
 MONTH_WORKING_HOURS_TABLE = "WHours.xlsx"
 DIVISIONS_NAMES_TABLE = "ShortDivisionNames.xlsx"
 FNS_NAMES_TABLE = "ShortFNNames.xlsx"
+VIRTUAL_FTE_FILE_NAME = "Искусственные FTE.xlsx"
 
 PROJECTS_TYPES_DESCR = "ProjectsTypesDescriptions.xlsx"
 PROJECTS_SUB_TYPES_TABLE = "ProjectsSubTypes.xlsx"
@@ -93,9 +97,17 @@ SETTINGS_SHEET_NAME = "Настройки"
 VACANCY_NAME_TEXT = "Вакансия"
 TEXT_LINES_SEPARATOR = "-" * 110
 PARAMETER_FILENAME_OF_LAST_REPORT = "Последний сформированный отчёт"
+
 PARAMETER_SAVED_VALUE_DELETE_VAC = "Удалять ли вакансии из отчёта?"
-PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL = "Открывать ли сформированный отчет в Excel?"
+PARAMETER_SAVED_VALUE_ADD_VFTE = "Дабавить к списку сырых данных искусственные FTE?"
 PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS = "Сохранять отчёт без формул?"
+PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL = "Открывать ли сформированный отчет в Excel?"
+
+PARAMETER_SAVED_VALUE_DELETE_VAC_DEFVALUE = True
+PARAMETER_SAVED_VALUE_ADD_VFTE_DEFVALUE = False
+PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS_DEFVALUE = False
+PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL_DEFVALUE = True
+
 PARAMETER_SAVED_SELECTED_REPORT = "Номер последнего выбранного отчёта"
 PARAMETER_MAX_ROWS_TEST_IN_REPORT = 50000
 EXCEL_MANUAL_CALC = -4135
