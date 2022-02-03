@@ -57,14 +57,19 @@ def load_raw_data(raw_file, ui_handle):
     # Загружаем сырые данные
     ui_handle.set_status("Начинаем загружать исходные данные.")
     if load_param(myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE, myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE_DEFVALUE):
+        # Проверим наличие файла:
         virtual_fte_file = \
                 os.path.join( \
                     os.path.join(os.getcwd(), get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)), \
                         myconstants.VIRTUAL_FTE_FILE_NAME)
-        df = pd.concat(\
-                        [pd.read_excel(raw_file, engine='openpyxl'), pd.read_excel(virtual_fte_file, engine='openpyxl')],\
-                        sort=False, axis=0, ignore_index=True\
-                        )
+        if not os.path.isfile(virtual_fte_file):
+            ui_handle.set_status("Не обнаружен файл с искусственными FTE.")
+            df = pd.read_excel(raw_file, engine='openpyxl')
+        else:
+            df = pd.concat(\
+                            [pd.read_excel(raw_file, engine='openpyxl'), pd.read_excel(virtual_fte_file, engine='openpyxl')],\
+                            sort=False, axis=0, ignore_index=True\
+                            )
     else:
         df = pd.read_excel(raw_file, engine='openpyxl')
 
@@ -191,6 +196,7 @@ def prepare_data(raw_file_name, p_delete_vacation, ui_handle):
     data_df["FDate"] = data_df["FDate"].dt.strftime('%Y_%m')
     
     ui_handle.set_status("... начинаем пересчет фактичеких часов в FTE.")
+    data_df["PlanFTE"] = data_df["PlanFTE"].fillna(0)
     data_df["FactFTE"] = \
         data_df[["FactHours", "Northern", "CHour", "NHour", "Project", "PlanFTE"]].apply( \
             lambda param: calc_fact_fte(*param), axis=1)
@@ -302,11 +308,13 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
     pythoncom.CoInitializeEx(0)
     oExcel = win32com.client.Dispatch("Excel.Application")
     oExcel.Visible = oExcel.WorkBooks.Count > 0
-#    oExcel.Visible = True
     oExcel.DisplayAlerts = False
         
     report_file_name = report_prepared_name
     wb = oExcel.Workbooks.Open(report_file_name)
+    currwindow = oExcel.ActiveWindow
+    currwindow.WindowState = myconstants.EXCELWINDOWSTATE_MIN
+#    oExcel.Windows[0].WindowState = -4140
     n_save_excel_calc_status = oExcel.Calculation
     oExcel.Calculation = myconstants.EXCEL_MANUAL_CALC
     
@@ -484,7 +492,8 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         wb.Sheets[myconstants.SETTINGS_SHEET_NAME]. Visible = False
             
         oExcel.Visible = True
-        oExcel.WindowState = myconstants.MAXIMIZED
+        currwindow.WindowState = myconstants.EXCELWINDOWSTATE_MAX
+#        oExcel.WindowState = myconstants.EXCELWINDOWSTATE_MAX
     else:
         pass
         oExcel.Quit()
