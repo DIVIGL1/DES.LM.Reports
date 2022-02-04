@@ -53,6 +53,7 @@ class Ui_MainWindow(object):
         self.pushButtonDoIt.setObjectName("pushButtonDoIt")
         self.listView = QtWidgets.QListView(self.centralwidget)
         self.listView.setGeometry(QtCore.QRect(10, 20, 271, 221))
+        self.listView.setStyleSheet("")
         self.listView.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.listView.setObjectName("listView")
         self.label = QtWidgets.QLabel(self.centralwidget)
