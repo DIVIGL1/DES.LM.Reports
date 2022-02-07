@@ -7,8 +7,6 @@ import warnings
 import pythoncom
 
 import myconstants
-#from myutils import get_files_list, save_param, get_report_parameters, get_full_files_names
-#from myutils import get_excel_and_wb, save_report, hide_and_delete_rows_and_columns
 from myutils import *
 from mytablefuncs import get_parameter_value, prepare_data
 
@@ -118,7 +116,7 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         oExcel.Quit()
         return
     else:
-        ui_handle.set_status("Ошибок не найдено.")
+        ui_handle.change_last_status_line("Пройдена проверка структуры файла, содержащего форму отчёта.")
 
     ui_handle.set_status("Файл Excel с формой отчёта подгружен.")
     
