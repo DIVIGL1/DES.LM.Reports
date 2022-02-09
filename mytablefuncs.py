@@ -130,6 +130,8 @@ def add_combine_columns(df):
     df["Pdr_User_ProjSubType"] = df["Division"] + "#" + df["User"] + "#" + df["ProjectSubType"]
     df["Pdr_User_ProjSubType_Month"] = df["Division"] + "#" + df["User"] + "#" + df["ProjectSubType"] + "#" + df["Month"]
 
+    df["pVacasia"] = df["User"].apply(lambda param: True if param.replace(" ", "").lower()[:8]=='вакансия' else False)
+
 def prepare_data(raw_file_name, p_delete_vacation, ui_handle):
     data_df = load_raw_data(raw_file_name, ui_handle)
     

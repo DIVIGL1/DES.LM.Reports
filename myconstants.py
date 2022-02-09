@@ -59,7 +59,8 @@ RESULT_DATA_COLUMNS = [
                         "ProjectSubType_Month",
                         "Pdr_User_ProjSubType",
                         "Pdr_User_ProjSubType_Month",
-                        "ProjectSubTypeDescription_Month"
+                        "ProjectSubTypeDescription_Month",
+                        "pVacasia"
                       ]
 
 RAW_DATA_DROP_COLUMNS = ["MVZ", "KoBo", "Contract", "Unnamed15", "Unnamed16"]
