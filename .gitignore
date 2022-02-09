@@ -7,7 +7,6 @@ _local_*.*
 __pycache__
 __pycache__/*.*
 ReportsPrepared/*
-Reports/*.*
 RawData/*.*
 build/*.*
 dist/*.*
