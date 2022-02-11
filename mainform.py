@@ -67,7 +67,7 @@ class Ui_MainWindow(object):
         self.label.setWordWrap(False)
         self.label.setObjectName("label")
         self.listViewRawData = QtWidgets.QListView(self.centralwidget)
-        self.listViewRawData.setGeometry(QtCore.QRect(10, 277, 251, 201))
+        self.listViewRawData.setGeometry(QtCore.QRect(10, 277, 251, 171))
         self.listViewRawData.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.listViewRawData.setObjectName("listViewRawData")
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
@@ -137,6 +137,28 @@ class Ui_MainWindow(object):
         self.checkBoxAddVFTE.setChecked(True)
         self.checkBoxAddVFTE.setAutoRepeat(False)
         self.checkBoxAddVFTE.setObjectName("checkBoxAddVFTE")
+        self.checkBoxDelPDn = QtWidgets.QCheckBox(self.centralwidget)
+        self.checkBoxDelPDn.setEnabled(True)
+        self.checkBoxDelPDn.setGeometry(QtCore.QRect(40, 464, 221, 17))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.checkBoxDelPDn.sizePolicy().hasHeightForWidth())
+        self.checkBoxDelPDn.setSizePolicy(sizePolicy)
+        self.checkBoxDelPDn.setChecked(True)
+        self.checkBoxDelPDn.setAutoRepeat(False)
+        self.checkBoxDelPDn.setObjectName("checkBoxDelPDn")
+        self.checkBoxDeleteNotProduct = QtWidgets.QCheckBox(self.centralwidget)
+        self.checkBoxDeleteNotProduct.setEnabled(True)
+        self.checkBoxDeleteNotProduct.setGeometry(QtCore.QRect(40, 450, 221, 17))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.checkBoxDeleteNotProduct.sizePolicy().hasHeightForWidth())
+        self.checkBoxDeleteNotProduct.setSizePolicy(sizePolicy)
+        self.checkBoxDeleteNotProduct.setChecked(True)
+        self.checkBoxDeleteNotProduct.setAutoRepeat(False)
+        self.checkBoxDeleteNotProduct.setObjectName("checkBoxDeleteNotProduct")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -156,6 +178,8 @@ class Ui_MainWindow(object):
         self.pushButtonOpenLastReport.setText(_translate("MainWindow", "Открыть последний сформированный отчет в Excel"))
         self.checkBoxSaveWithOutFotmulas.setText(_translate("MainWindow", "Сохранить только значения"))
         self.checkBoxAddVFTE.setText(_translate("MainWindow", "Добавить искусственные FTE"))
+        self.checkBoxDelPDn.setText(_translate("MainWindow", "Удалить проекты с ПерсДанными"))
+        self.checkBoxDeleteNotProduct.setText(_translate("MainWindow", "Оставить только производство"))
         
     # ------------------------------------------------------------------- #
 
@@ -216,6 +240,8 @@ class Ui_MainWindow(object):
             subprocess.Popen(last_report_filename, shell=True)
     
     def on_click_CheckBoxes(self):
+        save_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, self.checkBoxDeleteNotProduct.isChecked())
+        save_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, self.checkBoxDelPDn.isChecked())
         save_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, self.checkBoxDeleteVac.isChecked())
         save_param(myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE, self.checkBoxAddVFTE.isChecked())
         save_param(myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS, self.checkBoxSaveWithOutFotmulas.isChecked())
@@ -231,6 +257,8 @@ class Ui_MainWindow(object):
         self.pushButtonDoIt.clicked.connect(self.on_click_DoIt)
         self.pushButtonClose.clicked.connect(self.on_click_Close)
         
+        self.checkBoxDeleteNotProduct.clicked.connect(self.on_click_CheckBoxes)
+        self.checkBoxDelPDn.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxDeleteVac.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxAddVFTE.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxOpenExcel.clicked.connect(self.on_click_CheckBoxes)
@@ -239,6 +267,10 @@ class Ui_MainWindow(object):
         self.listView.doubleClicked.connect(self.on_dblClick_Reports_List)
         self.listViewRawData.doubleClicked.connect(self.on_dblClick_Reports_List)
 
+        self.checkBoxDeleteNotProduct.setChecked(\
+            load_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD_DEFVALUE))
+        self.checkBoxDelPDn.setChecked(\
+            load_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA_DEFVALUE))
         self.checkBoxDeleteVac.setChecked(\
             load_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC_DEFVALUE))
         self.checkBoxAddVFTE.setChecked(\
