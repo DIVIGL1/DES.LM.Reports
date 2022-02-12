@@ -27,7 +27,7 @@ def load_parameter_table(tablename):
 def load_raw_data(raw_file, ui_handle):
     # Загружаем сырые данные
     ui_handle.set_status("Начинаем загрузку и обработку исходных данных.")
-    _, p_add_vfte, _, _ = myutils.get_report_parameters()
+    _, _, _, p_add_vfte, _, _ = myutils.get_report_parameters()
     if p_add_vfte:
         # Проверим наличие файла:
         virtual_fte_file = \
@@ -132,7 +132,7 @@ def add_combine_columns(df):
 
     df["pVacasia"] = df["User"].apply(lambda param: True if param.replace(" ", "").lower()[:8]=='вакансия' else False)
 
-def prepare_data(raw_file_name, p_delete_vacation, ui_handle):
+def prepare_data(raw_file_name, p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, ui_handle):
     data_df = load_raw_data(raw_file_name, ui_handle)
     
     month_hours_df = load_parameter_table(myconstants.MONTH_WORKING_HOURS_TABLE)
@@ -187,6 +187,11 @@ def prepare_data(raw_file_name, p_delete_vacation, ui_handle):
             lambda param: param[0] + myconstants.OTHER_PROJECT_SUB_TYPE if pd.isna(param[1]) else param[1], axis=1)
 
     data_df = data_df.merge(projects_sub_types_descr_df, left_on="ProjectSubType", right_on="ProjectSubTypeName", how="left")
+    if p_delete_pers_data:
+        data_df = data_df[data_df["ProjectSubTypePersData"] != 1]
+
+    if p_delete_not_prod_units:
+        data_df = data_df[data_df["pNotProductUnit"] != 1]
 
     ui_handle.set_status(f"... и типы ПОДпроектов (всего строк данных: {data_df.shape[0]})")
     

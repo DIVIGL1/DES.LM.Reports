@@ -53,7 +53,7 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         return
     
     start_prog_time = time.time()
-    p_delete_vacation, _, p_save_without_formulas, p_open_in_excel = get_report_parameters()
+    p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, _, p_save_without_formulas, p_open_in_excel = get_report_parameters()
     raw_file_name, report_file_name, report_prepared_name = get_full_files_names(raw_file_name, report_file_name)
     
     ui_handle.clear_status()
@@ -120,7 +120,7 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
 
     ui_handle.set_status("Файл Excel с формой отчёта подгружен.")
     
-    report_df = prepare_data(raw_file_name, p_delete_vacation, ui_handle)
+    report_df = prepare_data(raw_file_name, p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, ui_handle)
     ui_handle.set_status(f"Таблица для загрузки полностью подготовлена (всего строк данных: {report_df.shape[0]})")
 
     ui_handle.set_status("Начинаем перенос строк в Excel:")

@@ -43,6 +43,10 @@ def get_files_list(path2files="", files_starts="", files_ends=".xlsx", reverse=T
 
 def get_report_parameters():
     myconstants.ROUND_FTE_VALUE = get_parameter_value(myconstants.ROUND_FTE_SECTION_NAME)
+    p_delete_not_prod_units =\
+        load_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD_DEFVALUE)
+    p_delete_pers_data =\
+        load_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA_DEFVALUE)
     p_delete_vacation =\
         load_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC_DEFVALUE)
     p_add_vfte =\
@@ -52,7 +56,7 @@ def get_report_parameters():
     p_open_in_excel =\
         load_param(myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL, myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL_DEFVALUE)
     
-    return p_delete_vacation, p_add_vfte, p_save_without_formulas, p_open_in_excel
+    return p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, p_add_vfte, p_save_without_formulas, p_open_in_excel
 
 def get_full_files_names(raw_file_name, report_file_name):
     report_prepared_name = \
