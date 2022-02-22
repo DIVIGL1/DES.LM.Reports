@@ -79,6 +79,7 @@ REPORTS_PREPARED_SECTION_NAME = "ReportsPrepared"
 MONTH_WORKING_HOURS_TABLE = "WHours.xlsx"
 DIVISIONS_NAMES_TABLE = "ShortDivisionNames.xlsx"
 FNS_NAMES_TABLE = "ShortFNNames.xlsx"
+P_FN_SUBST_TABLE = "FNSusbst.xlsx"
 VIRTUAL_FTE_FILE_NAME = "Искусственные FTE.xlsx"
 
 PROJECTS_TYPES_DESCR = "ProjectsTypesDescriptions.xlsx"
