@@ -122,17 +122,18 @@ def hide_and_delete_rows_and_columns(oExcel, wb):
                     p_found_first_row = False
                     break
                 
-                row_del_flag_value = row_del_flag_value.replace(" ","")
-                if row_del_flag_value == myconstants.DELETE_ROW_MARKER:
-                    p_found_first_row = True
-                    break
+                if (type(row_del_flag_value) == str):
+                    row_del_flag_value = row_del_flag_value.replace(" ","")
+                    if row_del_flag_value == myconstants.DELETE_ROW_MARKER:
+                        p_found_first_row = True
+                        break
 
             if p_found_first_row:
                 first_row_with_del = row_counter + 1
                 last_row_with_del = row_counter
                 while last_row_with_del < len(range_from_excel):
                     row_del_flag_value = range_from_excel[last_row_with_del][0]
-                    if row_del_flag_value == None or row_del_flag_value.replace(" ","") != myconstants.DELETE_ROW_MARKER:
+                    if (type(row_del_flag_value) != str) or row_del_flag_value.replace(" ","") != myconstants.DELETE_ROW_MARKER:
                         break
                     last_row_with_del += 1
 

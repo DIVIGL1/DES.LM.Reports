@@ -141,13 +141,17 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
     values_dict = dict()
     while True:
         uniq_col_name = ulist_sheet.Cells(1, column).value
-        if type(uniq_col_name) != str:
+        if (type(uniq_col_name) != str) and (uniq_col_name is not None):
             ui_handle.set_status("")
             ui_handle.set_status("")
             ui_handle.set_status("[Ошибка в структуре отчета]")
             ui_handle.set_status("")
-            ui_handle.set_status("В файле для выбранной формы на листе для уникальных списков в стороке 1:1 в качестве наименований списков должны быть символьные значения.")
-            ui_handle.set_status("Формирование отчёта остановлено.")
+            ui_handle.set_status(
+"""В файле для выбранной формы на листе \
+для уникальных списков в стороке 1:1 в качестве \
+наименований списков должны быть символьные значения. \
+Формирование отчёта остановлено."""
+                )
             save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
             ui_handle.enable_buttons()
             # oExcel.Quit()
@@ -167,8 +171,13 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         ui_handle.set_status("")
         ui_handle.set_status("[Ошибка в структуре отчета]")
         ui_handle.set_status("")
-        ui_handle.set_status("В файле для выбранной формы на листе для уникальных списков не указано ничего.")
-        ui_handle.set_status("Формирование отчёта остановлено.")
+        ui_handle.set_status(
+"""В файле для выбранной формы \
+на листе для уникальных списков \
+не указан уникальный список из \
+возможного перечня. \
+Формирование отчёта остановлено."""
+            )
         save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.enable_buttons()
         # oExcel.Quit()
