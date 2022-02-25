@@ -89,7 +89,8 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.enable_buttons()
         oExcel.Calculation = n_save_excel_calc_status
-        oExcel.Quit()
+        # oExcel.Quit()
+        wb.Close()
         return
     elif (myconstants.UNIQE_LISTS_SHEET_NAME not in [one_sheet.Name for one_sheet in wb.Sheets]):
         ui_handle.set_status("")
@@ -101,7 +102,8 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.enable_buttons()
         oExcel.Calculation = n_save_excel_calc_status
-        oExcel.Quit()
+        # oExcel.Quit()
+        wb.Close()
         return
     elif (myconstants.SETTINGS_SHEET_NAME not in [one_sheet.Name for one_sheet in wb.Sheets]):
         ui_handle.set_status("")
@@ -113,7 +115,8 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.enable_buttons()
         oExcel.Calculation = n_save_excel_calc_status
-        oExcel.Quit()
+        # oExcel.Quit()
+        wb.Close()
         return
     else:
         ui_handle.change_last_status_line("Пройдена проверка структуры файла, содержащего форму отчёта.")
@@ -155,7 +158,8 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         ui_handle.set_status("Формирование отчёта остановлено.")
         save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.enable_buttons()
-        oExcel.Quit()
+        # oExcel.Quit()
+        wb.Close()
         return
 
     ui_handle.set_status(f"Всего списков c уникальными данными: {len(columns_4_unique_list)} шт.")
@@ -198,7 +202,8 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         currwindow.WindowState = myconstants.EXCELWINDOWSTATE_MAX
     else:
         pass
-        oExcel.Quit()
+        # oExcel.Quit()
+        wb.Close()
 
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
     ui_handle.enable_buttons()
