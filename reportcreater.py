@@ -141,6 +141,19 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
     values_dict = dict()
     while True:
         uniq_col_name = ulist_sheet.Cells(1, column).value
+        if type(uniq_col_name) != str:
+            ui_handle.set_status("")
+            ui_handle.set_status("")
+            ui_handle.set_status("[Ошибка в структуре отчета]")
+            ui_handle.set_status("")
+            ui_handle.set_status("В файле для выбранной формы на листе для уникальных списков в стороке 1:1 в качестве наименований списков должны быть символьные значения.")
+            ui_handle.set_status("Формирование отчёта остановлено.")
+            save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
+            ui_handle.enable_buttons()
+            # oExcel.Quit()
+            wb.Close()
+            return
+            
         if uniq_col_name != None and uniq_col_name.replace(" ","") != "":
             values_dict[uniq_col_name] = column
             column += 1
