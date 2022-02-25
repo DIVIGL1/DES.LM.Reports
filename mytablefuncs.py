@@ -138,6 +138,7 @@ def prepare_data(raw_file_name, p_delete_not_prod_units, p_delete_pers_data, p_d
     month_hours_df = load_parameter_table(myconstants.MONTH_WORKING_HOURS_TABLE)
     divisions_names_df = load_parameter_table(myconstants.DIVISIONS_NAMES_TABLE)
     fns_names_df = load_parameter_table(myconstants.FNS_NAMES_TABLE)
+    p_fns_subst_df = load_parameter_table(myconstants.P_FN_SUBST_TABLE)
     projects_sub_types_df = load_parameter_table(myconstants.PROJECTS_SUB_TYPES_TABLE)
     projects_types_descr_df = load_parameter_table(myconstants.PROJECTS_TYPES_DESCR)
     projects_sub_types_descr_df = load_parameter_table(myconstants.PROJECTS_SUB_TYPES_DESCR)
@@ -171,6 +172,9 @@ def prepare_data(raw_file_name, p_delete_not_prod_units, p_delete_pers_data, p_d
     data_df["Division"] = data_df[["ShortDivisionName", "DivisionRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
     ui_handle.set_status(f"Все подразделенния заполнены (всего строк данных: {data_df.shape[0]})")
 
+    
+    data_df = data_df.merge(p_fns_subst_df, left_on="Project", right_on="ProjectNum", how="left")
+    data_df["FNRaw"] = data_df[["RealFNName", "FNRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
     data_df = data_df.merge(fns_names_df, left_on="FNRaw", right_on="FullFNName", how="left")
     data_df["FN"] = data_df[["ShortFNName", "FNRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
     ui_handle.set_status(f"Данные объединены с таблицей с ФН (всего строк данных: {data_df.shape[0]})")
