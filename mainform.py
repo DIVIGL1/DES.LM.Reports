@@ -231,7 +231,6 @@ class Ui_MainWindow(object):
             self.app.quit()
 
     def on_dblClick_Reports_List(self):
-        #save_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT, self.checkBoxDeleteVac.isChecked())
         self.on_click_DoIt()
 
     def on_click_OpenLastReport(self):
@@ -240,12 +239,31 @@ class Ui_MainWindow(object):
             subprocess.Popen(last_report_filename, shell=True)
     
     def on_click_CheckBoxes(self):
-        save_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, self.checkBoxDeleteNotProduct.isChecked())
-        save_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, self.checkBoxDelPDn.isChecked())
-        save_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, self.checkBoxDeleteVac.isChecked())
-        save_param(myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE, self.checkBoxAddVFTE.isChecked())
-        save_param(myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS, self.checkBoxSaveWithOutFotmulas.isChecked())
-        save_param(myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL, self.checkBoxOpenExcel.isChecked())
+        s_preff = self.listView.currentIndex().data() + " --> "
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, self.checkBoxDeleteNotProduct.isChecked())
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, self.checkBoxDelPDn.isChecked())
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, self.checkBoxDeleteVac.isChecked())
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE, self.checkBoxAddVFTE.isChecked())
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS, self.checkBoxSaveWithOutFotmulas.isChecked())
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL, self.checkBoxOpenExcel.isChecked())
+
+    def on_Click_Reports_List(self):
+        self.setup_check_boxes()
+        
+    def setup_check_boxes(self):
+        s_preff = self.listView.currentIndex().data() + " --> "
+        self.checkBoxDeleteNotProduct.setChecked(\
+            load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD_DEFVALUE))
+        self.checkBoxDelPDn.setChecked(\
+            load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA_DEFVALUE))
+        self.checkBoxDeleteVac.setChecked(\
+            load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC_DEFVALUE))
+        self.checkBoxAddVFTE.setChecked(\
+            load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE, myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE_DEFVALUE))
+        self.checkBoxSaveWithOutFotmulas.setChecked(\
+            load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS, myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS_DEFVALUE))
+        self.checkBoxOpenExcel.setChecked(\
+            load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL, myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL_DEFVALUE))
 
     def setup_form(self, reports_list, raw_files_list):
         self.reports_list = reports_list
@@ -264,22 +282,13 @@ class Ui_MainWindow(object):
         self.checkBoxOpenExcel.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxSaveWithOutFotmulas.clicked.connect(self.on_click_CheckBoxes)
         
+        self.setup_check_boxes()
+
+        self.listView.clicked.connect(self.on_Click_Reports_List)
+        
         self.listView.doubleClicked.connect(self.on_dblClick_Reports_List)
         self.listViewRawData.doubleClicked.connect(self.on_dblClick_Reports_List)
 
-        self.checkBoxDeleteNotProduct.setChecked(\
-            load_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD_DEFVALUE))
-        self.checkBoxDelPDn.setChecked(\
-            load_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA_DEFVALUE))
-        self.checkBoxDeleteVac.setChecked(\
-            load_param(myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC_DEFVALUE))
-        self.checkBoxAddVFTE.setChecked(\
-            load_param(myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE, myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE_DEFVALUE))
-        self.checkBoxSaveWithOutFotmulas.setChecked(\
-            load_param(myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS, myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS_DEFVALUE))
-        self.checkBoxOpenExcel.setChecked(\
-            load_param(myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL, myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL_DEFVALUE))
-        
         self.pushButtonOpenLastReport.clicked.connect(self.on_click_OpenLastReport)
         self.status_text = ""
         self.previous_status_text = ""
