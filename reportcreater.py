@@ -53,15 +53,18 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         return
     
     start_prog_time = time.time()
-    p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, _, p_save_without_formulas, p_open_in_excel = get_report_parameters()
+    p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, p_virtual_FTE, p_save_without_formulas, p_open_in_excel = get_report_parameters()
     raw_file_name, report_file_name, report_prepared_name = get_full_files_names(raw_file_name, report_file_name)
     
     ui_handle.clear_status()
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
     ui_handle.set_status(f"1. Выбран отчет:\n>>   {report_file_name}")
     ui_handle.set_status(f"2. Выбран файл с данными:\n>>   {raw_file_name}")
-    ui_handle.set_status(f"3. Вакансии: {'удалить из отчета.' if p_delete_vacation else 'оставить в отчете.'}")
-    ui_handle.set_status(f"4. Округление до: {myconstants.ROUND_FTE_VALUE}-го знака после запятой")
+    ui_handle.set_status(f"3. {'В отчете оставитьтолько производство.' if p_delete_not_prod_units else 'В отчет включить и производство и управленцев.'}")
+    ui_handle.set_status(f"4. Персональные данные (больничные листы): {'исключить из отчета.' if p_delete_pers_data else 'оставить в отчете.'}")
+    ui_handle.set_status(f"5. Вакансии: {'удалить из отчета.' if p_delete_vacation else 'оставить в отчете.'}")
+    ui_handle.set_status(f"6. Искусственно добавить FTE: {'да (если есть).' if p_virtual_FTE else 'нет.'}")
+    ui_handle.set_status(f"7. Округление до: {myconstants.ROUND_FTE_VALUE}-го знака после запятой")
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
     ui_handle.set_status("Проверим структуру файла, содержащего форму отчёта.")
 
@@ -77,6 +80,7 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
 
     pythoncom.CoInitializeEx(0)
     
+    # необходимо проверить запуск Excel - здесь может подвисать #
     oExcel, currwindow, wb, n_save_excel_calc_status = get_excel_and_wb(report_prepared_name)
     
     if (myconstants.RAW_DATA_SHEET_NAME not in [one_sheet.Name for one_sheet in wb.Sheets]):
