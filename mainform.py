@@ -1,4 +1,5 @@
 # pyuic5 -x Qt5Project/Windows.ui -o _tmp_Qt5_form.py
+# pyuic5 -x Qt5Project/_tmp_QLV.ui -o _tmp_QLV_form.py
 #        MainWindow.setFixedSize(MainWindow.size().width(), MainWindow.size().height())
 #        MainWindow.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
 
@@ -208,7 +209,7 @@ class Ui_MainWindow(object):
         for one_file in rawdata_list:
             item = QtGui.QStandardItem(one_file)
             self.model.appendRow(item)
-        
+
         item = self.model.item(0)
         self.listViewRawData.setCurrentIndex(self.model.indexFromItem(item))
         
@@ -221,6 +222,15 @@ class Ui_MainWindow(object):
 
         report_file_name = self.listView.currentIndex().data()
         raw_file_name = self.listViewRawData.currentIndex().data()
+
+        # Парамертры без префиксов будем использовать для получения 
+        s_preff = myconstants.DO_IT_PREFFIX
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, self.checkBoxDeleteNotProduct.isChecked())
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, self.checkBoxDelPDn.isChecked())
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, self.checkBoxDeleteVac.isChecked())
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE, self.checkBoxAddVFTE.isChecked())
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS, self.checkBoxSaveWithOutFotmulas.isChecked())
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL, self.checkBoxOpenExcel.isChecked())
 
         reportcreater.send_df_2_xls(report_file_name, raw_file_name, self)
 
