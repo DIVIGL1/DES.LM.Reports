@@ -5,7 +5,7 @@ import pickle
 import win32com.client
 
 import myconstants
-from mytablefuncs import get_parameter_value
+import mytablefuncs
 
 
 def save_param(param_name, param_value, filename="saved.pkl"):
@@ -42,7 +42,7 @@ def get_files_list(path2files="", files_starts="", files_ends=".xlsx", reverse=T
     return(files_list)
 
 def get_report_parameters():
-    myconstants.ROUND_FTE_VALUE = get_parameter_value(myconstants.ROUND_FTE_SECTION_NAME)
+    myconstants.ROUND_FTE_VALUE = mytablefuncs.get_parameter_value(myconstants.ROUND_FTE_SECTION_NAME)
     s_preff = myconstants.DO_IT_PREFFIX
 
     p_delete_not_prod_units =\
@@ -62,22 +62,25 @@ def get_report_parameters():
 
 def get_full_files_names(raw_file_name, report_file_name):
     report_prepared_name = \
-            os.path.join( \
-                os.path.join(os.getcwd(), get_parameter_value(myconstants.REPORTS_PREPARED_SECTION_NAME)), \
-                    raw_file_name + "__" + report_file_name + myconstants.EXCEL_FILES_ENDS)
-    report_prepared_name = report_prepared_name.replace("\\","/")
+        os.path.join( 
+            os.path.join(os.getcwd(), mytablefuncs.get_parameter_value(myconstants.REPORTS_PREPARED_SECTION_NAME)),
+            raw_file_name + "__" + report_file_name + myconstants.EXCEL_FILES_ENDS
+        )
+    report_prepared_name = report_prepared_name.replace("\\", "/")
     
     report_file_name = \
-            os.path.join( \
-                os.path.join(os.getcwd(), get_parameter_value(myconstants.REPORTS_SECTION_NAME)), \
-                    myconstants.REPORT_FILE_PREFFIX + report_file_name + myconstants.EXCEL_FILES_ENDS)
-    report_file_name = report_file_name.replace("\\","/")
+        os.path.join( 
+            os.path.join(os.getcwd(), mytablefuncs.get_parameter_value(myconstants.REPORTS_SECTION_NAME)),
+            myconstants.REPORT_FILE_PREFFIX + report_file_name + myconstants.EXCEL_FILES_ENDS
+        )
+    report_file_name = report_file_name.replace("\\", "/")
     
     raw_file_name = \
-            os.path.join( \
-                os.path.join(os.getcwd(), get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)), \
-                    raw_file_name + myconstants.EXCEL_FILES_ENDS)
-    raw_file_name = raw_file_name.replace("\\","/")
+        os.path.join( 
+            os.path.join(os.getcwd(), mytablefuncs.get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)),
+            raw_file_name + myconstants.EXCEL_FILES_ENDS
+        )
+    raw_file_name = raw_file_name.replace("\\", "/")
     
     return raw_file_name, report_file_name, report_prepared_name
     
@@ -115,17 +118,17 @@ def hide_and_delete_rows_and_columns(oExcel, wb):
             last_row_with_del = 0
             p_found_first_row = False
             last_row_4_test = myconstants.PARAMETER_MAX_ROWS_TEST_IN_REPORT
-            range_from_excel = wb.Sheets[curr_sheet_name].Range(wb.Sheets[curr_sheet_name].Cells(1,1), wb.Sheets[curr_sheet_name].Cells(last_row_4_test,1)).Value
+            range_from_excel = wb.Sheets[curr_sheet_name].Range(wb.Sheets[curr_sheet_name].Cells(1, 1), wb.Sheets[curr_sheet_name].Cells(last_row_4_test, 1)).Value
 
             # Ищем первый признак 'delete'
             for row_counter in range(len(range_from_excel)):
                 row_del_flag_value = range_from_excel[row_counter][0]
-                if row_del_flag_value == None:
+                if row_del_flag_value is None:
                     p_found_first_row = False
                     break
                 
                 if (type(row_del_flag_value) == str):
-                    row_del_flag_value = row_del_flag_value.replace(" ","")
+                    row_del_flag_value = row_del_flag_value.replace(" ", "")
                     if row_del_flag_value == myconstants.DELETE_ROW_MARKER:
                         p_found_first_row = True
                         break
@@ -135,12 +138,12 @@ def hide_and_delete_rows_and_columns(oExcel, wb):
                 last_row_with_del = row_counter
                 while last_row_with_del < len(range_from_excel):
                     row_del_flag_value = range_from_excel[last_row_with_del][0]
-                    if (type(row_del_flag_value) != str) or row_del_flag_value.replace(" ","") != myconstants.DELETE_ROW_MARKER:
+                    if (type(row_del_flag_value) != str) or row_del_flag_value.replace(" ", "") != myconstants.DELETE_ROW_MARKER:
                         break
                     last_row_with_del += 1
 
                 wb.Sheets[curr_sheet_name].Range(wb.Sheets[curr_sheet_name].Cells( \
-                            first_row_with_del, 1), wb.Sheets[curr_sheet_name].Cells(last_row_with_del, 1)).Rows.EntireRow.Delete()
+                    first_row_with_del, 1), wb.Sheets[curr_sheet_name].Cells(last_row_with_del, 1)).Rows.EntireRow.Delete()
     # -----------------------------------
             # Скрываем строки и столбцы с признаком 'hide'
             for curr_sheet_name in [one_sheet.Name for one_sheet in wb.Sheets]:
@@ -148,22 +151,21 @@ def hide_and_delete_rows_and_columns(oExcel, wb):
                     # Скрываем строки с признаком 'hide'
                     for curr_row in range(1, myconstants.NUM_ROWS_FOR_HIDE + 1):
                         cell_value = wb.Sheets[curr_sheet_name].Cells(curr_row, 1).Value
-                        if type(cell_value) == str and cell_value != None and cell_value.replace(" ", "") == myconstants.HIDE_MARKER:
+                        if type(cell_value) == str and cell_value is not None and cell_value.replace(" ", "") == myconstants.HIDE_MARKER:
                             pass
                             wb.Sheets[curr_sheet_name].Rows(curr_row).Hidden = True
                     # Скрываем столбцы с признаком 'hide'
                     for curr_col in range(1, myconstants.NUM_ROWS_FOR_HIDE + 1):
                         cell_value = wb.Sheets[curr_sheet_name].Cells(1, curr_col).Value
-                        if type(cell_value) == str and cell_value != None and cell_value.replace(" ", "") == myconstants.HIDE_MARKER:
+                        if type(cell_value) == str and cell_value is not None and cell_value.replace(" ", "") == myconstants.HIDE_MARKER:
                             pass
                             wb.Sheets[curr_sheet_name].Columns(curr_col).Hidden = True
     # -----------------------------------
-
-    
+   
 
 if __name__ == "__main__":
-#    param_name = myconstants.LAST_REPORT_PARAM_NAME
-#    print(load_param(param_name, "<пусто>"))
-#    save_param(param_name, 7)
-#    print(load_param(param_name, "<пусто>"))
+    #    param_name = myconstants.LAST_REPORT_PARAM_NAME
+    #    print(load_param(param_name, "<пусто>"))
+    #    save_param(param_name, 7)
+    #    print(load_param(param_name, "<пусто>"))
     print(get_files_list("RawData", "", ".xlsx"))

@@ -9,7 +9,7 @@ def get_parameter_value(paramname):
     # Читаем настройки
     settings_df = pd.read_excel("Settings.xlsx", engine='openpyxl')
     settings_df.dropna(how='all', inplace=True)
-    ret_value = settings_df[settings_df["ParameterName"]==paramname]["ParameterValue"].to_list()[0]
+    ret_value = settings_df[settings_df["ParameterName"] == paramname]["ParameterValue"].to_list()[0]
     if type(ret_value) == str:
         ret_value = ret_value.replace("\\", "/")
         if ret_value[-1] == "/":
@@ -31,17 +31,16 @@ def load_raw_data(raw_file, ui_handle):
     if p_add_vfte:
         # Проверим наличие файла:
         virtual_fte_file = \
-                os.path.join( \
-                    os.path.join(os.getcwd(), get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)), \
-                        myconstants.VIRTUAL_FTE_FILE_NAME)
+            os.path.join(
+                os.path.join(os.getcwd(), get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)), \
+                myconstants.VIRTUAL_FTE_FILE_NAME)
         if not os.path.isfile(virtual_fte_file):
             ui_handle.set_status("Не обнаружен файл с искусственными FTE.")
             df = pd.read_excel(raw_file, engine='openpyxl')
         else:
-            df = pd.concat(\
-                            [pd.read_excel(raw_file, engine='openpyxl'), pd.read_excel(virtual_fte_file, engine='openpyxl')],\
-                            sort=False, axis=0, ignore_index=True\
-                            )
+            df = pd.concat(
+                [pd.read_excel(raw_file, engine='openpyxl'), pd.read_excel(virtual_fte_file, engine='openpyxl')],\
+                sort=False, axis=0, ignore_index=True)
     else:
         df = pd.read_excel(raw_file, engine='openpyxl')
 
@@ -130,7 +129,7 @@ def add_combine_columns(df):
     df["Pdr_User_ProjSubType"] = df["Division"] + "#" + df["User"] + "#" + df["ProjectSubType"]
     df["Pdr_User_ProjSubType_Month"] = df["Division"] + "#" + df["User"] + "#" + df["ProjectSubType"] + "#" + df["Month"]
 
-    df["pVacasia"] = df["User"].apply(lambda param: True if param.replace(" ", "").lower()[:8]=='вакансия' else False)
+    df["pVacasia"] = df["User"].apply(lambda param: True if param.replace(" ", "").lower()[:8] == myconstants.VACANCY_NAME_TEXT.lower() else False)
 
 def prepare_data(raw_file_name, p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, ui_handle):
     data_df = load_raw_data(raw_file_name, ui_handle)
@@ -172,7 +171,6 @@ def prepare_data(raw_file_name, p_delete_not_prod_units, p_delete_pers_data, p_d
     data_df["Division"] = data_df[["ShortDivisionName", "DivisionRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
     ui_handle.set_status(f"Все подразделенния заполнены (всего строк данных: {data_df.shape[0]})")
 
-    
     data_df = data_df.merge(p_fns_subst_df, left_on="Project", right_on="ProjectNum", how="left")
     data_df["FNRaw"] = data_df[["RealFNName", "FNRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
     data_df = data_df.merge(fns_names_df, left_on="FNRaw", right_on="FullFNName", how="left")
@@ -204,7 +202,7 @@ def prepare_data(raw_file_name, p_delete_not_prod_units, p_delete_pers_data, p_d
         vacancy_text = vacancy_text.lower()
         data_df["User"] = \
             data_df["User"].apply(
-                lambda param: vacancy_text if param.replace(" ", "").lower()[:len(vacancy_text)]==vacancy_text else param)
+                lambda param: vacancy_text if param.replace(" ", "").lower()[:len(vacancy_text)] == vacancy_text else param)
         
         data_df = data_df[data_df["User"] != vacancy_text]
         ui_handle.set_status(f"Удалены вакансии (всего строк данных: {data_df.shape[0]})")
