@@ -83,9 +83,10 @@ class Ui_MainWindow(object):
         self.label_2.setWordWrap(False)
         self.label_2.setObjectName("label_2")
         self.plainTextEdit = QtWidgets.QPlainTextEdit(self.centralwidget)
-        self.plainTextEdit.setEnabled(False)
+        self.plainTextEdit.setEnabled(True)
         self.plainTextEdit.setGeometry(QtCore.QRect(267, 20, 521, 551))
         self.plainTextEdit.setStyleSheet("color: rgb(0, 0, 0);")
+        self.plainTextEdit.setReadOnly(True)
         self.plainTextEdit.setObjectName("plainTextEdit")
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
         self.label_3.setGeometry(QtCore.QRect(298, 3, 481, 16))
@@ -110,7 +111,7 @@ class Ui_MainWindow(object):
         self.checkBoxOpenExcel.setAutoRepeat(False)
         self.checkBoxOpenExcel.setObjectName("checkBoxOpenExcel")
         self.pushButtonOpenLastReport = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButtonOpenLastReport.setGeometry(QtCore.QRect(267, 540, 521, 31))
+        self.pushButtonOpenLastReport.setGeometry(QtCore.QRect(267, 541, 521, 31))
         self.pushButtonOpenLastReport.setMinimumSize(QtCore.QSize(191, 23))
         self.pushButtonOpenLastReport.setCheckable(False)
         self.pushButtonOpenLastReport.setAutoDefault(False)
@@ -327,8 +328,27 @@ class Ui_MainWindow(object):
     def enable_buttons(self):
         self.pushButtonClose.setEnabled(True)
         self.pushButtonDoIt.setEnabled(True)
+        
         self.comminucate.updateStatusText.emit()
-        self.pushButtonOpenLastReport.setVisible(load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT) != "")
+        
+        slastreportfilename = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT)
+        text_geometry = self.plainTextEdit.geometry()
+        button_geometry = self.pushButtonOpenLastReport.geometry()
+        x = text_geometry.left()
+        y = text_geometry.top()
+        w = text_geometry.width()
+        if slastreportfilename == "":
+            self.pushButtonOpenLastReport.setVisible(False)
+            h = button_geometry.top() - text_geometry.top() + button_geometry.height() - 1
+            self.plainTextEdit.setGeometry(QtCore.QRect(x, y, w, h))
+        else:
+            self.pushButtonOpenLastReport.setVisible(True)
+            h = button_geometry.top() - text_geometry.top() - 5
+            self.plainTextEdit.setGeometry(QtCore.QRect(x, y, w, h))
+
+#        print(self.pushButtonOpenLastReport.geometry())
+#        print(self.pushButtonOpenLastReport.geometry().bottom())
+#        print(self.pushButtonOpenLastReport.geometry().height())
         
     def save_app_link(self, app):
         self.app = app

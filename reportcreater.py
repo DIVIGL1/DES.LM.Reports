@@ -72,7 +72,7 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         shutil.copyfile(report_file_name, report_prepared_name)
     except:
         ui_handle.set_status("Не удалось скопировать файл с формой отчёта.")
-        ui_handle.set_status(f"проверьте, пожалуйста. не открыт ли у Вас файл: \n>>   {report_prepared_name}")
+        ui_handle.set_status(f"проверьте, пожалуйста, не открыт ли у Вас файл: \n>>   {report_prepared_name}")
         ui_handle.set_status("Формирование отчёта не возможно.")
         save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.enable_buttons()
