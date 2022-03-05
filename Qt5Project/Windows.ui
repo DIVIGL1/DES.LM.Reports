@@ -50,9 +50,9 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>479</y>
-      <width>221</width>
+      <x>20</x>
+      <y>449</y>
+      <width>241</width>
       <height>17</height>
      </rect>
     </property>
@@ -63,7 +63,7 @@
      </sizepolicy>
     </property>
     <property name="text">
-     <string>Удалить вакансии из отчёта</string>
+     <string>Удалить данные о вакансиях из отчёта</string>
     </property>
     <property name="checked">
      <bool>true</bool>
@@ -90,7 +90,7 @@
      <rect>
       <x>90</x>
       <y>541</y>
-      <width>171</width>
+      <width>181</width>
       <height>31</height>
      </rect>
     </property>
@@ -109,7 +109,7 @@
      <rect>
       <x>10</x>
       <y>20</y>
-      <width>251</width>
+      <width>261</width>
       <height>231</height>
      </rect>
     </property>
@@ -159,8 +159,8 @@
      <rect>
       <x>10</x>
       <y>277</y>
-      <width>251</width>
-      <height>171</height>
+      <width>261</width>
+      <height>141</height>
      </rect>
     </property>
     <property name="editTriggers">
@@ -207,9 +207,9 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>267</x>
+      <x>277</x>
       <y>20</y>
-      <width>521</width>
+      <width>511</width>
       <height>551</height>
      </rect>
     </property>
@@ -263,9 +263,9 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>20</x>
       <y>521</y>
-      <width>221</width>
+      <width>241</width>
       <height>17</height>
      </rect>
     </property>
@@ -276,7 +276,7 @@
      </sizepolicy>
     </property>
     <property name="text">
-     <string>Сразу открыть отчет в Excel</string>
+     <string>Сразу открыть в Excel полученный отчет</string>
     </property>
     <property name="checked">
      <bool>true</bool>
@@ -288,9 +288,9 @@
    <widget class="QPushButton" name="pushButtonOpenLastReport">
     <property name="geometry">
      <rect>
-      <x>267</x>
+      <x>277</x>
       <y>541</y>
-      <width>521</width>
+      <width>511</width>
       <height>31</height>
      </rect>
     </property>
@@ -319,9 +319,9 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>507</y>
-      <width>221</width>
+      <x>20</x>
+      <y>486</y>
+      <width>241</width>
       <height>17</height>
      </rect>
     </property>
@@ -332,7 +332,7 @@
      </sizepolicy>
     </property>
     <property name="text">
-     <string>Сохранить только значения</string>
+     <string>Сохранить только значения (без формул)</string>
     </property>
     <property name="checked">
      <bool>true</bool>
@@ -347,9 +347,9 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>493</y>
-      <width>221</width>
+      <x>20</x>
+      <y>463</y>
+      <width>241</width>
       <height>17</height>
      </rect>
     </property>
@@ -360,7 +360,7 @@
      </sizepolicy>
     </property>
     <property name="text">
-     <string>Добавить искусственные FTE</string>
+     <string>Добавить к данным искусственные FTE</string>
     </property>
     <property name="checked">
      <bool>true</bool>
@@ -375,8 +375,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>464</y>
+      <x>20</x>
+      <y>434</y>
       <width>221</width>
       <height>17</height>
      </rect>
@@ -403,8 +403,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>450</y>
+      <x>20</x>
+      <y>420</y>
       <width>221</width>
       <height>17</height>
      </rect>
@@ -425,8 +425,51 @@
      <bool>false</bool>
     </property>
    </widget>
+   <widget class="QCheckBox" name="checkBoxDelRawData">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>500</y>
+      <width>241</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="text">
+     <string>Удалить лист с данными в файле отчета</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+    <property name="autoRepeat">
+     <bool>false</bool>
+    </property>
+   </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>listView</tabstop>
+  <tabstop>listViewRawData</tabstop>
+  <tabstop>checkBoxDelPDn</tabstop>
+  <tabstop>checkBoxDeleteNotProduct</tabstop>
+  <tabstop>checkBoxDeleteVac</tabstop>
+  <tabstop>pushButtonClose</tabstop>
+  <tabstop>checkBoxSaveWithOutFotmulas</tabstop>
+  <tabstop>checkBoxAddVFTE</tabstop>
+  <tabstop>plainTextEdit</tabstop>
+  <tabstop>pushButtonDoIt</tabstop>
+  <tabstop>checkBoxDelRawData</tabstop>
+  <tabstop>checkBoxOpenExcel</tabstop>
+  <tabstop>pushButtonOpenLastReport</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
