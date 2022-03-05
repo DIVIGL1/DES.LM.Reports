@@ -34,7 +34,7 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName("centralwidget")
         self.checkBoxDeleteVac = QtWidgets.QCheckBox(self.centralwidget)
         self.checkBoxDeleteVac.setEnabled(True)
-        self.checkBoxDeleteVac.setGeometry(QtCore.QRect(40, 479, 221, 17))
+        self.checkBoxDeleteVac.setGeometry(QtCore.QRect(20, 449, 241, 17))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -47,12 +47,12 @@ class Ui_MainWindow(object):
         self.pushButtonClose.setGeometry(QtCore.QRect(10, 541, 75, 31))
         self.pushButtonClose.setObjectName("pushButtonClose")
         self.pushButtonDoIt = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButtonDoIt.setGeometry(QtCore.QRect(90, 541, 171, 31))
+        self.pushButtonDoIt.setGeometry(QtCore.QRect(90, 541, 181, 31))
         self.pushButtonDoIt.setAutoDefault(False)
         self.pushButtonDoIt.setFlat(False)
         self.pushButtonDoIt.setObjectName("pushButtonDoIt")
         self.listView = QtWidgets.QListView(self.centralwidget)
-        self.listView.setGeometry(QtCore.QRect(10, 20, 251, 231))
+        self.listView.setGeometry(QtCore.QRect(10, 20, 261, 231))
         self.listView.setStyleSheet("")
         self.listView.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.listView.setObjectName("listView")
@@ -68,7 +68,7 @@ class Ui_MainWindow(object):
         self.label.setWordWrap(False)
         self.label.setObjectName("label")
         self.listViewRawData = QtWidgets.QListView(self.centralwidget)
-        self.listViewRawData.setGeometry(QtCore.QRect(10, 277, 251, 171))
+        self.listViewRawData.setGeometry(QtCore.QRect(10, 277, 261, 141))
         self.listViewRawData.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.listViewRawData.setObjectName("listViewRawData")
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
@@ -84,7 +84,7 @@ class Ui_MainWindow(object):
         self.label_2.setObjectName("label_2")
         self.plainTextEdit = QtWidgets.QPlainTextEdit(self.centralwidget)
         self.plainTextEdit.setEnabled(True)
-        self.plainTextEdit.setGeometry(QtCore.QRect(267, 20, 521, 551))
+        self.plainTextEdit.setGeometry(QtCore.QRect(277, 20, 511, 551))
         self.plainTextEdit.setStyleSheet("color: rgb(0, 0, 0);")
         self.plainTextEdit.setReadOnly(True)
         self.plainTextEdit.setObjectName("plainTextEdit")
@@ -101,7 +101,7 @@ class Ui_MainWindow(object):
         self.label_3.setObjectName("label_3")
         self.checkBoxOpenExcel = QtWidgets.QCheckBox(self.centralwidget)
         self.checkBoxOpenExcel.setEnabled(True)
-        self.checkBoxOpenExcel.setGeometry(QtCore.QRect(40, 521, 221, 17))
+        self.checkBoxOpenExcel.setGeometry(QtCore.QRect(20, 521, 241, 17))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -111,7 +111,7 @@ class Ui_MainWindow(object):
         self.checkBoxOpenExcel.setAutoRepeat(False)
         self.checkBoxOpenExcel.setObjectName("checkBoxOpenExcel")
         self.pushButtonOpenLastReport = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButtonOpenLastReport.setGeometry(QtCore.QRect(267, 541, 521, 31))
+        self.pushButtonOpenLastReport.setGeometry(QtCore.QRect(277, 541, 511, 31))
         self.pushButtonOpenLastReport.setMinimumSize(QtCore.QSize(191, 23))
         self.pushButtonOpenLastReport.setCheckable(False)
         self.pushButtonOpenLastReport.setAutoDefault(False)
@@ -119,7 +119,7 @@ class Ui_MainWindow(object):
         self.pushButtonOpenLastReport.setObjectName("pushButtonOpenLastReport")
         self.checkBoxSaveWithOutFotmulas = QtWidgets.QCheckBox(self.centralwidget)
         self.checkBoxSaveWithOutFotmulas.setEnabled(True)
-        self.checkBoxSaveWithOutFotmulas.setGeometry(QtCore.QRect(40, 507, 221, 17))
+        self.checkBoxSaveWithOutFotmulas.setGeometry(QtCore.QRect(20, 486, 241, 17))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -130,7 +130,7 @@ class Ui_MainWindow(object):
         self.checkBoxSaveWithOutFotmulas.setObjectName("checkBoxSaveWithOutFotmulas")
         self.checkBoxAddVFTE = QtWidgets.QCheckBox(self.centralwidget)
         self.checkBoxAddVFTE.setEnabled(True)
-        self.checkBoxAddVFTE.setGeometry(QtCore.QRect(40, 493, 221, 17))
+        self.checkBoxAddVFTE.setGeometry(QtCore.QRect(20, 463, 241, 17))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -141,7 +141,7 @@ class Ui_MainWindow(object):
         self.checkBoxAddVFTE.setObjectName("checkBoxAddVFTE")
         self.checkBoxDelPDn = QtWidgets.QCheckBox(self.centralwidget)
         self.checkBoxDelPDn.setEnabled(True)
-        self.checkBoxDelPDn.setGeometry(QtCore.QRect(40, 464, 221, 17))
+        self.checkBoxDelPDn.setGeometry(QtCore.QRect(20, 434, 221, 17))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -152,7 +152,7 @@ class Ui_MainWindow(object):
         self.checkBoxDelPDn.setObjectName("checkBoxDelPDn")
         self.checkBoxDeleteNotProduct = QtWidgets.QCheckBox(self.centralwidget)
         self.checkBoxDeleteNotProduct.setEnabled(True)
-        self.checkBoxDeleteNotProduct.setGeometry(QtCore.QRect(40, 450, 221, 17))
+        self.checkBoxDeleteNotProduct.setGeometry(QtCore.QRect(20, 420, 221, 17))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -161,28 +161,51 @@ class Ui_MainWindow(object):
         self.checkBoxDeleteNotProduct.setChecked(True)
         self.checkBoxDeleteNotProduct.setAutoRepeat(False)
         self.checkBoxDeleteNotProduct.setObjectName("checkBoxDeleteNotProduct")
+        self.checkBoxDelRawData = QtWidgets.QCheckBox(self.centralwidget)
+        self.checkBoxDelRawData.setEnabled(True)
+        self.checkBoxDelRawData.setGeometry(QtCore.QRect(20, 500, 241, 17))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.checkBoxDelRawData.sizePolicy().hasHeightForWidth())
+        self.checkBoxDelRawData.setSizePolicy(sizePolicy)
+        self.checkBoxDelRawData.setChecked(True)
+        self.checkBoxDelRawData.setAutoRepeat(False)
+        self.checkBoxDelRawData.setObjectName("checkBoxDelRawData")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        MainWindow.setTabOrder(self.listView, self.listViewRawData)
+        MainWindow.setTabOrder(self.listViewRawData, self.checkBoxDelPDn)
+        MainWindow.setTabOrder(self.checkBoxDelPDn, self.checkBoxDeleteNotProduct)
+        MainWindow.setTabOrder(self.checkBoxDeleteNotProduct, self.checkBoxDeleteVac)
+        MainWindow.setTabOrder(self.checkBoxDeleteVac, self.pushButtonClose)
+        MainWindow.setTabOrder(self.pushButtonClose, self.checkBoxSaveWithOutFotmulas)
+        MainWindow.setTabOrder(self.checkBoxSaveWithOutFotmulas, self.checkBoxAddVFTE)
+        MainWindow.setTabOrder(self.checkBoxAddVFTE, self.plainTextEdit)
+        MainWindow.setTabOrder(self.plainTextEdit, self.pushButtonDoIt)
+        MainWindow.setTabOrder(self.pushButtonDoIt, self.checkBoxDelRawData)
+        MainWindow.setTabOrder(self.checkBoxDelRawData, self.checkBoxOpenExcel)
+        MainWindow.setTabOrder(self.checkBoxOpenExcel, self.pushButtonOpenLastReport)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "DES.LM.Reporter"))
-        self.checkBoxDeleteVac.setText(_translate("MainWindow", "Удалить вакансии из отчёта"))
+        self.checkBoxDeleteVac.setText(_translate("MainWindow", "Удалить данные о вакансиях из отчёта"))
         self.pushButtonClose.setText(_translate("MainWindow", "Закрыть"))
         self.pushButtonDoIt.setText(_translate("MainWindow", "Сформировать"))
         self.label.setText(_translate("MainWindow", "Список доступных отчетов:"))
         self.label_2.setText(_translate("MainWindow", "Выгрузка данных из DES.LM:"))
         self.plainTextEdit.setPlainText(_translate("MainWindow", "> Ожидание выбора пользователя."))
         self.label_3.setText(_translate("MainWindow", "Прогресс выполнения обработки данных и подготовки отчета:"))
-        self.checkBoxOpenExcel.setText(_translate("MainWindow", "Сразу открыть отчет в Excel"))
+        self.checkBoxOpenExcel.setText(_translate("MainWindow", "Сразу открыть в Excel полученный отчет"))
         self.pushButtonOpenLastReport.setText(_translate("MainWindow", "Открыть последний сформированный отчет в Excel"))
-        self.checkBoxSaveWithOutFotmulas.setText(_translate("MainWindow", "Сохранить только значения"))
-        self.checkBoxAddVFTE.setText(_translate("MainWindow", "Добавить искусственные FTE"))
+        self.checkBoxSaveWithOutFotmulas.setText(_translate("MainWindow", "Сохранить только значения (без формул)"))
+        self.checkBoxAddVFTE.setText(_translate("MainWindow", "Добавить к данным искусственные FTE"))
         self.checkBoxDelPDn.setText(_translate("MainWindow", "Удалить проекты с ПерсДанными"))
         self.checkBoxDeleteNotProduct.setText(_translate("MainWindow", "Оставить только производство"))
-        
+        self.checkBoxDelRawData.setText(_translate("MainWindow", "Удалить лист с данными в файле отчета"))        
     # ------------------------------------------------------------------- #
 
     closeApp = pyqtSignal()
@@ -231,8 +254,11 @@ class Ui_MainWindow(object):
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, self.checkBoxDeleteVac.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE, self.checkBoxAddVFTE.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS, self.checkBoxSaveWithOutFotmulas.isChecked())
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DEL_RAWSHEET, self.checkBoxDelRawData.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL, self.checkBoxOpenExcel.isChecked())
-
+        
+        save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
+        self.resize_text_and_button()
         reportcreater.send_df_2_xls(report_file_name, raw_file_name, self)
 
     def on_click_Close(self):
@@ -256,7 +282,10 @@ class Ui_MainWindow(object):
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, self.checkBoxDeleteVac.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE, self.checkBoxAddVFTE.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS, self.checkBoxSaveWithOutFotmulas.isChecked())
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DEL_RAWSHEET, self.checkBoxDelRawData.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL, self.checkBoxOpenExcel.isChecked())
+        
+        self.checkBoxDelRawData.setVisible(self.checkBoxSaveWithOutFotmulas.isChecked())
 
     def on_Click_Reports_List(self):
         self.setup_check_boxes()
@@ -273,8 +302,12 @@ class Ui_MainWindow(object):
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE, myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE_DEFVALUE))
         self.checkBoxSaveWithOutFotmulas.setChecked(\
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS, myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS_DEFVALUE))
+        self.checkBoxDelRawData.setChecked(\
+            load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DEL_RAWSHEET, myconstants.PARAMETER_SAVED_VALUE_DEL_RAWSHEET_DEFVALUE))
         self.checkBoxOpenExcel.setChecked(\
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL, myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL_DEFVALUE))
+        
+        self.checkBoxDelRawData.setVisible(self.checkBoxSaveWithOutFotmulas.isChecked())
 
     def setup_form(self, reports_list, raw_files_list):
         self.reports_list = reports_list
@@ -292,6 +325,7 @@ class Ui_MainWindow(object):
         self.checkBoxAddVFTE.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxOpenExcel.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxSaveWithOutFotmulas.clicked.connect(self.on_click_CheckBoxes)
+        self.checkBoxDelRawData.clicked.connect(self.on_click_CheckBoxes)
         
         self.setup_check_boxes()
 
@@ -331,6 +365,9 @@ class Ui_MainWindow(object):
         
         self.comminucate.updateStatusText.emit()
         
+        self.resize_text_and_button()
+    
+    def resize_text_and_button(self):
         slastreportfilename = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT)
         text_geometry = self.plainTextEdit.geometry()
         button_geometry = self.pushButtonOpenLastReport.geometry()
@@ -345,10 +382,6 @@ class Ui_MainWindow(object):
             self.pushButtonOpenLastReport.setVisible(True)
             h = button_geometry.top() - text_geometry.top() - 5
             self.plainTextEdit.setGeometry(QtCore.QRect(x, y, w, h))
-
-#        print(self.pushButtonOpenLastReport.geometry())
-#        print(self.pushButtonOpenLastReport.geometry().bottom())
-#        print(self.pushButtonOpenLastReport.geometry().height())
         
     def save_app_link(self, app):
         self.app = app
