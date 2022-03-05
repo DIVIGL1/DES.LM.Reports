@@ -63,6 +63,7 @@ RESULT_DATA_COLUMNS = [
 
 RAW_DATA_DROP_COLUMNS = ["MVZ", "KoBo", "Contract", "Unnamed15", "Unnamed16"]
 SHEETS_DONT_DELETE_FORMULAS = ["ИсходныеДанные", "УникальныеСписки", "Настройки"]
+DELETE_SHEETS_LIST_IF_NO_FORMULAS = ["ИсходныеДанные", "УникальныеСписки"]
 DONT_REPLACE_ENTER = ["Month"]
 
 BOOLEAN_VALUES_SUBST = {"ЛОЖЬ": 0, "ИСТИНА": 1}
@@ -103,6 +104,7 @@ PARAMETER_SAVED_VALUE_DELETE_PERSDATA = "Удалять проекты с пер
 PARAMETER_SAVED_VALUE_DELETE_VAC = "Удалять ли вакансии из отчёта?"
 PARAMETER_SAVED_VALUE_ADD_VFTE = "Дабавить к списку сырых данных искусственные FTE?"
 PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS = "Сохранять отчёт без формул?"
+PARAMETER_SAVED_VALUE_DEL_RAWSHEET = "Удаить лист с исходными данными?"
 PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL = "Открывать ли сформированный отчет в Excel?"
 
 DO_IT_PREFFIX = ""
@@ -112,6 +114,7 @@ PARAMETER_SAVED_VALUE_DELETE_PERSDATA_DEFVALUE = False
 PARAMETER_SAVED_VALUE_DELETE_VAC_DEFVALUE = True
 PARAMETER_SAVED_VALUE_ADD_VFTE_DEFVALUE = False
 PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS_DEFVALUE = True
+PARAMETER_SAVED_VALUE_DEL_RAWSHEET_DEFVALUE = False
 PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL_DEFVALUE = True
 
 PARAMETER_SAVED_SELECTED_REPORT = "Номер последнего выбранного отчёта"
