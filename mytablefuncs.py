@@ -27,7 +27,7 @@ def load_parameter_table(tablename):
 def load_raw_data(raw_file, ui_handle):
     # Загружаем сырые данные
     ui_handle.set_status("Начинаем загрузку и обработку исходных данных.")
-    _, _, _, p_add_vfte, _, _ = myutils.get_report_parameters()
+    _, _, _, p_add_vfte, _, _, _ = myutils.get_report_parameters()
     if p_add_vfte:
         # Проверим наличие файла:
         virtual_fte_file = \

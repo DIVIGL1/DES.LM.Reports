@@ -51,7 +51,7 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         return
     
     start_prog_time = time.time()
-    p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, p_virtual_FTE, p_save_without_formulas, p_open_in_excel = myutils.get_report_parameters()
+    p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, p_virtual_FTE, p_save_without_formulas, p_delete_rawdata_sheet, p_open_in_excel = myutils.get_report_parameters()
     raw_file_name, report_file_name, report_prepared_name = myutils.get_full_files_names(raw_file_name, report_file_name)
     
     ui_handle.clear_status()
@@ -81,7 +81,7 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
     # необходимо проверить запуск Excel - здесь может подвисать #
     oExcel, currwindow, wb, n_save_excel_calc_status = myutils.get_excel_and_wb(report_prepared_name)
     
-    if (myconstants.RAW_DATA_SHEET_NAME not in [one_sheet.Name for one_sheet in wb.Sheets]):
+    if (myconstants.RAW_DATA_SHEET_NAME not in myutils.get_sheets_list(wb)):
         ui_handle.set_status("")
         ui_handle.set_status("")
         ui_handle.set_status("[Ошибка в структуре отчета]")
@@ -91,10 +91,10 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.enable_buttons()
         oExcel.Calculation = n_save_excel_calc_status
-        # oExcel.Quit()
+        oExcel.DisplayAlerts = True
         wb.Close()
         return
-    elif (myconstants.UNIQE_LISTS_SHEET_NAME not in [one_sheet.Name for one_sheet in wb.Sheets]):
+    elif (myconstants.UNIQE_LISTS_SHEET_NAME not in myutils.get_sheets_list(wb)):
         ui_handle.set_status("")
         ui_handle.set_status("")
         ui_handle.set_status("[Ошибка в структуре отчета]")
@@ -104,10 +104,10 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.enable_buttons()
         oExcel.Calculation = n_save_excel_calc_status
-        # oExcel.Quit()
+        oExcel.DisplayAlerts = True
         wb.Close()
         return
-    elif (myconstants.SETTINGS_SHEET_NAME not in [one_sheet.Name for one_sheet in wb.Sheets]):
+    elif (myconstants.SETTINGS_SHEET_NAME not in myutils.get_sheets_list(wb)):
         ui_handle.set_status("")
         ui_handle.set_status("")
         ui_handle.set_status("[Ошибка в структуре отчета]")
@@ -117,7 +117,7 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
         myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.enable_buttons()
         oExcel.Calculation = n_save_excel_calc_status
-        # oExcel.Quit()
+        oExcel.DisplayAlerts = True
         wb.Close()
         return
     else:
@@ -152,7 +152,7 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
                                     "в качестве наименований списков должны быть символьные значения. Формирование отчёта остановлено.")
             myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
             ui_handle.enable_buttons()
-            # oExcel.Quit()
+            oExcel.DisplayAlerts = True
             wb.Close()
             return
             
@@ -173,7 +173,7 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
                                 "уникальный список из возможного перечня. Формирование отчёта остановлено.")
         myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.enable_buttons()
-        # oExcel.Quit()
+        oExcel.DisplayAlerts = True
         wb.Close()
         return
 
@@ -199,7 +199,7 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
     myutils.hide_and_delete_rows_and_columns(oExcel, wb)
 
     oExcel.Calculation = n_save_excel_calc_status
-    myutils.save_report(wb, p_save_without_formulas)
+    myutils.save_report(wb, p_save_without_formulas, p_delete_rawdata_sheet)
     ui_handle.set_status("Отчёт сохранён.")
     
     myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, report_prepared_name)
@@ -210,14 +210,16 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
 
     if p_open_in_excel:
         # Скроем вспомогательные листы
-        wb.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME]. Visible = False
-        wb.Sheets[myconstants.SETTINGS_SHEET_NAME]. Visible = False
+        if myconstants.UNIQE_LISTS_SHEET_NAME in myutils.get_sheets_list(wb):
+            wb.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME].Visible = False
+        
+        if myconstants.SETTINGS_SHEET_NAME in myutils.get_sheets_list(wb):
+            wb.Sheets[myconstants.SETTINGS_SHEET_NAME].Visible = False
             
         oExcel.Visible = True
         currwindow.WindowState = myconstants.EXCELWINDOWSTATE_MAX
     else:
-        pass
-        # oExcel.Quit()
+        oExcel.DisplayAlerts = True
         wb.Close()
 
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)

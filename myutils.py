@@ -55,10 +55,12 @@ def get_report_parameters():
         load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE, myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE_DEFVALUE)
     p_save_without_formulas =\
         load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS, myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS_DEFVALUE)
+    p_delete_rawdata_sheet =\
+        load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DEL_RAWSHEET, myconstants.PARAMETER_SAVED_VALUE_DEL_RAWSHEET_DEFVALUE)
     p_open_in_excel =\
         load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL, myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL_DEFVALUE)
     
-    return p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, p_add_vfte, p_save_without_formulas, p_open_in_excel
+    return p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, p_add_vfte, p_save_without_formulas, p_delete_rawdata_sheet, p_open_in_excel
 
 def get_full_files_names(raw_file_name, report_file_name):
     report_prepared_name = \
@@ -97,12 +99,20 @@ def get_excel_and_wb(excel_file_name):
     
     return oExcel, currwindow, wb, n_save_excel_calc_status
 
-def save_report(wb, p_save_without_formulas):
+def get_sheets_list(wb):
+    return([one_sheet.Name for one_sheet in wb.Sheets])
+
+def save_report(wb, p_save_without_formulas, p_delete_rawdata_sheet):
     wb.Save()
     if p_save_without_formulas: 
-        for curr_sheet_name in [one_sheet.Name for one_sheet in wb.Sheets]:
+        for curr_sheet_name in get_sheets_list(wb):
             if curr_sheet_name not in myconstants.SHEETS_DONT_DELETE_FORMULAS:
                 wb.Sheets[curr_sheet_name].UsedRange.Value = wb.Sheets[curr_sheet_name].UsedRange.Value
+        
+        if p_delete_rawdata_sheet:
+            for one_sheet_name in myconstants.DELETE_SHEETS_LIST_IF_NO_FORMULAS:
+                if one_sheet_name in get_sheets_list(wb):
+                    wb.Sheets[one_sheet_name].Delete()
         
         wb.Save()
 
@@ -111,7 +121,7 @@ def hide_and_delete_rows_and_columns(oExcel, wb):
     # -----------------------------------
     oExcel.Calculation = myconstants.EXCEL_AUTOMATIC_CALC
     oExcel.Calculation = myconstants.EXCEL_MANUAL_CALC
-    for curr_sheet_name in [one_sheet.Name for one_sheet in wb.Sheets]:
+    for curr_sheet_name in get_sheets_list(wb):
         if curr_sheet_name not in myconstants.SHEETS_DONT_DELETE_FORMULAS:
             row_counter = 0
             first_row_with_del = 0
@@ -146,7 +156,7 @@ def hide_and_delete_rows_and_columns(oExcel, wb):
                     first_row_with_del, 1), wb.Sheets[curr_sheet_name].Cells(last_row_with_del, 1)).Rows.EntireRow.Delete()
     # -----------------------------------
             # Скрываем строки и столбцы с признаком 'hide'
-            for curr_sheet_name in [one_sheet.Name for one_sheet in wb.Sheets]:
+            for curr_sheet_name in get_sheets_list(wb):
                 if curr_sheet_name not in [myconstants.RAW_DATA_SHEET_NAME, myconstants.UNIQE_LISTS_SHEET_NAME, myconstants.SETTINGS_SHEET_NAME]:
                     # Скрываем строки с признаком 'hide'
                     for curr_row in range(1, myconstants.NUM_ROWS_FOR_HIDE + 1):
