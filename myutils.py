@@ -165,7 +165,7 @@ def hide_and_delete_rows_and_columns(oExcel, wb):
                             pass
                             wb.Sheets[curr_sheet_name].Rows(curr_row).Hidden = True
                     # Скрываем столбцы с признаком 'hide'
-                    for curr_col in range(1, myconstants.NUM_ROWS_FOR_HIDE + 1):
+                    for curr_col in range(1, myconstants.NUM_COLUMNS_FOR_HIDE + 1):
                         cell_value = wb.Sheets[curr_sheet_name].Cells(1, curr_col).Value
                         if type(cell_value) == str and cell_value is not None and cell_value.replace(" ", "") == myconstants.HIDE_MARKER:
                             pass
