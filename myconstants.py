@@ -61,6 +61,8 @@ RESULT_DATA_COLUMNS = [
     "Northern"
 ]
 
+START_PARAMETERS_FILE = "Settings.xlsx"
+
 RAW_DATA_DROP_COLUMNS = ["MVZ", "KoBo", "Contract", "Unnamed15", "Unnamed16"]
 SHEETS_DONT_DELETE_FORMULAS = ["ИсходныеДанные", "УникальныеСписки", "Настройки"]
 DELETE_SHEETS_LIST_IF_NO_FORMULAS = ["ИсходныеДанные", "УникальныеСписки"]
@@ -71,6 +73,7 @@ BOOLEAN_VALUES_SUBST = {"ЛОЖЬ": 0, "ИСТИНА": 1}
 PARAMETERS_SECTION_NAME = "Parameters"
 RAW_DATA_SECTION_NAME = "RawDataPath"
 ROUND_FTE_SECTION_NAME = "RoundFTE"
+ROUND_FTE_DEFVALUE = 3
 REPORTS_SECTION_NAME = "ReportsPath"
 REPORTS_PREPARED_SECTION_NAME = "ReportsPrepared"
 
