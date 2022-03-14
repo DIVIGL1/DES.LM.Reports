@@ -31,6 +31,7 @@ def load_param(param_name, default="", filename="saved.pkl"):
     return(params_dict.get(param_name, default))
 
 def get_files_list(path2files="", files_starts="", files_ends=".xlsx", reverse=True):
+    path2files= os.path.join(os.getcwd(), path2files)
     files_list = \
         [one_file[len(files_starts):][:-len(files_ends)] \
             for one_file \
@@ -42,7 +43,7 @@ def get_files_list(path2files="", files_starts="", files_ends=".xlsx", reverse=T
     return(files_list)
 
 def get_report_parameters():
-    myconstants.ROUND_FTE_VALUE = mytablefuncs.get_parameter_value(myconstants.ROUND_FTE_SECTION_NAME)
+    myconstants.ROUND_FTE_VALUE = mytablefuncs.get_parameter_value(myconstants.ROUND_FTE_SECTION_NAME, myconstants.ROUND_FTE_DEFVALUE)
     s_preff = myconstants.DO_IT_PREFFIX
 
     p_delete_not_prod_units =\

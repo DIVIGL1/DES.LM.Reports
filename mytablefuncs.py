@@ -5,15 +5,18 @@ import os
 import myconstants
 import myutils
 
-def get_parameter_value(paramname):
+def get_parameter_value(paramname, defvalue=""):
     # Читаем настройки
-    settings_df = pd.read_excel("Settings.xlsx", engine='openpyxl')
-    settings_df.dropna(how='all', inplace=True)
-    ret_value = settings_df[settings_df["ParameterName"] == paramname]["ParameterValue"].to_list()[0]
-    if type(ret_value) == str:
-        ret_value = ret_value.replace("\\", "/")
-        if ret_value[-1] == "/":
-            ret_value = ret_value[:-1:]
+    if not os.path.isfile(myconstants.START_PARAMETERS_FILE):
+        ret_value = defvalue
+    else:
+        settings_df = pd.read_excel(myconstants.START_PARAMETERS_FILE, engine='openpyxl')
+        settings_df.dropna(how='all', inplace=True)
+        ret_value = settings_df[settings_df["ParameterName"] == paramname]["ParameterValue"].to_list()[0]
+        if type(ret_value) == str:
+            ret_value = ret_value.replace("\\", "/")
+            if ret_value[-1] == "/":
+                ret_value = ret_value[:-1:]
     
     return (ret_value)
 
