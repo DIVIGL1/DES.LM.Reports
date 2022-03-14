@@ -291,7 +291,11 @@ class Ui_MainWindow(object):
         self.setup_check_boxes()
         
     def setup_check_boxes(self):
-        s_preff = self.listView.currentIndex().data() + " --> "
+        if self.listView.currentIndex().data() is None:
+            s_preff = ""
+        else:
+            s_preff = self.listView.currentIndex().data() + " --> "
+            
         self.checkBoxDeleteNotProduct.setChecked(\
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD_DEFVALUE))
         self.checkBoxDelPDn.setChecked(\
