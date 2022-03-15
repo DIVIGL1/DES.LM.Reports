@@ -44,6 +44,7 @@ def get_files_list(path2files="", files_starts="", files_ends=".xlsx", reverse=T
 
 def get_report_parameters():
     myconstants.ROUND_FTE_VALUE = mytablefuncs.get_parameter_value(myconstants.ROUND_FTE_SECTION_NAME, myconstants.ROUND_FTE_DEFVALUE)
+    myconstants.MEANOURSPERMONTH_VALUE = mytablefuncs.get_parameter_value(myconstants.MEANOURSPERMONTH_SECTION_NAME, myconstants.MEANOURSPERMONTH_DEFVALUE)
     s_preff = myconstants.DO_IT_PREFFIX
 
     p_delete_not_prod_units =\
@@ -60,6 +61,10 @@ def get_report_parameters():
         load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DEL_RAWSHEET, myconstants.PARAMETER_SAVED_VALUE_DEL_RAWSHEET_DEFVALUE)
     p_open_in_excel =\
         load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL, myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL_DEFVALUE)
+
+    if os.path.isfile(myconstants.SECRET_COSTS_LOCATION + "/" + myconstants.COSTS_TABLE):
+        p_save_without_formulas = True
+        p_delete_rawdata_sheet = True
     
     return p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, p_add_vfte, p_save_without_formulas, p_delete_rawdata_sheet, p_open_in_excel
 
@@ -169,8 +174,9 @@ def hide_and_delete_rows_and_columns(oExcel, wb):
                     for curr_col in range(1, myconstants.NUM_COLUMNS_FOR_HIDE + 1):
                         cell_value = wb.Sheets[curr_sheet_name].Cells(1, curr_col).Value
                         if type(cell_value) == str and cell_value is not None and cell_value.replace(" ", "") == myconstants.HIDE_MARKER:
-                            pass
                             wb.Sheets[curr_sheet_name].Columns(curr_col).Hidden = True
+                        else:
+                            pass
     # -----------------------------------
    
 

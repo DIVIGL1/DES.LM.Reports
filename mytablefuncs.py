@@ -12,7 +12,12 @@ def get_parameter_value(paramname, defvalue=""):
     else:
         settings_df = pd.read_excel(myconstants.START_PARAMETERS_FILE, engine='openpyxl')
         settings_df.dropna(how='all', inplace=True)
-        ret_value = settings_df[settings_df["ParameterName"] == paramname]["ParameterValue"].to_list()[0]
+        tmp_df = settings_df[settings_df["ParameterName"] == paramname]["ParameterValue"]
+        if tmp_df.shape[0] == 0:
+            ret_value = defvalue
+        else:
+            ret_value = tmp_df.to_list()[0]
+        
         if type(ret_value) == str:
             ret_value = ret_value.replace("\\", "/")
             if ret_value[-1] == "/":
@@ -22,7 +27,11 @@ def get_parameter_value(paramname, defvalue=""):
 
 def load_parameter_table(tablename):
     # Загружаем соответствующу таблицу с параметрами
-    parameter_df = pd.read_excel(get_parameter_value(myconstants.PARAMETERS_SECTION_NAME) + "/" + tablename, engine='openpyxl')
+    if (tablename == myconstants.COSTS_TABLE) and os.path.isfile(myconstants.SECRET_COSTS_LOCATION + "/" + myconstants.COSTS_TABLE):
+        parameter_df = pd.read_excel(myconstants.SECRET_COSTS_LOCATION + "/" + myconstants.COSTS_TABLE, engine='openpyxl')
+    else:
+        parameter_df = pd.read_excel(get_parameter_value(myconstants.PARAMETERS_SECTION_NAME) + "/" + tablename, engine='openpyxl')
+        
     parameter_df.dropna(how='all', inplace=True)
     
     return(parameter_df)
@@ -144,6 +153,7 @@ def prepare_data(raw_file_name, p_delete_not_prod_units, p_delete_pers_data, p_d
     projects_sub_types_df = load_parameter_table(myconstants.PROJECTS_SUB_TYPES_TABLE)
     projects_types_descr_df = load_parameter_table(myconstants.PROJECTS_TYPES_DESCR)
     projects_sub_types_descr_df = load_parameter_table(myconstants.PROJECTS_SUB_TYPES_DESCR)
+    costs_df = load_parameter_table(myconstants.COSTS_TABLE)
 
     ui_handle.set_status(f"Загружены таблицы с параметрами (всего строк данных: {data_df.shape[0]})")
 
@@ -179,6 +189,11 @@ def prepare_data(raw_file_name, p_delete_not_prod_units, p_delete_pers_data, p_d
     data_df = data_df.merge(fns_names_df, left_on="FNRaw", right_on="FullFNName", how="left")
     data_df["FN"] = data_df[["ShortFNName", "FNRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
     ui_handle.set_status(f"Данные объединены с таблицей с ФН (всего строк данных: {data_df.shape[0]})")
+
+    data_df["JustUserName"] = data_df["User"].apply(lambda param: param.replace(myconstants.FIRED_NAME_TEXT, ""))
+    data_df = data_df.merge(costs_df, left_on="JustUserName", right_on="CostUserName", how="left")
+    data_df["UserHourCost"] = data_df["UserHourCost"].apply(lambda param: 0.00 if pd.isna(param) else param)
+    data_df["UserMonthCost"] = data_df["UserMonthCost"].apply(lambda param: 0.00 if pd.isna(param) else param)
     
     data_df["ProjectType"] = \
         data_df[["Project", "ProjectType"]].apply(

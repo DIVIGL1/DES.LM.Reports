@@ -58,7 +58,10 @@ RESULT_DATA_COLUMNS = [
     "Pdr_User_ProjSubType_Month",
     "ProjectSubTypeDescription_Month",
     "pVacasia",
-    "Northern"
+    "Northern",
+    "JustUserName",
+    "UserHourCost",
+    "UserMonthCost",
 ]
 
 START_PARAMETERS_FILE = "Settings.xlsx"
@@ -74,6 +77,11 @@ PARAMETERS_SECTION_NAME = "Parameters"
 RAW_DATA_SECTION_NAME = "RawDataPath"
 ROUND_FTE_SECTION_NAME = "RoundFTE"
 ROUND_FTE_DEFVALUE = 3
+ROUND_FTE_VALUE = ROUND_FTE_DEFVALUE
+MEANOURSPERMONTH_SECTION_NAME = "MeanOursPerMonth"
+MEANOURSPERMONTH_DEFVALUE = 1973 / 12
+MEANOURSPERMONTH_VALUE = MEANOURSPERMONTH_DEFVALUE
+
 REPORTS_SECTION_NAME = "ReportsPath"
 REPORTS_PREPARED_SECTION_NAME = "ReportsPrepared"
 
@@ -83,13 +91,12 @@ FNS_NAMES_TABLE = "ShortFNNames.xlsx"
 P_FN_SUBST_TABLE = "FNSusbst.xlsx"
 VIRTUAL_FTE_FILE_NAME = "Искусственные FTE.xlsx"
 COSTS_TABLE = "UCosts.xlsx"
-SECRET_COSTS_LOCATION = "C:/Tmp/"
+SECRET_COSTS_LOCATION = "C:/Tmp"
 
 PROJECTS_TYPES_DESCR = "ProjectsTypesDescriptions.xlsx"
 PROJECTS_SUB_TYPES_TABLE = "ProjectsSubTypes.xlsx"
 PROJECTS_SUB_TYPES_DESCR = "ProjectsSubTypesDescriptions.xlsx"
 
-ROUND_FTE_VALUE = 5
 FACT_IS_PLAN_MARKER = "(факт=плану)"
 OTHER_PROJECT_SUB_TYPE = "_Прочее"
 
@@ -101,6 +108,7 @@ UNIQE_LISTS_SHEET_NAME = "УникальныеСписки"
 SETTINGS_SHEET_NAME = "Настройки"
 
 VACANCY_NAME_TEXT = "Вакансия"
+FIRED_NAME_TEXT = "(Уволен) "
 TEXT_LINES_SEPARATOR = "-" * 110
 PARAMETER_FILENAME_OF_LAST_REPORT = "Последний сформированный отчёт"
 
@@ -131,4 +139,4 @@ HIDE_MARKER = "hide"
 EXCELWINDOWSTATE_MAX = -4137 # Максимизировано
 EXCELWINDOWSTATE_MIN = -4140 # Минимизировано
 NUM_ROWS_FOR_HIDE = 20
-NUM_COLUMNS_FOR_HIDE = 50
+NUM_COLUMNS_FOR_HIDE = 150
