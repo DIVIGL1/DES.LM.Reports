@@ -82,6 +82,8 @@ DIVISIONS_NAMES_TABLE = "ShortDivisionNames.xlsx"
 FNS_NAMES_TABLE = "ShortFNNames.xlsx"
 P_FN_SUBST_TABLE = "FNSusbst.xlsx"
 VIRTUAL_FTE_FILE_NAME = "Искусственные FTE.xlsx"
+COSTS_TABLE = "UCosts.xlsx"
+SECRET_COSTS_LOCATION = "C:/Tmp/"
 
 PROJECTS_TYPES_DESCR = "ProjectsTypesDescriptions.xlsx"
 PROJECTS_SUB_TYPES_TABLE = "ProjectsSubTypes.xlsx"
