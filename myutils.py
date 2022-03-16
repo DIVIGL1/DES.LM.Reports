@@ -31,7 +31,7 @@ def load_param(param_name, default="", filename="saved.pkl"):
     return(params_dict.get(param_name, default))
 
 def get_files_list(path2files="", files_starts="", files_ends=".xlsx", reverse=True):
-    path2files= os.path.join(os.getcwd(), path2files)
+    path2files = os.path.join(os.getcwd(), path2files)
     files_list = \
         [one_file[len(files_starts):][:-len(files_ends)] \
             for one_file \
@@ -41,6 +41,26 @@ def get_files_list(path2files="", files_starts="", files_ends=".xlsx", reverse=T
     
     files_list = sorted(files_list, reverse=reverse)
     return(files_list)
+
+def is_all_parametars_exist():
+    s_section_path = mytablefuncs.get_parameter_value(myconstants.PARAMETERS_SECTION_NAME) + "/"
+    files_list = [
+        (myconstants.MONTH_WORKING_HOURS_TABLE, "Таблица с количеством рабочих часов в месяцах"), 
+        (myconstants.DIVISIONS_NAMES_TABLE, "Таблица с наименованиями подразделений"),
+        (myconstants.FNS_NAMES_TABLE, "Таблица с наименованиями функциональных направлений"), 
+        (myconstants.P_FN_SUBST_TABLE, "Таблица подстановок названий функциональных направлений"), 
+        (myconstants.PROJECTS_SUB_TYPES_TABLE, "Таблица с наименованиями подтипов проектов"), 
+        (myconstants.PROJECTS_TYPES_DESCR, "Таблица расшифровок типов проектов"), 
+        (myconstants.PROJECTS_SUB_TYPES_DESCR, "Таблица с расшифровок подтипов проектов"), 
+        (myconstants.COSTS_TABLE, "Таблица часовых ставок"), 
+    ]
+    ret_value = ""
+    for one_file_info in files_list:
+        if not os.path.isfile(s_section_path + "/" + one_file_info[0]):
+            ret_value = one_file_info
+            break
+        
+    return ret_value
 
 def get_report_parameters():
     myconstants.ROUND_FTE_VALUE = mytablefuncs.get_parameter_value(myconstants.ROUND_FTE_SECTION_NAME, myconstants.ROUND_FTE_DEFVALUE)

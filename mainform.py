@@ -11,7 +11,7 @@ from PyQt5.QtCore import pyqtSignal, QObject
 
 import myconstants
 import reportcreater
-from myutils import load_param, save_param
+from myutils import load_param, save_param, is_all_parametars_exist
 
 class Communicate(QObject):
     updateStatusText = pyqtSignal()
@@ -239,7 +239,17 @@ class Ui_MainWindow(object):
         
         return(True)
 
+    def what_about_parameters(self):
+        s_ret_value = is_all_parametars_exist()
+        if s_ret_value:
+            self.plainTextEdit.setPlainText(f"(!) Отсутствует файл настройки: {s_ret_value[1]}.\nИмя файла: {s_ret_value[0]}\n\nВыполнение программы не возможно.")
+            return False
+        
+        return True
+
     def on_click_DoIt(self):
+        if not self.what_about_parameters():
+            return
         self.pushButtonDoIt.setEnabled(False)
         self.pushButtonClose.setEnabled(False)
         self.pushButtonOpenLastReport.setVisible(False)
@@ -343,6 +353,8 @@ class Ui_MainWindow(object):
         self.previous_status_text = ""
         self.comminucate = Communicate()
         self.comminucate.updateStatusText.connect(self.update_status)
+
+        self.what_about_parameters()
     
     def update_status(self):
         self.plainTextEdit.setPlainText(self.status_text)
