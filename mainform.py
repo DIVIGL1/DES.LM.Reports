@@ -286,6 +286,9 @@ class Ui_MainWindow(object):
             subprocess.Popen(last_report_filename, shell=True)
     
     def on_click_CheckBoxes(self):
+        if self.listView.currentIndex().data() is None:
+            return
+        
         s_preff = self.listView.currentIndex().data() + " --> "
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, self.checkBoxDeleteNotProduct.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, self.checkBoxDelPDn.isChecked())
