@@ -171,7 +171,7 @@ def prepare_data(raw_file_name, p_delete_not_prod_units, p_delete_pers_data, p_d
     ui_handle.set_status(f"Проведено объединение с таблицей с рабочими часами (всего строк данных: {data_df.shape[0]})")
     data_df["FDate"] = data_df["FDate"].dt.strftime('%Y_%m')
     
-    ui_handle.set_status("... начинаем пересчет фактичеких часов в FTE.")
+    ui_handle.set_status("... начинаем пересчет фактических часов в FTE.")
     data_df["PlanFTE"] = data_df["PlanFTE"].fillna(0)
     data_df["FactFTE"] = \
         data_df[["FactHours", "Northern", "CHour", "NHour", "Project", "PlanFTE"]].apply( \
