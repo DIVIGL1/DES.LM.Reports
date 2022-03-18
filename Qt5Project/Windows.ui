@@ -72,25 +72,12 @@
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonClose">
+   <widget class="QPushButton" name="pushButtonDoIt">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>541</y>
-      <width>75</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Закрыть</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonDoIt">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>541</y>
-      <width>181</width>
+      <width>261</width>
       <height>31</height>
      </rect>
     </property>
@@ -461,7 +448,6 @@
   <tabstop>checkBoxDelPDn</tabstop>
   <tabstop>checkBoxDeleteNotProduct</tabstop>
   <tabstop>checkBoxDeleteVac</tabstop>
-  <tabstop>pushButtonClose</tabstop>
   <tabstop>checkBoxSaveWithOutFotmulas</tabstop>
   <tabstop>checkBoxAddVFTE</tabstop>
   <tabstop>plainTextEdit</tabstop>
