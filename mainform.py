@@ -43,11 +43,8 @@ class Ui_MainWindow(object):
         self.checkBoxDeleteVac.setChecked(True)
         self.checkBoxDeleteVac.setAutoRepeat(False)
         self.checkBoxDeleteVac.setObjectName("checkBoxDeleteVac")
-        self.pushButtonClose = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButtonClose.setGeometry(QtCore.QRect(10, 541, 75, 31))
-        self.pushButtonClose.setObjectName("pushButtonClose")
         self.pushButtonDoIt = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButtonDoIt.setGeometry(QtCore.QRect(90, 541, 181, 31))
+        self.pushButtonDoIt.setGeometry(QtCore.QRect(10, 541, 261, 31))
         self.pushButtonDoIt.setAutoDefault(False)
         self.pushButtonDoIt.setFlat(False)
         self.pushButtonDoIt.setObjectName("pushButtonDoIt")
@@ -180,8 +177,7 @@ class Ui_MainWindow(object):
         MainWindow.setTabOrder(self.listViewRawData, self.checkBoxDelPDn)
         MainWindow.setTabOrder(self.checkBoxDelPDn, self.checkBoxDeleteNotProduct)
         MainWindow.setTabOrder(self.checkBoxDeleteNotProduct, self.checkBoxDeleteVac)
-        MainWindow.setTabOrder(self.checkBoxDeleteVac, self.pushButtonClose)
-        MainWindow.setTabOrder(self.pushButtonClose, self.checkBoxSaveWithOutFotmulas)
+        MainWindow.setTabOrder(self.checkBoxDeleteVac, self.checkBoxSaveWithOutFotmulas)
         MainWindow.setTabOrder(self.checkBoxSaveWithOutFotmulas, self.checkBoxAddVFTE)
         MainWindow.setTabOrder(self.checkBoxAddVFTE, self.plainTextEdit)
         MainWindow.setTabOrder(self.plainTextEdit, self.pushButtonDoIt)
@@ -193,7 +189,6 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "DES.LM.Reporter"))
         self.checkBoxDeleteVac.setText(_translate("MainWindow", "Удалить данные о вакансиях из отчёта"))
-        self.pushButtonClose.setText(_translate("MainWindow", "Закрыть"))
         self.pushButtonDoIt.setText(_translate("MainWindow", "Сформировать"))
         self.label.setText(_translate("MainWindow", "Список доступных отчетов:"))
         self.label_2.setText(_translate("MainWindow", "Выгрузка данных из DES.LM:"))
@@ -205,7 +200,7 @@ class Ui_MainWindow(object):
         self.checkBoxAddVFTE.setText(_translate("MainWindow", "Добавить к данным искусственные FTE"))
         self.checkBoxDelPDn.setText(_translate("MainWindow", "Удалить проекты с ПерсДанными"))
         self.checkBoxDeleteNotProduct.setText(_translate("MainWindow", "Оставить только производство"))
-        self.checkBoxDelRawData.setText(_translate("MainWindow", "Удалить лист с данными в файле отчета"))        
+        self.checkBoxDelRawData.setText(_translate("MainWindow", "Удалить лист с данными в файле отчета"))
     # ------------------------------------------------------------------- #
 
     closeApp = pyqtSignal()
@@ -252,7 +247,6 @@ class Ui_MainWindow(object):
         if not self.what_about_parameters():
             return
         self.pushButtonDoIt.setEnabled(False)
-        self.pushButtonClose.setEnabled(False)
         self.pushButtonOpenLastReport.setVisible(False)
 
         report_file_name = self.listView.currentIndex().data()
@@ -271,12 +265,6 @@ class Ui_MainWindow(object):
         save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         self.resize_text_and_button()
         reportcreater.send_df_2_xls(report_file_name, raw_file_name, self)
-
-    def on_click_Close(self):
-        if self.pushButtonClose.isEnabled():
-            self.pushButtonClose.setEnabled(False)
-            self.pushButtonDoIt.setEnabled(False)
-            self.app.quit()
 
     def on_dblClick_Reports_List(self):
         self.on_click_DoIt()
@@ -335,7 +323,6 @@ class Ui_MainWindow(object):
         self.setup_rawdata_list(raw_files_list)
 
         self.pushButtonDoIt.clicked.connect(self.on_click_DoIt)
-        self.pushButtonClose.clicked.connect(self.on_click_Close)
         
         self.checkBoxDeleteNotProduct.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxDelPDn.clicked.connect(self.on_click_CheckBoxes)
@@ -384,7 +371,6 @@ class Ui_MainWindow(object):
             # Форма закрыта во время формирования отчёта - кнопок уже нет.
             return
         
-        self.pushButtonClose.setEnabled(True)
         self.pushButtonDoIt.setEnabled(True)
         
         self.comminucate.updateStatusText.emit()
