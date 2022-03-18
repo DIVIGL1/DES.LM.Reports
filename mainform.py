@@ -209,6 +209,7 @@ class Ui_MainWindow(object):
     # ------------------------------------------------------------------- #
 
     closeApp = pyqtSignal()
+    exit_in_process = False
     
     def setup_reports_list(self, reports_list=[]):
     
@@ -379,6 +380,10 @@ class Ui_MainWindow(object):
         self.comminucate.updateStatusText.emit()
         
     def enable_buttons(self):
+        if self.exit_in_process:
+            # Форма закрыта во время формирования отчёта - кнопок уже нет.
+            return
+        
         self.pushButtonClose.setEnabled(True)
         self.pushButtonDoIt.setEnabled(True)
         
@@ -405,22 +410,40 @@ class Ui_MainWindow(object):
     def save_app_link(self, app):
         self.app = app
         
+class MyWindow(QtWidgets.QMainWindow):
+    ui = None
+    def __init__ (self, parent = None):
+        QtWidgets.QMainWindow.__init__(self, parent)
+        
+    def closeEvent(self, e):
+        result = QtWidgets.QMessageBox.question(self, "Подтверждение закрытия окна", 
+           "Вы действительно хотите закрыть программу?\n\nЕсли у Вас формируется отчёт,\nто скорее всего, его формирование не прекратится.", 
+           QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, 
+           QtWidgets.QMessageBox.No)
+        if result == QtWidgets.QMessageBox.Yes:
+            self.ui.exit_in_process = True
+            e.accept()
+            QtWidgets.QMainWindow.closeEvent(self, e)
+        else:
+            e.ignore()
 
 def get_app_and_mainwindow():
     app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    ui.save_app_link(app)
+    MainWindow = MyWindow()
+    #ui = Ui_MainWindow()
+    #ui.setupUi(MainWindow)
+    #ui.save_app_link(app)
+    MainWindow.ui = Ui_MainWindow()
+    MainWindow.ui.setupUi(MainWindow)
+    MainWindow.ui.save_app_link(app)
     MainWindow.setFixedSize(MainWindow.size().width(), MainWindow.size().height())
-    MainWindow.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
 
-    return(app, ui, MainWindow)
-
+    return(app, MainWindow.ui, MainWindow)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
+#    MainWindow = QtWidgets.QMainWindow()
+    MainWindow = MyWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
