@@ -398,14 +398,20 @@ class Ui_MainWindow(object):
         
 class MyWindow(QtWidgets.QMainWindow):
     ui = None
-    def __init__ (self, parent = None):
+    
+    def __init__(self, parent=None):
+        self._app = QtWidgets.QApplication(sys.argv)
         QtWidgets.QMainWindow.__init__(self, parent)
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+        self.ui.save_app_link(self._app)
+        self.setFixedSize(self.size().width(), self.size().height())
         
     def closeEvent(self, e):
         result = QtWidgets.QMessageBox.question(self, "Подтверждение закрытия окна", 
-           "Вы действительно хотите закрыть программу?\n\nЕсли у Вас формируется отчёт,\nто скорее всего, его формирование не прекратится.", 
-           QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, 
-           QtWidgets.QMessageBox.No)
+                                                "Вы действительно хотите закрыть программу?\n\nЕсли у Вас формируется отчёт,\nто скорее всего, его формирование не прекратится.", 
+                                                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, 
+                                                QtWidgets.QMessageBox.No)
         if result == QtWidgets.QMessageBox.Yes:
             self.ui.exit_in_process = True
             e.accept()
@@ -413,24 +419,5 @@ class MyWindow(QtWidgets.QMainWindow):
         else:
             e.ignore()
 
-def get_app_and_mainwindow():
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = MyWindow()
-    #ui = Ui_MainWindow()
-    #ui.setupUi(MainWindow)
-    #ui.save_app_link(app)
-    MainWindow.ui = Ui_MainWindow()
-    MainWindow.ui.setupUi(MainWindow)
-    MainWindow.ui.save_app_link(app)
-    MainWindow.setFixedSize(MainWindow.size().width(), MainWindow.size().height())
-
-    return(app, MainWindow.ui, MainWindow)
-
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-#    MainWindow = QtWidgets.QMainWindow()
-    MainWindow = MyWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
+    pass

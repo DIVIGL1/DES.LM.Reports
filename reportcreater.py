@@ -63,17 +63,16 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
     ui_handle.set_status(f"5. Вакансии: {'удалить из отчета.' if p_delete_vacation else 'оставить в отчете.'}")
     ui_handle.set_status(f"6. Искусственно добавить FTE: {'да (если есть).' if p_virtual_FTE else 'нет.'}")
     if p_save_without_formulas:
-        ui_handle.set_status(f"7. Все формулы заменить их значениями (быстрее открывается и меньше размер файла).")
+        ui_handle.set_status("7. Все формулы заменить их значениями (быстрее открывается и меньше размер файла).")
         if p_delete_rawdata_sheet:
-            ui_handle.set_status(f"8. Удалить закладки с данными (дополнительное уменьшение размера файла).")
+            ui_handle.set_status("8. Удалить закладки с данными (дополнительное уменьшение размера файла).")
     else:
-        ui_handle.set_status(f"7. Сохранть формулы (возможно медленное открытие и больше размер файла).")
+        ui_handle.set_status("7. Сохранть формулы (возможно медленное открытие и больше размер файла).")
             
     if p_save_without_formulas & p_delete_rawdata_sheet:
         ui_handle.set_status(f"9. Округление до: {myconstants.ROUND_FTE_VALUE}-го знака после запятой")
     else:
         ui_handle.set_status(f"8. Округление до: {myconstants.ROUND_FTE_VALUE}-го знака после запятой")
-        
             
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
     
