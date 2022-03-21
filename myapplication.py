@@ -1,8 +1,11 @@
 import sys
+import time
+import os
 
 import myconstants
 import mainform
 import reportcreater
+import mytablefuncs
 import myutils
 import win32com.client
 
@@ -42,7 +45,6 @@ class MyExcel:
                         self._wb.Sheets[one_sheet_name].Delete()
             
             self._wb.Save()
-
         
 class MyApplication:
     def __init__(self):
@@ -58,3 +60,59 @@ class MyApplication:
         sys.exit(self._mainwindow._app.exec_())
         
 
+class MyReportParameters:
+    def __init__(self, raw_file_name, report_file_name):
+
+        self.start_timer()
+        # Получим параметры для данного отчёта - требуются во время исполнение.
+        # Их необходимо сохранить, потому что во время исполнения в основном окне
+        # может быть выбран другой отчёт и параметры на главном окне изменятся.
+        myconstants.ROUND_FTE_VALUE = mytablefuncs.get_parameter_value(myconstants.ROUND_FTE_SECTION_NAME, myconstants.ROUND_FTE_DEFVALUE)
+        myconstants.MEANOURSPERMONTH_VALUE = mytablefuncs.get_parameter_value(myconstants.MEANOURSPERMONTH_SECTION_NAME, myconstants.MEANOURSPERMONTH_DEFVALUE)
+        
+        s_preff = myconstants.DO_IT_PREFFIX
+        self.p_delete_not_prod_units =\
+            myutils.load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD_DEFVALUE)
+        self.p_delete_pers_data =\
+            myutils.load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA_DEFVALUE)
+        self.p_delete_vacation =\
+            myutils.load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC_DEFVALUE)
+        self.p_add_vfte =\
+            myutils.load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE, myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE_DEFVALUE)
+        self.p_save_without_formulas =\
+            myutils.load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS, myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS_DEFVALUE)
+        self.p_delete_rawdata_sheet =\
+            myutils.load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DEL_RAWSHEET, myconstants.PARAMETER_SAVED_VALUE_DEL_RAWSHEET_DEFVALUE)
+        self.p_open_in_excel =\
+            myutils.load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL, myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL_DEFVALUE)
+
+        if os.path.isfile(myconstants.SECRET_COSTS_LOCATION + "/" + myconstants.COSTS_TABLE):
+            self.p_save_without_formulas = True
+            self.p_delete_rawdata_sheet = True
+        
+        # Получим полные пути до файлов.
+        raw_file_name, report_file_name, report_prepared_name = myutils.get_full_files_names(raw_file_name, report_file_name)
+        report_prepared_name = \
+            os.path.join( 
+                os.path.join(os.getcwd(), mytablefuncs.get_parameter_value(myconstants.REPORTS_PREPARED_SECTION_NAME)),
+                raw_file_name + "__" + report_file_name + myconstants.EXCEL_FILES_ENDS
+            )
+        
+        report_file_name = \
+            os.path.join( 
+                os.path.join(os.getcwd(), mytablefuncs.get_parameter_value(myconstants.REPORTS_SECTION_NAME)),
+                myconstants.REPORT_FILE_PREFFIX + report_file_name + myconstants.EXCEL_FILES_ENDS
+            )
+        
+        raw_file_name = \
+            os.path.join( 
+                os.path.join(os.getcwd(), mytablefuncs.get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)),
+                raw_file_name + myconstants.EXCEL_FILES_ENDS
+            )
+
+        self.raw_file_name = raw_file_name.replace("\\", "/")
+        self.report_file_name = report_file_name.replace("\\", "/")
+        self.report_prepared_name = report_prepared_name.replace("\\", "/")
+        
+    def start_timer(self):
+        self.start_prog_time = time.time()
