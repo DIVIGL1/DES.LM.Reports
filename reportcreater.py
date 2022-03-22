@@ -20,8 +20,9 @@ def thread(my_func):
     return wrapper
 
 class ReportCreater(object):
-    def __init__(self, *args):
+    def __init__(self, parent, *args):
         super(ReportCreater, self).__init__(*args)
+        self.parent = parent
         self.reports_list = \
             myutils.get_files_list(
                 get_parameter_value(myconstants.REPORTS_SECTION_NAME), 
@@ -38,7 +39,6 @@ class ReportCreater(object):
 
 @thread
 def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
-    myutils.save_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT, ui_handle.reports_list.index(report_file_name) + 1)
     if report_file_name is None:
         myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.set_status("Необходимо выбрать отчётную форму.")

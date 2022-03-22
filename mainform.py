@@ -11,7 +11,7 @@ from PyQt5.QtCore import pyqtSignal, QObject
 
 import myconstants
 import reportcreater
-from myutils import load_param, save_param, is_all_parametars_exist
+from myutils import load_param, save_param
 
 class Communicate(QObject):
     updateStatusText = pyqtSignal()
@@ -205,6 +205,7 @@ class Ui_MainWindow(object):
 
     closeApp = pyqtSignal()
     exit_in_process = False
+    parent = None
     
     def setup_reports_list(self, reports_list=[]):
     
@@ -235,35 +236,20 @@ class Ui_MainWindow(object):
         
         return(True)
 
-    def what_about_parameters(self):
-        s_ret_value = is_all_parametars_exist()
-        if s_ret_value:
-            self.plainTextEdit.setPlainText(f"(!) Отсутствует файл настройки: {s_ret_value[1]}.\nИмя файла: {s_ret_value[0]}\n\nВыполнение программы не возможно.")
-            return False
-        
-        return True
-
     def on_click_DoIt(self):
-        if not self.what_about_parameters():
-            return
         self.pushButtonDoIt.setEnabled(False)
         self.pushButtonOpenLastReport.setVisible(False)
 
-        report_file_name = self.listView.currentIndex().data()
         raw_file_name = self.listViewRawData.currentIndex().data()
+        report_file_name = self.listView.currentIndex().data()
 
-        # Парамертры без префиксов будем использовать для получения 
-        s_preff = myconstants.DO_IT_PREFFIX
-        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, self.checkBoxDeleteNotProduct.isChecked())
-        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, self.checkBoxDelPDn.isChecked())
-        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, self.checkBoxDeleteVac.isChecked())
-        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE, self.checkBoxAddVFTE.isChecked())
-        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS, self.checkBoxSaveWithOutFotmulas.isChecked())
-        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DEL_RAWSHEET, self.checkBoxDelRawData.isChecked())
-        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL, self.checkBoxOpenExcel.isChecked())
-        
-        save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
+        self.parent.parent.report_parameters.update(raw_file_name, report_file_name)
+        if not self.parent.parent.report_parameters.is_all_parametars_exist():
+            return
+
         self.resize_text_and_button()
+        save_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT, self.reports_list.index(report_file_name) + 1)
+        
         reportcreater.send_df_2_xls(report_file_name, raw_file_name, self)
 
     def on_dblClick_Reports_List(self):
@@ -344,8 +330,6 @@ class Ui_MainWindow(object):
         self.previous_status_text = ""
         self.comminucate = Communicate()
         self.comminucate.updateStatusText.connect(self.update_status)
-
-        self.what_about_parameters()
     
     def update_status(self):
         self.plainTextEdit.setPlainText(self.status_text)
@@ -399,11 +383,13 @@ class Ui_MainWindow(object):
 class MyWindow(QtWidgets.QMainWindow):
     ui = None
     
-    def __init__(self, parent=None):
+    def __init__(self, parent):
+        self.parent = parent
         self._app = QtWidgets.QApplication(sys.argv)
-        QtWidgets.QMainWindow.__init__(self, parent)
+        QtWidgets.QMainWindow.__init__(self, None)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.ui.parent = self
         self.ui.save_app_link(self._app)
         self.setFixedSize(self.size().width(), self.size().height())
         
