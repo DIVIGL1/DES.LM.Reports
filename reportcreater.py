@@ -9,7 +9,6 @@ import myconstants
 from mytablefuncs import get_parameter_value, prepare_data
 import myutils
 
-
 def thread(my_func):
     """
     Запускает функцию в отдельном потоке
@@ -35,26 +34,52 @@ class ReportCreater(object):
     
     def get_report_file_name_by_num(self, num):
         return(self.reports_list[num])
+    
+    def create_report(self):
+        if self.parent.report_parameters.report_file_name is None:
+            myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
+            self.parent._mainwindow.ui.set_status("Необходимо выбрать отчётную форму.")
+            self.parent._mainwindow.ui.enable_buttons()
+            return False
+        if self.parent.report_parameters.raw_file_name is None:
+            myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
+            self.parent._mainwindow.ui.set_status("Необходимо выбрать файл, выгруженный из DES.LM для формирования отчёта.")
+            self.parent._mainwindow.ui.enable_buttons()
+            return False
+        
+        self.start_timer()
+        self.parent._mainwindow.ui.clear_status()
+        send_df_2_xls(self.parent.report_parameters)
+        self.show_timer()
+        
+        return True
 
+    def start_timer(self):
+        self.start_prog_time = time.time()
+
+    def show_timer(self):
+        end_prog_time = time.time()
+        duration_in_seconds = int(end_prog_time - self.start_prog_time)
+        self.parent._mainwindow.ui.set_status("Время выполнения: {0:0>2}:{1:0>2}".format(duration_in_seconds // 60, duration_in_seconds % 60))
 
 @thread
-def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
-    if report_file_name is None:
-        myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
-        ui_handle.set_status("Необходимо выбрать отчётную форму.")
-        ui_handle.enable_buttons()
-        return
-    if raw_file_name is None:
-        myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
-        ui_handle.set_status("Необходимо выбрать файл, выгруженный из DES.LM для формирования отчёта.")
-        ui_handle.enable_buttons()
-        return
+def send_df_2_xls(report_parameters):
+    # ----------------------------------------------------
+    raw_file_name = report_parameters.raw_file_name
+    report_file_name = report_parameters.report_file_name
+    report_prepared_name = report_parameters.report_prepared_name
+
+    p_delete_not_prod_units = report_parameters.p_delete_not_prod_units
+    p_delete_pers_data = report_parameters.p_delete_pers_data
+    p_delete_vacation = report_parameters.p_delete_vacation
+    p_virtual_FTE = report_parameters.p_virtual_FTE
+    p_save_without_formulas = report_parameters.p_save_without_formulas
+    p_delete_rawdata_sheet = report_parameters.p_delete_rawdata_sheet
+    p_open_in_excel = report_parameters.p_open_in_excel
+
+    ui_handle = report_parameters.parent._mainwindow.ui
+    # ----------------------------------------------------
     
-    start_prog_time = time.time()
-    p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, p_virtual_FTE, p_save_without_formulas, p_delete_rawdata_sheet, p_open_in_excel = myutils.get_report_parameters()
-    raw_file_name, report_file_name, report_prepared_name = myutils.get_full_files_names(raw_file_name, report_file_name)
-    
-    ui_handle.clear_status()
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
     ui_handle.set_status(f"1. Выбран отчет:\n>>   {report_file_name}")
     ui_handle.set_status(f"2. Выбран файл с данными:\n>>   {raw_file_name}")
@@ -216,10 +241,6 @@ def send_df_2_xls(report_file_name, raw_file_name, ui_handle):
     
     myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, report_prepared_name)
     
-    end_prog_time = time.time()
-    duration_in_seconds = int(end_prog_time - start_prog_time)
-    ui_handle.set_status("Время выполнения: {0:0>2}:{1:0>2}".format(duration_in_seconds // 60, duration_in_seconds % 60))
-
     if p_open_in_excel:
         # Скроем вспомогательные листы
         if myconstants.UNIQE_LISTS_SHEET_NAME in myutils.get_sheets_list(wb):

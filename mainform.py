@@ -10,7 +10,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSignal, QObject
 
 import myconstants
-import reportcreater
 from myutils import load_param, save_param
 
 class Communicate(QObject):
@@ -237,9 +236,6 @@ class Ui_MainWindow(object):
         return(True)
 
     def on_click_DoIt(self):
-        self.pushButtonDoIt.setEnabled(False)
-        self.pushButtonOpenLastReport.setVisible(False)
-
         raw_file_name = self.listViewRawData.currentIndex().data()
         report_file_name = self.listView.currentIndex().data()
 
@@ -247,10 +243,12 @@ class Ui_MainWindow(object):
         if not self.parent.parent.report_parameters.is_all_parametars_exist():
             return
 
+        self.pushButtonDoIt.setEnabled(False)
+        self.pushButtonOpenLastReport.setVisible(False)
         self.resize_text_and_button()
         save_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT, self.reports_list.index(report_file_name) + 1)
         
-        reportcreater.send_df_2_xls(report_file_name, raw_file_name, self)
+        self.parent.parent.reporter.create_report()
 
     def on_dblClick_Reports_List(self):
         self.on_click_DoIt()

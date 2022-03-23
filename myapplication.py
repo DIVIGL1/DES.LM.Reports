@@ -1,5 +1,4 @@
 import sys
-import time
 import os
 
 import myconstants
@@ -9,6 +8,19 @@ import mytablefuncs
 import myutils
 import win32com.client
 
+class MyApplication:
+    def __init__(self):
+        self.report_parameters = MyReportParameters(self)
+        self.reporter = reportcreater.ReportCreater(self)
+        self._mainwindow = mainform.MyWindow(self)
+        self._mainwindow.ui.setup_form(self.reporter.get_reports_list(),
+                                        myutils.get_files_list(reportcreater.get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)))
+
+        self._mainwindow.show()
+        self.report_parameters.is_all_parametars_exist()
+
+        sys.exit(self._mainwindow._app.exec_())
+    
 class MyExcel:
     def __init__(self, excel_file_name):
         self._oExcel = win32com.client.Dispatch("Excel.Application")
@@ -45,20 +57,7 @@ class MyExcel:
                         self._wb.Sheets[one_sheet_name].Delete()
             
             self._wb.Save()
-        
-class MyApplication:
-    def __init__(self):
-        self.report_parameters = MyReportParameters(self)
-        self._curr_reporter = reportcreater.ReportCreater(self)
-        self._mainwindow = mainform.MyWindow(self)
-        self._mainwindow.ui.setup_form(self._curr_reporter.get_reports_list(),
-                                        myutils.get_files_list(reportcreater.get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)))
 
-        self._mainwindow.show()
-        self.report_parameters.is_all_parametars_exist()
-
-        sys.exit(self._mainwindow._app.exec_())
-    
 class MyReportParameters:
     def __init__(self, parent):
         self.parent = parent
@@ -77,7 +76,6 @@ class MyReportParameters:
             self.parent._mainwindow.ui.enable_buttons()
             return False
 
-        self.start_timer()
         # Сохраним параметры для данного отчёта - требуются во время исполнение.
         # Их необходимо сохранить, потому что во время исполнения в основном окне
         # может быть выбран другой отчёт и параметры на главном окне изменятся.
@@ -88,7 +86,7 @@ class MyReportParameters:
         self.p_delete_not_prod_units = self.parent._mainwindow.ui.checkBoxDeleteNotProduct.isChecked()
         self.p_delete_pers_data = self.parent._mainwindow.ui.checkBoxDelPDn.isChecked()
         self.p_delete_vacation = self.parent._mainwindow.ui.checkBoxDeleteVac.isChecked()
-        self.p_add_vfte = self.parent._mainwindow.ui.checkBoxAddVFTE.isChecked()
+        self.p_virtual_FTE = self.parent._mainwindow.ui.checkBoxAddVFTE.isChecked()
         self.p_save_without_formulas = self.parent._mainwindow.ui.checkBoxSaveWithOutFotmulas.isChecked()
         self.p_delete_rawdata_sheet = self.parent._mainwindow.ui.checkBoxDelRawData.isChecked()
         self.p_open_in_excel = self.parent._mainwindow.ui.checkBoxOpenExcel.isChecked()
@@ -141,6 +139,3 @@ class MyReportParameters:
                 break
             
         return ret_value
-
-    def start_timer(self):
-        self.start_prog_time = time.time()
