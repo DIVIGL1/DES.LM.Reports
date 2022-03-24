@@ -8,6 +8,7 @@ import pythoncom
 import myconstants
 from mytablefuncs import get_parameter_value, prepare_data
 import myutils
+from myexcelclass import MyExcel
 
 def thread(my_func):
     """
@@ -50,7 +51,6 @@ class ReportCreater(object):
         self.start_timer()
         self.parent._mainwindow.ui.clear_status()
         send_df_2_xls(self.parent.report_parameters)
-        self.show_timer()
         
         return True
 
@@ -64,7 +64,8 @@ class ReportCreater(object):
 
 @thread
 def send_df_2_xls(report_parameters):
-    # ----------------------------------------------------
+    # Определим ключевые параметры в переменные,
+    # чтобы не указывать полную ссылку каждый раз
     raw_file_name = report_parameters.raw_file_name
     report_file_name = report_parameters.report_file_name
     report_prepared_name = report_parameters.report_prepared_name
@@ -75,11 +76,9 @@ def send_df_2_xls(report_parameters):
     p_virtual_FTE = report_parameters.p_virtual_FTE
     p_save_without_formulas = report_parameters.p_save_without_formulas
     p_delete_rawdata_sheet = report_parameters.p_delete_rawdata_sheet
-    p_open_in_excel = report_parameters.p_open_in_excel
 
     ui_handle = report_parameters.parent._mainwindow.ui
     # ----------------------------------------------------
-    
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
     ui_handle.set_status(f"1. Выбран отчет:\n>>   {report_file_name}")
     ui_handle.set_status(f"2. Выбран файл с данными:\n>>   {raw_file_name}")
@@ -100,7 +99,7 @@ def send_df_2_xls(report_parameters):
         ui_handle.set_status(f"8. Округление до: {myconstants.ROUND_FTE_VALUE}-го знака после запятой")
             
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
-    
+
     ui_handle.set_status("Проверим структуру файла, содержащего форму отчёта.")
 
     try:
@@ -111,63 +110,21 @@ def send_df_2_xls(report_parameters):
         ui_handle.set_status("Формирование отчёта не возможно.")
         myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.enable_buttons()
-        return
+        return False
 
     pythoncom.CoInitializeEx(0)
     
-    # необходимо проверить запуск Excel - здесь может подвисать #
-    oExcel, currwindow, wb, n_save_excel_calc_status = myutils.get_excel_and_wb(report_prepared_name)
-    
-    if (myconstants.RAW_DATA_SHEET_NAME not in myutils.get_sheets_list(wb)):
-        ui_handle.set_status("")
-        ui_handle.set_status("")
-        ui_handle.set_status("[Ошибка в структуре отчета]")
-        ui_handle.set_status("")
-        ui_handle.set_status("В файле для выбранной формы отчёта отсутствует необходимый лист для данных.")
-        ui_handle.set_status("Формирование отчёта не возможно.")
-        myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
-        ui_handle.enable_buttons()
-        oExcel.Calculation = n_save_excel_calc_status
-        oExcel.DisplayAlerts = True
-        wb.Close()
-        return
-    elif (myconstants.UNIQE_LISTS_SHEET_NAME not in myutils.get_sheets_list(wb)):
-        ui_handle.set_status("")
-        ui_handle.set_status("")
-        ui_handle.set_status("[Ошибка в структуре отчета]")
-        ui_handle.set_status("")
-        ui_handle.set_status("В файле для выбранной формы отчёта отсутствует необходимый лист для уникальных списков.")
-        ui_handle.set_status("Формирование отчёта не возможно.")
-        myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
-        ui_handle.enable_buttons()
-        oExcel.Calculation = n_save_excel_calc_status
-        oExcel.DisplayAlerts = True
-        wb.Close()
-        return
-    elif (myconstants.SETTINGS_SHEET_NAME not in myutils.get_sheets_list(wb)):
-        ui_handle.set_status("")
-        ui_handle.set_status("")
-        ui_handle.set_status("[Ошибка в структуре отчета]")
-        ui_handle.set_status("")
-        ui_handle.set_status("В файле для выбранной формы отчёта отсутствует необходимый лист c настройками.")
-        ui_handle.set_status("Формирование отчёта не возможно.")
-        myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
-        ui_handle.enable_buttons()
-        oExcel.Calculation = n_save_excel_calc_status
-        oExcel.DisplayAlerts = True
-        wb.Close()
-        return
-    else:
-        ui_handle.change_last_status_line("Пройдена проверка структуры файла, содержащего форму отчёта.")
-
-    ui_handle.set_status("Файл Excel с формой отчёта подгружен.")
+    oExcel = MyExcel(report_parameters)
+    if oExcel.not_ready:
+        # Что-то пошло не так.
+        return False
     
     report_df = prepare_data(raw_file_name, p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, ui_handle)
     ui_handle.set_status(f"Таблица для загрузки полностью подготовлена (всего строк данных: {report_df.shape[0]})")
 
     ui_handle.set_status("Начинаем перенос строк в Excel:")
-    data_sheet = wb.Sheets[myconstants.RAW_DATA_SHEET_NAME]
-    ulist_sheet = wb.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME]
+    data_sheet = oExcel._wb.Sheets[myconstants.RAW_DATA_SHEET_NAME]
+    ulist_sheet = oExcel._wb.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME]
 
     data_array = report_df.to_numpy()
     data_sheet.Range(data_sheet.Cells(2, 1), data_sheet.Cells(len(data_array) + 1, len(data_array[0]))).Value = data_array    
@@ -175,6 +132,7 @@ def send_df_2_xls(report_parameters):
     ui_handle.set_status("Строки в Excel скопированы.")
 
     ui_handle.set_status("Формируем списки с уникальными значениями.")
+    
     # Запоним списки уникальными значениями
     column = 1
     values_dict = dict()
@@ -187,11 +145,8 @@ def send_df_2_xls(report_parameters):
             ui_handle.set_status("")
             ui_handle.set_status("В файле для выбранной формы на листе для уникальных списков в стороке 1:1 " + \
                                     "в качестве наименований списков должны быть символьные значения. Формирование отчёта остановлено.")
-            myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
-            ui_handle.enable_buttons()
-            oExcel.DisplayAlerts = True
-            wb.Close()
-            return
+
+            return False
             
         if uniq_col_name is not None and uniq_col_name.replace(" ", "") != "":
             values_dict[uniq_col_name] = column
@@ -209,10 +164,8 @@ def send_df_2_xls(report_parameters):
         ui_handle.set_status("В файле для выбранной формы на листе для уникальных списков не указан " + \
                                 "уникальный список из возможного перечня. Формирование отчёта остановлено.")
         myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
-        ui_handle.enable_buttons()
-        oExcel.DisplayAlerts = True
-        wb.Close()
-        return
+
+        return False
 
     ui_handle.set_status(f"Всего списков c уникальными данными: {len(columns_4_unique_list)} шт.")
     ui_handle.set_status("")
@@ -229,34 +182,9 @@ def send_df_2_xls(report_parameters):
         ui_handle.change_last_status_line(f"Значений в списке {len(unique_elements_list)} шт.")
     else:
         ui_handle.change_last_status_line("Собраны и сохранениы списки с уникальными значениями.")
-                
-    ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
-    ui_handle.set_status(f"Сохраняем в файл: {report_prepared_name}")
-    
-    myutils.hide_and_delete_rows_and_columns(oExcel, wb)
 
-    oExcel.Calculation = n_save_excel_calc_status
-    myutils.save_report(wb, p_save_without_formulas, p_delete_rawdata_sheet)
-    ui_handle.set_status("Отчёт сохранён.")
-    
-    myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, report_prepared_name)
-    
-    if p_open_in_excel:
-        # Скроем вспомогательные листы
-        if myconstants.UNIQE_LISTS_SHEET_NAME in myutils.get_sheets_list(wb):
-            wb.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME].Visible = False
-        
-        if myconstants.SETTINGS_SHEET_NAME in myutils.get_sheets_list(wb):
-            wb.Sheets[myconstants.SETTINGS_SHEET_NAME].Visible = False
-            
-        oExcel.Visible = True
-        currwindow.WindowState = myconstants.EXCELWINDOWSTATE_MAX
-    else:
-        oExcel.DisplayAlerts = True
-        wb.Close()
-
-    ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
-    ui_handle.enable_buttons()
+    oExcel.report_prepared = True
+    return True
 
 
 if __name__ == "__main__":
