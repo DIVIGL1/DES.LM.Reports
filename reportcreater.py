@@ -181,7 +181,7 @@ def send_df_2_xls(report_parameters):
     if len(columns_4_unique_list) == 1:
         ui_handle.change_last_status_line(f"Значений в списке {len(unique_elements_list)} шт.")
     else:
-        ui_handle.change_last_status_line("Собраны и сохранениы списки с уникальными значениями.")
+        ui_handle.change_last_status_line("Собраны и сохранены списки с уникальными значениями.")
 
     oExcel.report_prepared = True
     return True
