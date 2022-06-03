@@ -62,6 +62,9 @@ RESULT_DATA_COLUMNS = [
     "JustUserName",
     "UserHourCost",
     "UserMonthCost",
+    "Personal_email",
+    "user_email",
+    "boss_email",
 ]
 
 START_PARAMETERS_FILE = "Settings.xlsx"
@@ -91,6 +94,8 @@ FNS_NAMES_TABLE = "ShortFNNames.xlsx"
 P_FN_SUBST_TABLE = "FNSusbst.xlsx"
 VIRTUAL_FTE_FILE_NAME = "Искусственные FTE.xlsx"
 COSTS_TABLE = "UCosts.xlsx"
+EMAILS_TABLE = "EMails.xlsx"
+EMAIL_INFO_COLUMNS = ["Personal_email", "user_email", "boss_email"]
 SECRET_COSTS_LOCATION = "C:/Tmp"
 
 PROJECTS_TYPES_DESCR = "ProjectsTypesDescriptions.xlsx"
