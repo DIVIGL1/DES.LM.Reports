@@ -147,7 +147,7 @@
       <x>10</x>
       <y>277</y>
       <width>261</width>
-      <height>141</height>
+      <height>121</height>
      </rect>
     </property>
     <property name="editTriggers">
@@ -432,6 +432,34 @@
     </property>
     <property name="text">
      <string>Удалить лист с данными в файле отчета</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+    <property name="autoRepeat">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxDeleteVIP">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>400</y>
+      <width>221</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="text">
+     <string>Убрать VIP</string>
     </property>
     <property name="checked">
      <bool>true</bool>
