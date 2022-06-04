@@ -1,5 +1,6 @@
 .env_DES.LM/*
 .vscode/*
+.idea/*
 .ipynb_checkpoints/*
 _tmp_*.*
 ~_tmp_*.*
@@ -15,6 +16,8 @@ mef.bat
 *.pkl
 *.ipynb
 *.exe
+EMails.xlsx
+VIP.xlsx
 
 # C++ objects and libs
 *.slo
