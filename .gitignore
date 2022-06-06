@@ -16,8 +16,6 @@ mef.bat
 *.pkl
 *.ipynb
 *.exe
-EMails.xlsx
-VIP.xlsx
 
 # C++ objects and libs
 *.slo
