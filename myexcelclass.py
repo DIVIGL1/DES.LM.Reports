@@ -11,7 +11,7 @@ class MyExcel:
         
         self.report_parameters = report_parameters
         
-        self._wb = self._oExcel.Workbooks.Open(report_parameters.report_file_name)
+        self._wb = self._oExcel.Workbooks.Open(report_parameters.report_prepared_name)
         self._currwindow = self._oExcel.ActiveWindow
         self._currwindow.WindowState = myconstants.EXCELWINDOWSTATE_MIN
         self._n_save_excel_calc_status = self._oExcel.Calculation
@@ -59,6 +59,7 @@ class MyExcel:
         return([one_sheet.Name for one_sheet in self._wb.Sheets])
 
     def save_report(self):
+        self._oExcel.Calculation = self._n_save_excel_calc_status
         self._wb.Save()
         if self.report_parameters.p_save_without_formulas: 
             for curr_sheet_name in self.get_sheets_list():
@@ -76,10 +77,8 @@ class MyExcel:
         if self.not_ready:
             pass
         else:
-            self._oExcel.Calculation = self._n_save_excel_calc_status
-            self._oExcel.DisplayAlerts = self._p_save_DisplayAlerts
-            
             if not self.report_prepared:
+                self._oExcel.Calculation = self._n_save_excel_calc_status
                 self._wb.Close()
                 myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
             else:
@@ -109,6 +108,8 @@ class MyExcel:
                 
                 self.report_parameters.parent.reporter.show_timer()
 
+        self._oExcel.DisplayAlerts = self._p_save_DisplayAlerts
+        
         # Не нашёл другого места где кнопки должны быть разлокированы.
         self.report_parameters.parent._mainwindow.ui.enable_buttons()
 

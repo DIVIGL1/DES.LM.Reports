@@ -70,6 +70,7 @@ def send_df_2_xls(report_parameters):
     report_file_name = report_parameters.report_file_name
     report_prepared_name = report_parameters.report_prepared_name
 
+    p_delete_vip = report_parameters.p_delete_vip
     p_delete_not_prod_units = report_parameters.p_delete_not_prod_units
     p_delete_pers_data = report_parameters.p_delete_pers_data
     p_delete_vacation = report_parameters.p_delete_vacation
@@ -119,7 +120,7 @@ def send_df_2_xls(report_parameters):
         # Что-то пошло не так.
         return False
     
-    report_df = prepare_data(raw_file_name, p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, ui_handle)
+    report_df = prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, ui_handle)
     ui_handle.set_status(f"Таблица для загрузки полностью подготовлена (всего строк данных: {report_df.shape[0]})")
 
     ui_handle.set_status("Начинаем перенос строк в Excel:")

@@ -128,21 +128,6 @@ def get_excel_and_wb(excel_file_name):
 def get_sheets_list(wb):
     return([one_sheet.Name for one_sheet in wb.Sheets])
 
-def save_report(wb, p_save_without_formulas, p_delete_rawdata_sheet):
-    wb.Save()
-    if p_save_without_formulas: 
-        for curr_sheet_name in get_sheets_list(wb):
-            if curr_sheet_name not in myconstants.SHEETS_DONT_DELETE_FORMULAS:
-                wb.Sheets[curr_sheet_name].UsedRange.Value = wb.Sheets[curr_sheet_name].UsedRange.Value
-        
-        if p_delete_rawdata_sheet:
-            for one_sheet_name in myconstants.DELETE_SHEETS_LIST_IF_NO_FORMULAS:
-                if one_sheet_name in get_sheets_list(wb):
-                    wb.Sheets[one_sheet_name].Delete()
-        
-        wb.Save()
-
-
 def hide_and_delete_rows_and_columns(oExcel, wb):
     # -----------------------------------
     oExcel.Calculation = myconstants.EXCEL_AUTOMATIC_CALC

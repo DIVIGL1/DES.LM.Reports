@@ -9,6 +9,7 @@ import myutils
 
 class MyApplication:
     def __init__(self):
+        myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         self.report_parameters = MyReportParameters(self)
         self.reporter = reportcreater.ReportCreater(self)
         self._mainwindow = mainform.MyWindow(self)
@@ -45,6 +46,7 @@ class MyReportParameters:
         myconstants.MEANOURSPERMONTH_VALUE = mytablefuncs.get_parameter_value(myconstants.MEANOURSPERMONTH_SECTION_NAME, myconstants.MEANOURSPERMONTH_DEFVALUE)
 
         # Парамертры без префиксов будем использовать для получения
+        self.p_delete_vip = self.parent._mainwindow.ui.checkBoxDeleteVIP.isChecked()
         self.p_delete_not_prod_units = self.parent._mainwindow.ui.checkBoxDeleteNotProduct.isChecked()
         self.p_delete_pers_data = self.parent._mainwindow.ui.checkBoxDelPDn.isChecked()
         self.p_delete_vacation = self.parent._mainwindow.ui.checkBoxDeleteVac.isChecked()

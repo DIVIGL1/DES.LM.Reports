@@ -74,7 +74,7 @@ SHEETS_DONT_DELETE_FORMULAS = ["ИсходныеДанные", "Уникальн
 DELETE_SHEETS_LIST_IF_NO_FORMULAS = ["ИсходныеДанные", "УникальныеСписки"]
 DONT_REPLACE_ENTER = ["Month"]
 
-BOOLEAN_VALUES_SUBST = {"ЛОЖЬ": 0, "ИСТИНА": 1}
+BOOLEAN_VALUES_SUBST = {"ЛОЖЬ": False, "ИСТИНА": True}
 
 PARAMETERS_SECTION_NAME = "Parameters"
 RAW_DATA_SECTION_NAME = "RawDataPath"
@@ -95,6 +95,7 @@ P_FN_SUBST_TABLE = "FNSusbst.xlsx"
 VIRTUAL_FTE_FILE_NAME = "Искусственные FTE.xlsx"
 COSTS_TABLE = "UCosts.xlsx"
 EMAILS_TABLE = "EMails.xlsx"
+VIP_TABLE = "VIP.xlsx"
 EMAIL_INFO_COLUMNS = ["Personal_email", "user_email", "boss_email"]
 SECRET_COSTS_LOCATION = "C:/Tmp"
 
@@ -117,6 +118,7 @@ FIRED_NAME_TEXT = "(Уволен) "
 TEXT_LINES_SEPARATOR = "-" * 110
 PARAMETER_FILENAME_OF_LAST_REPORT = "Последний сформированный отчёт"
 
+PARAMETER_SAVED_VALUE_DELETE_VIP = "Удалить VIP?"
 PARAMETER_SAVED_VALUE_DELETE_NONPROD = "Удалять не производственные подразделения?"
 PARAMETER_SAVED_VALUE_DELETE_PERSDATA = "Удалять проекты с персональными данныи?"
 PARAMETER_SAVED_VALUE_DELETE_VAC = "Удалять ли вакансии из отчёта?"
@@ -127,6 +129,7 @@ PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL = "Открывать ли сформиро�
 
 DO_IT_PREFFIX = ""
 
+PARAMETER_SAVED_VALUE_DELETE_VIP_DEFVALUE = False
 PARAMETER_SAVED_VALUE_DELETE_NONPROD_DEFVALUE = False
 PARAMETER_SAVED_VALUE_DELETE_PERSDATA_DEFVALUE = False
 PARAMETER_SAVED_VALUE_DELETE_VAC_DEFVALUE = True

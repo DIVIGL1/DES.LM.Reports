@@ -89,21 +89,6 @@ def calc_fact_fte(FactHours, Northern, CHour, NHour, Project, PlanFTE):
     return(fact_fte)
 
 def add_combine_columns(df):
-    # "Month",
-    # "FN",
-    # "Division",
-    # "User",
-    # "Project",
-    # "ProjectType",
-    # "ProjectSubType",
-    # "PlanFTE",
-    # "FactFTE"
-    # Подразделение + Проект + ФИО + Месяц
-    # Подразделение + ФИО + Проект + Месяц
-    # Подразделение + ФИО + Месяц
-    # Подразделение + Проект + Месяц
-    # ПМ + Проект + Месяц
-    # ПМ + Проект + ФИО + Месяц
     df["Project7Letters"] = df["Project"].str[:7]
     
     df["FN_Proj"] = df["FN"] + "#" + df["Project7Letters"]
@@ -143,7 +128,7 @@ def add_combine_columns(df):
 
     df["pVacasia"] = df["User"].apply(lambda param: True if param.replace(" ", "").lower()[:8] == myconstants.VACANCY_NAME_TEXT.lower() else False)
 
-def prepare_data(raw_file_name, p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, ui_handle):
+def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, ui_handle):
     data_df = load_raw_data(raw_file_name, ui_handle)
     
     month_hours_df = load_parameter_table(myconstants.MONTH_WORKING_HOURS_TABLE)
@@ -154,6 +139,8 @@ def prepare_data(raw_file_name, p_delete_not_prod_units, p_delete_pers_data, p_d
     projects_types_descr_df = load_parameter_table(myconstants.PROJECTS_TYPES_DESCR)
     projects_sub_types_descr_df = load_parameter_table(myconstants.PROJECTS_SUB_TYPES_DESCR)
     costs_df = load_parameter_table(myconstants.COSTS_TABLE)
+    emails_df = load_parameter_table(myconstants.EMAILS_TABLE)
+    vip_df = load_parameter_table(myconstants.VIP_TABLE)
 
     ui_handle.set_status(f"Загружены таблицы с параметрами (всего строк данных: {data_df.shape[0]})")
 
@@ -192,6 +179,10 @@ def prepare_data(raw_file_name, p_delete_not_prod_units, p_delete_pers_data, p_d
 
     data_df["JustUserName"] = data_df["User"].apply(lambda param: param.replace(myconstants.FIRED_NAME_TEXT, ""))
     data_df = data_df.merge(costs_df, left_on="JustUserName", right_on="CostUserName", how="left")
+    data_df = data_df.merge(emails_df, left_on="JustUserName", right_on="FIO_4_email", how="left")
+    for one_column in myconstants.EMAIL_INFO_COLUMNS:
+        data_df[one_column] = data_df[one_column].fillna("")
+    
     data_df["UserHourCost"] = data_df["UserHourCost"].apply(lambda param: 0.00 if pd.isna(param) else param)
     data_df["UserMonthCost"] = data_df["UserMonthCost"].apply(lambda param: 0.00 if pd.isna(param) else param)
     
@@ -209,6 +200,11 @@ def prepare_data(raw_file_name, p_delete_not_prod_units, p_delete_pers_data, p_d
     data_df = data_df.merge(projects_sub_types_descr_df, left_on="ProjectSubType", right_on="ProjectSubTypeName", how="left")
     if p_delete_pers_data:
         data_df = data_df[data_df["ProjectSubTypePersData"] != 1]
+
+    if p_delete_vip:
+        vip_list = vip_df["FIO_VIP"].to_list()
+        for one_vip in vip_list:
+            data_df = data_df[data_df["JustUserName"] != one_vip]
 
     if p_delete_not_prod_units:
         data_df = data_df[data_df["pNotProductUnit"] != 1]

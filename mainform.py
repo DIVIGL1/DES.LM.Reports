@@ -64,7 +64,7 @@ class Ui_MainWindow(object):
         self.label.setWordWrap(False)
         self.label.setObjectName("label")
         self.listViewRawData = QtWidgets.QListView(self.centralwidget)
-        self.listViewRawData.setGeometry(QtCore.QRect(10, 277, 261, 141))
+        self.listViewRawData.setGeometry(QtCore.QRect(10, 277, 261, 121))
         self.listViewRawData.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.listViewRawData.setObjectName("listViewRawData")
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
@@ -168,6 +168,17 @@ class Ui_MainWindow(object):
         self.checkBoxDelRawData.setChecked(True)
         self.checkBoxDelRawData.setAutoRepeat(False)
         self.checkBoxDelRawData.setObjectName("checkBoxDelRawData")
+        self.checkBoxDeleteVIP = QtWidgets.QCheckBox(self.centralwidget)
+        self.checkBoxDeleteVIP.setEnabled(True)
+        self.checkBoxDeleteVIP.setGeometry(QtCore.QRect(20, 400, 221, 21))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.checkBoxDeleteVIP.sizePolicy().hasHeightForWidth())
+        self.checkBoxDeleteVIP.setSizePolicy(sizePolicy)
+        self.checkBoxDeleteVIP.setChecked(True)
+        self.checkBoxDeleteVIP.setAutoRepeat(False)
+        self.checkBoxDeleteVIP.setObjectName("checkBoxDeleteVIP")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -200,6 +211,7 @@ class Ui_MainWindow(object):
         self.checkBoxDelPDn.setText(_translate("MainWindow", "Удалить проекты с ПерсДанными"))
         self.checkBoxDeleteNotProduct.setText(_translate("MainWindow", "Оставить только производство"))
         self.checkBoxDelRawData.setText(_translate("MainWindow", "Удалить лист с данными в файле отчета"))
+        self.checkBoxDeleteVIP.setText(_translate("MainWindow", "Убрать VIP"))
     # ------------------------------------------------------------------- #
 
     closeApp = pyqtSignal()
@@ -239,13 +251,13 @@ class Ui_MainWindow(object):
         raw_file_name = self.listViewRawData.currentIndex().data()
         report_file_name = self.listView.currentIndex().data()
 
-        self.parent.parent.report_parameters.update(raw_file_name, report_file_name)
         if not self.parent.parent.report_parameters.is_all_parametars_exist():
             return
 
         self.pushButtonDoIt.setEnabled(False)
-        self.pushButtonOpenLastReport.setVisible(False)
+        self.pushButtonOpenLastReport.setEnabled(False)
         self.resize_text_and_button()
+        self.parent.parent.report_parameters.update(raw_file_name, report_file_name)
         save_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT, self.reports_list.index(report_file_name) + 1)
         
         self.parent.parent.reporter.create_report()
@@ -263,6 +275,7 @@ class Ui_MainWindow(object):
             return
         
         s_preff = self.listView.currentIndex().data() + " --> "
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VIP, self.checkBoxDeleteVIP.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, self.checkBoxDeleteNotProduct.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, self.checkBoxDelPDn.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, self.checkBoxDeleteVac.isChecked())
@@ -282,6 +295,8 @@ class Ui_MainWindow(object):
         else:
             s_preff = self.listView.currentIndex().data() + " --> "
             
+        self.checkBoxDeleteVIP.setChecked(\
+            load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VIP, myconstants.PARAMETER_SAVED_VALUE_DELETE_VIP_DEFVALUE))
         self.checkBoxDeleteNotProduct.setChecked(\
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD_DEFVALUE))
         self.checkBoxDelPDn.setChecked(\
@@ -308,6 +323,7 @@ class Ui_MainWindow(object):
 
         self.pushButtonDoIt.clicked.connect(self.on_click_DoIt)
         
+        self.checkBoxDeleteVIP.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxDeleteNotProduct.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxDelPDn.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxDeleteVac.clicked.connect(self.on_click_CheckBoxes)
@@ -354,6 +370,7 @@ class Ui_MainWindow(object):
             return
         
         self.pushButtonDoIt.setEnabled(True)
+        self.pushButtonOpenLastReport.setEnabled(True)
         
         self.comminucate.updateStatusText.emit()
         
