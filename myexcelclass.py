@@ -64,7 +64,16 @@ class MyExcel:
         if self.report_parameters.p_save_without_formulas: 
             for curr_sheet_name in self.get_sheets_list():
                 if curr_sheet_name not in myconstants.SHEETS_DONT_DELETE_FORMULAS:
-                    self._wb.Sheets[curr_sheet_name].UsedRange.Value = self._wb.Sheets[curr_sheet_name].UsedRange.Value
+                    column1 = self._wb.Sheets[curr_sheet_name].UsedRange.Column
+                    column2 = self._wb.Sheets[curr_sheet_name].UsedRange.Columns(self._wb.Sheets[curr_sheet_name].UsedRange.Columns.Count).Column
+                    
+                    row1 = self._wb.Sheets[curr_sheet_name].UsedRange.Row
+                    row2 = self._wb.Sheets[curr_sheet_name].UsedRange.Rows(self._wb.Sheets[curr_sheet_name].UsedRange.Rows.Count).Row
+                    
+                    cell1 = self._wb.Sheets[curr_sheet_name].Cells(row1 + 3, column1).Address
+                    cell2 = self._wb.Sheets[curr_sheet_name].Cells(row2, column2).Address
+                    
+                    self._wb.Sheets[curr_sheet_name].Range(cell1, cell2).Value = self._wb.Sheets[curr_sheet_name].Range(cell1, cell2).Value
             
             if self.report_parameters.p_delete_rawdata_sheet:
                 for one_sheet_name in myconstants.DELETE_SHEETS_LIST_IF_NO_FORMULAS:
