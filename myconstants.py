@@ -65,11 +65,14 @@ RESULT_DATA_COLUMNS = [
     "Personal_email",
     "user_email",
     "boss_email",
+    "Contract",
+    "Portfolio",
+    "Portfolio_Month",
 ]
 
 START_PARAMETERS_FILE = "Settings.xlsx"
 
-RAW_DATA_DROP_COLUMNS = ["MVZ", "KoBo", "Contract", "Unnamed15", "Unnamed16"]
+RAW_DATA_DROP_COLUMNS = ["MVZ", "KoBo", "Unnamed15", "Unnamed16"]
 SHEETS_DONT_DELETE_FORMULAS = ["ИсходныеДанные", "УникальныеСписки", "Настройки"]
 DELETE_SHEETS_LIST_IF_NO_FORMULAS = ["ИсходныеДанные", "УникальныеСписки"]
 DONT_REPLACE_ENTER = ["Month"]
@@ -96,6 +99,7 @@ VIRTUAL_FTE_FILE_NAME = "Искусственные FTE.xlsx"
 COSTS_TABLE = "UCosts.xlsx"
 EMAILS_TABLE = "EMails.xlsx"
 VIP_TABLE = "VIP.xlsx"
+PORTFEL_TABLE = "BProg.xlsx"
 EMAIL_INFO_COLUMNS = ["Personal_email", "user_email", "boss_email"]
 SECRET_COSTS_LOCATION = "C:/Tmp"
 
@@ -113,6 +117,10 @@ RAW_DATA_SHEET_NAME = "ИсходныеДанные"
 UNIQE_LISTS_SHEET_NAME = "УникальныеСписки"
 SETTINGS_SHEET_NAME = "Настройки"
 
+NO_CONTRACT_TYPES = ["А", "S", "В", "И", "Н"]
+NO_PORTFOLIO_TYPES = ["А", "S", "В", "И", "Н"]
+NO_CONTRACT_TEXT = "Не предусмотрен"
+NO_PORTFOLIO_TEXT = "Не предусмотрен"
 VACANCY_NAME_TEXT = "Вакансия"
 FIRED_NAME_TEXT = "(Уволен) "
 TEXT_LINES_SEPARATOR = "-" * 110

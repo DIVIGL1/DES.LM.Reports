@@ -109,8 +109,7 @@ def add_combine_columns(df):
     df["ProjMang_Proj_User"] = df["ProjectManager"] + "#" + df["Project7Letters"] + "#" + df["User"]
     df["ProjMang_Proj_User_Month"] = df["ProjectManager"] + "#" + df["Project7Letters"] + "#" + df["User"] + "#" + df["Month"]
 
-    df["ShortProject"] = df["Project"].str[:7]
-    df["ShortProject_Month"] = df["Project"].str[:7] + "#" + df["Month"]
+    df["ShortProject_Month"] = df["ShortProject"] + "#" + df["Month"]
 
     df["Division_Month"] = df["Division"] + "#" + df["Month"]
     df["User_Month"] = df["User"] + "#" + df["Month"]
@@ -128,6 +127,8 @@ def add_combine_columns(df):
 
     df["pVacasia"] = df["User"].apply(lambda param: True if param.replace(" ", "").lower()[:8] == myconstants.VACANCY_NAME_TEXT.lower() else False)
 
+    df["Portfolio_Month"] = df["Portfolio"] + "#" + df["Month"]
+
 def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, ui_handle):
     data_df = load_raw_data(raw_file_name, ui_handle)
     
@@ -141,6 +142,7 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     costs_df = load_parameter_table(myconstants.COSTS_TABLE)
     emails_df = load_parameter_table(myconstants.EMAILS_TABLE)
     vip_df = load_parameter_table(myconstants.VIP_TABLE)
+    portfolio_df = load_parameter_table(myconstants.PORTFEL_TABLE)
 
     ui_handle.set_status(f"Загружены таблицы с параметрами (всего строк данных: {data_df.shape[0]})")
 
@@ -149,6 +151,8 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
             data_df[column_name] = data_df[column_name].str.replace("\n", "")
             data_df[column_name] = data_df[column_name].str.strip()
     ui_handle.set_status(f"Удалены переносы строк (всего строк данных: {data_df.shape[0]})")
+
+    data_df["ShortProject"] = data_df["Project"].str[:5]
     
     data_df["FDate"] = data_df["FDate"].apply(lambda param: udata_2_date(param))
     ui_handle.set_status(f"Обновлён формат данных даты первого дня месяца (всего строк данных: {data_df.shape[0]})")
@@ -197,6 +201,14 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
         data_df[["ProjectType", "ProjectSubTypePart"]].apply(
             lambda param: param[0] + myconstants.OTHER_PROJECT_SUB_TYPE if pd.isna(param[1]) else param[1], axis=1)
 
+    data_df = data_df.merge(portfolio_df, left_on="ShortProject", right_on="ID_DES.LM_project", how="left")
+    data_df["Portfolio"] = data_df["Portfolio"].fillna("")
+    data_df["Contract"] = data_df["Contract"].fillna("")
+    for one_type in myconstants.NO_CONTRACT_TYPES:
+        data_df.loc[data_df["ProjectType"] == one_type, "Contract"] = myconstants.NO_CONTRACT_TEXT
+    for one_type in myconstants.NO_PORTFOLIO_TYPES:
+        data_df.loc[data_df["ProjectType"] == one_type, "Portfolio"] = myconstants.NO_PORTFOLIO_TEXT
+    
     data_df = data_df.merge(projects_sub_types_descr_df, left_on="ProjectSubType", right_on="ProjectSubTypeName", how="left")
     if p_delete_pers_data:
         data_df = data_df[data_df["ProjectSubTypePersData"] != 1]
@@ -222,6 +234,7 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
         ui_handle.set_status(f"Удалены вакансии (всего строк данных: {data_df.shape[0]})")
     
     add_combine_columns(data_df)
+
     ui_handle.set_status(f"Добавленны производные столбцы (конкатинация) (всего строк данных: {data_df.shape[0]})")
     
     return(data_df[myconstants.RESULT_DATA_COLUMNS])
