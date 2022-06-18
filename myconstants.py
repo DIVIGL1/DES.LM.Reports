@@ -68,6 +68,14 @@ RESULT_DATA_COLUMNS = [
     "Contract",
     "Portfolio",
     "Portfolio_Month",
+    "IS_Service_type",
+    "IS_Service_type_Month",
+    "IS_Product_type",
+    "IS_Product_type_Month",
+    "Pdr_Proj",
+    "Pdr_Proj_Month",
+    "Proj_Pdr",
+    "Proj_Pdr_Month",
 ]
 
 START_PARAMETERS_FILE = "Settings.xlsx"
@@ -128,6 +136,7 @@ PARAMETER_FILENAME_OF_LAST_REPORT = "Последний сформированн
 
 PARAMETER_SAVED_VALUE_DELETE_VIP = "Удалить VIP?"
 PARAMETER_SAVED_VALUE_DELETE_NONPROD = "Удалять не производственные подразделения?"
+PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT = "Удалять строки не содержащие факта (факт=0)?"
 PARAMETER_SAVED_VALUE_DELETE_PERSDATA = "Удалять проекты с персональными данныи?"
 PARAMETER_SAVED_VALUE_DELETE_VAC = "Удалять ли вакансии из отчёта?"
 PARAMETER_SAVED_VALUE_ADD_VFTE = "Дабавить к списку сырых данных искусственные FTE?"
@@ -139,6 +148,7 @@ DO_IT_PREFFIX = ""
 
 PARAMETER_SAVED_VALUE_DELETE_VIP_DEFVALUE = False
 PARAMETER_SAVED_VALUE_DELETE_NONPROD_DEFVALUE = False
+PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT_DEFVALUE = False
 PARAMETER_SAVED_VALUE_DELETE_PERSDATA_DEFVALUE = False
 PARAMETER_SAVED_VALUE_DELETE_VAC_DEFVALUE = True
 PARAMETER_SAVED_VALUE_ADD_VFTE_DEFVALUE = False

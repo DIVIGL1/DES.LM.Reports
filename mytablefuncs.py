@@ -128,6 +128,16 @@ def add_combine_columns(df):
     df["pVacasia"] = df["User"].apply(lambda param: True if param.replace(" ", "").lower()[:8] == myconstants.VACANCY_NAME_TEXT.lower() else False)
 
     df["Portfolio_Month"] = df["Portfolio"] + "#" + df["Month"]
+    df["IS_Service_type_Month"] = df["IS_Service_type"] + "#" + df["Month"]
+    df["IS_Product_type_Month"] = df["IS_Product_type"] + "#" + df["Month"]
+    
+    df["Pdr_Proj"] = df["Division"] + "#" + df["Project7Letters"]
+    df["Pdr_Proj_Month"] = df["Division"] + "#" + df["Project7Letters"] + "#" + df["Month"]
+
+    df["Proj_Pdr"] = df["Project7Letters"] + "#" + df["Division"]
+    df["Proj_Pdr_Month"] = df["Project7Letters"] + "#" + df["Division"] + "#" + df["Month"]
+
+    df["FN_Month"] = df["FN"] + "#" + df["Month"]
 
 def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, ui_handle):
     data_df = load_raw_data(raw_file_name, ui_handle)
@@ -204,6 +214,8 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     data_df = data_df.merge(portfolio_df, left_on="ShortProject", right_on="ID_DES.LM_project", how="left")
     data_df["Portfolio"] = data_df["Portfolio"].fillna("")
     data_df["Contract"] = data_df["Contract"].fillna("")
+    data_df["IS_Service_type"] = data_df["IS_Service_type"].fillna("")
+    data_df["IS_Product_type"] = data_df["IS_Product_type"].fillna("")
     for one_type in myconstants.NO_CONTRACT_TYPES:
         data_df.loc[data_df["ProjectType"] == one_type, "Contract"] = myconstants.NO_CONTRACT_TEXT
     for one_type in myconstants.NO_PORTFOLIO_TYPES:
