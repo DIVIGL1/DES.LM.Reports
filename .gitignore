@@ -16,6 +16,7 @@ mef.bat
 *.pkl
 *.ipynb
 *.exe
+*.ttf
 
 # C++ objects and libs
 *.slo
