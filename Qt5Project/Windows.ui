@@ -448,7 +448,7 @@
      <rect>
       <x>20</x>
       <y>391</y>
-      <width>221</width>
+      <width>81</width>
       <height>21</height>
      </rect>
     </property>
@@ -488,6 +488,34 @@
     </property>
     <property name="text">
      <string>Удалить строки с нулевым фактом</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+    <property name="autoRepeat">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxCurrMonthAHalf">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>392</y>
+      <width>131</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="text">
+     <string>Текущий месяц 50%</string>
     </property>
     <property name="checked">
      <bool>true</bool>

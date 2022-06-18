@@ -15,6 +15,7 @@ from myutils import load_param, save_param
 class Communicate(QObject):
     updateStatusText = pyqtSignal()
 
+# ------------------------------------------------------------------- #
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -170,7 +171,7 @@ class Ui_MainWindow(object):
         self.checkBoxDelRawData.setObjectName("checkBoxDelRawData")
         self.checkBoxDeleteVIP = QtWidgets.QCheckBox(self.centralwidget)
         self.checkBoxDeleteVIP.setEnabled(True)
-        self.checkBoxDeleteVIP.setGeometry(QtCore.QRect(20, 391, 221, 21))
+        self.checkBoxDeleteVIP.setGeometry(QtCore.QRect(20, 391, 81, 21))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -190,6 +191,17 @@ class Ui_MainWindow(object):
         self.checkBoxDeleteWithoutFact.setChecked(True)
         self.checkBoxDeleteWithoutFact.setAutoRepeat(False)
         self.checkBoxDeleteWithoutFact.setObjectName("checkBoxDeleteWithoutFact")
+        self.checkBoxCurrMonthAHalf = QtWidgets.QCheckBox(self.centralwidget)
+        self.checkBoxCurrMonthAHalf.setEnabled(True)
+        self.checkBoxCurrMonthAHalf.setGeometry(QtCore.QRect(140, 392, 131, 20))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.checkBoxCurrMonthAHalf.sizePolicy().hasHeightForWidth())
+        self.checkBoxCurrMonthAHalf.setSizePolicy(sizePolicy)
+        self.checkBoxCurrMonthAHalf.setChecked(True)
+        self.checkBoxCurrMonthAHalf.setAutoRepeat(False)
+        self.checkBoxCurrMonthAHalf.setObjectName("checkBoxCurrMonthAHalf")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -224,7 +236,8 @@ class Ui_MainWindow(object):
         self.checkBoxDelRawData.setText(_translate("MainWindow", "Удалить лист с данными в файле отчета"))
         self.checkBoxDeleteVIP.setText(_translate("MainWindow", "Убрать VIP"))
         self.checkBoxDeleteWithoutFact.setText(_translate("MainWindow", "Удалить строки с нулевым фактом"))
-    # ------------------------------------------------------------------- #
+        self.checkBoxCurrMonthAHalf.setText(_translate("MainWindow", "Текущий месяц 50%"))
+# ------------------------------------------------------------------- #
 
     closeApp = pyqtSignal()
     exit_in_process = False
@@ -290,6 +303,7 @@ class Ui_MainWindow(object):
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VIP, self.checkBoxDeleteVIP.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, self.checkBoxDeleteNotProduct.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT, self.checkBoxDeleteWithoutFact.isChecked())
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_CURRMONTHHALF, self.checkBoxCurrMonthAHalf.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, self.checkBoxDelPDn.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, self.checkBoxDeleteVac.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE, self.checkBoxAddVFTE.isChecked())
@@ -314,6 +328,8 @@ class Ui_MainWindow(object):
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD_DEFVALUE))
         self.checkBoxDeleteWithoutFact.setChecked(\
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT, myconstants.PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT_DEFVALUE))
+        self.checkBoxCurrMonthAHalf.setChecked(\
+            load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_CURRMONTHHALF, myconstants.PARAMETER_SAVED_VALUE_DELETE_CURRMONTHHALF_DEFVALUE))
         self.checkBoxDelPDn.setChecked(\
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA_DEFVALUE))
         self.checkBoxDeleteVac.setChecked(\
@@ -341,6 +357,7 @@ class Ui_MainWindow(object):
         self.checkBoxDeleteVIP.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxDeleteNotProduct.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxDeleteWithoutFact.clicked.connect(self.on_click_CheckBoxes)
+        self.checkBoxCurrMonthAHalf.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxDelPDn.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxDeleteVac.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxAddVFTE.clicked.connect(self.on_click_CheckBoxes)
