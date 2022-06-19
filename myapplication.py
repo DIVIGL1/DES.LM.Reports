@@ -48,6 +48,8 @@ class MyReportParameters:
         # Парамертры без префиксов будем использовать для получения
         self.p_delete_vip = self.parent._mainwindow.ui.checkBoxDeleteVIP.isChecked()
         self.p_delete_not_prod_units = self.parent._mainwindow.ui.checkBoxDeleteNotProduct.isChecked()
+        self.p_delete_without_fact = self.parent._mainwindow.ui.checkBoxDeleteWithoutFact.isChecked()
+        self.p_curr_month_half = self.parent._mainwindow.ui.checkBoxCurrMonthAHalf.isChecked()
         self.p_delete_pers_data = self.parent._mainwindow.ui.checkBoxDelPDn.isChecked()
         self.p_delete_vacation = self.parent._mainwindow.ui.checkBoxDeleteVac.isChecked()
         self.p_virtual_FTE = self.parent._mainwindow.ui.checkBoxAddVFTE.isChecked()

@@ -72,6 +72,8 @@ def send_df_2_xls(report_parameters):
 
     p_delete_vip = report_parameters.p_delete_vip
     p_delete_not_prod_units = report_parameters.p_delete_not_prod_units
+    p_delete_without_fact = report_parameters.p_delete_without_fact
+    p_curr_month_half = report_parameters.p_curr_month_half
     p_delete_pers_data = report_parameters.p_delete_pers_data
     p_delete_vacation = report_parameters.p_delete_vacation
     p_virtual_FTE = report_parameters.p_virtual_FTE
@@ -80,24 +82,41 @@ def send_df_2_xls(report_parameters):
 
     ui_handle = report_parameters.parent._mainwindow.ui
     # ----------------------------------------------------
+    num_poz = 1
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
-    ui_handle.set_status(f"1. Выбран отчет:\n>>   {report_file_name}")
-    ui_handle.set_status(f"2. Выбран файл с данными:\n>>   {raw_file_name}")
-    ui_handle.set_status(f"3. {'В отчете оставитьтолько производство.' if p_delete_not_prod_units else 'В отчет включить и производство и управленцев.'}")
-    ui_handle.set_status(f"4. Персональные данные (больничные листы): {'исключить из отчета.' if p_delete_pers_data else 'оставить в отчете.'}")
-    ui_handle.set_status(f"5. Вакансии: {'удалить из отчета.' if p_delete_vacation else 'оставить в отчете.'}")
-    ui_handle.set_status(f"6. Искусственно добавить FTE: {'да (если есть).' if p_virtual_FTE else 'нет.'}")
+    ui_handle.set_status(f"{num_poz}. Выбран отчет:\n>>   {report_file_name}")
+    num_poz += 1
+    ui_handle.set_status(f"{num_poz}. Выбран файл с данными:\n>>   {raw_file_name}")
+    num_poz += 1
+    if p_delete_vip:
+        ui_handle.set_status(f"{num_poz}. Данные VIP удалены.")
+        num_poz += 1
+    if p_curr_month_half:
+        ui_handle.set_status(f"{num_poz}. В текущем месяце для расчета FTE использовано пол нормы.")
+        num_poz += 1
+    if p_delete_without_fact:
+        ui_handle.set_status(f"{num_poz}. Исключены строки с фактом равным нулю.")
+        num_poz += 1
+    ui_handle.set_status(f"{num_poz}. {'В отчете включено только производство.' if p_delete_not_prod_units else 'В отчет включены производство и управленцы.'}")
+    num_poz += 1
+    ui_handle.set_status(f"{num_poz}. Персональные данные (больничные листы): {'исключены из отчета.' if p_delete_pers_data else 'оставлены в отчете.'}")
+    num_poz += 1
+    ui_handle.set_status(f"{num_poz}. Вакансии: {'удалены из отчета.' if p_delete_vacation else 'оставлены в отчете.'}")
+    num_poz += 1
+    ui_handle.set_status(f"{num_poz}. Искусственно добавлены FTE: {'да (если есть).' if p_virtual_FTE else 'нет.'}")
+    num_poz += 1
     if p_save_without_formulas:
-        ui_handle.set_status("7. Все формулы заменить их значениями (быстрее открывается и меньше размер файла).")
+        ui_handle.set_status(f"{num_poz}. Все формулы заменены их значениями (быстрее открывается и меньше размер файла).")
+        num_poz += 1
         if p_delete_rawdata_sheet:
-            ui_handle.set_status("8. Удалить закладки с данными (дополнительное уменьшение размера файла).")
+            ui_handle.set_status(f"{num_poz}. Удалены закладки с данными (дополнительное уменьшение размера файла).")
+            num_poz += 1
     else:
-        ui_handle.set_status("7. Сохранть формулы (возможно медленное открытие и больше размер файла).")
+        ui_handle.set_status(f"{num_poz}. Сохранены формулы (возможно медленное открытие и больше размер файла).")
+        num_poz += 1
             
-    if p_save_without_formulas & p_delete_rawdata_sheet:
-        ui_handle.set_status(f"9. Округление до: {myconstants.ROUND_FTE_VALUE}-го знака после запятой")
-    else:
-        ui_handle.set_status(f"8. Округление до: {myconstants.ROUND_FTE_VALUE}-го знака после запятой")
+    ui_handle.set_status(f"{num_poz}. Округление до: {myconstants.ROUND_FTE_VALUE}-го знака после запятой")
+    num_poz += 1
             
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
 
@@ -119,8 +138,8 @@ def send_df_2_xls(report_parameters):
     if oExcel.not_ready:
         # Что-то пошло не так.
         return False
-    
-    report_df = prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, ui_handle)
+
+    report_df = prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_without_fact, p_curr_month_half, p_delete_pers_data, p_delete_vacation, ui_handle)
     ui_handle.set_status(f"Таблица для загрузки полностью подготовлена (всего строк данных: {report_df.shape[0]})")
 
     ui_handle.set_status("Начинаем перенос строк в Excel:")

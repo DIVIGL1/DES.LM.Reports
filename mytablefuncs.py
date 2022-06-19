@@ -139,7 +139,7 @@ def add_combine_columns(df):
 
     df["FN_Month"] = df["FN"] + "#" + df["Month"]
 
-def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_pers_data, p_delete_vacation, ui_handle):
+def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_without_fact, p_curr_month_half, p_delete_pers_data, p_delete_vacation, ui_handle):
     data_df = load_raw_data(raw_file_name, ui_handle)
     
     month_hours_df = load_parameter_table(myconstants.MONTH_WORKING_HOURS_TABLE)
@@ -153,6 +153,12 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     emails_df = load_parameter_table(myconstants.EMAILS_TABLE)
     vip_df = load_parameter_table(myconstants.VIP_TABLE)
     portfolio_df = load_parameter_table(myconstants.PORTFEL_TABLE)
+    
+    if p_curr_month_half:
+        sCurrMonth = f"{dt.datetime.now().year}-{dt.datetime.now().month:0{2}}-01"
+        hours_of_month = month_hours_df[month_hours_df["FirstDate"] == sCurrMonth][["CHour", "NHour"]].values[0]
+        month_hours_df.loc[(month_hours_df["FirstDate"] == sCurrMonth), ["CHour", "NHour"]] = [hours_of_month[0] / 2, hours_of_month[1] / 2]
+#        month_hours_df.loc[(month_hours_df["FirstDate"] == sCurrMonth), ["CHour", "NHour"]] = [hours_of_month[0] * 2, hours_of_month[1] * 2]
 
     ui_handle.set_status(f"Загружены таблицы с параметрами (всего строк данных: {data_df.shape[0]})")
 
@@ -177,6 +183,10 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     data_df["FactFTE"] = \
         data_df[["FactHours", "Northern", "CHour", "NHour", "Project", "PlanFTE"]].apply( \
             lambda param: calc_fact_fte(*param), axis=1)
+    if p_delete_without_fact:
+        data_df = data_df[data_df["FactFTE"] != 0]
+        ui_handle.set_status("Удаляены строки без данных о факте.")
+        
     ui_handle.set_status(f"Пересчитано (всего строк данных: {data_df.shape[0]})")
 
     data_df = data_df.merge(divisions_names_df, left_on="DivisionRaw", right_on="FullDivisionName", how="left")
