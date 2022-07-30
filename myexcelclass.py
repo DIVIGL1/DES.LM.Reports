@@ -124,7 +124,7 @@ class MyExcel:
 
     def hide_and_delete_rows_and_columns(self):
         # -----------------------------------
-        # Произведём пересчёт ячеек иначе, если не сработают формулы используемые для проставления признаков скрываемых/даляемыз строк/столбцов.
+        # Произведём пересчёт ячеек иначе, если не сработают формулы используемые для проставления признаков скрываемых/удаляемых строк/столбцов.
         self._oExcel.Calculation = myconstants.EXCEL_AUTOMATIC_CALC
         self._oExcel.Calculation = myconstants.EXCEL_MANUAL_CALC
         for curr_sheet_name in self.get_sheets_list():
@@ -162,20 +162,18 @@ class MyExcel:
                     self._wb.Sheets[curr_sheet_name].Range(self._wb.Sheets[curr_sheet_name].Cells( \
                         first_row_with_del, 1), self._wb.Sheets[curr_sheet_name].Cells(last_row_with_del, 1)).Rows.EntireRow.Delete()
         # -----------------------------------
-                # Скрываем строки и столбцы с признаком 'hide'
-                for curr_sheet_name in self.get_sheets_list():
-                    if curr_sheet_name not in [myconstants.RAW_DATA_SHEET_NAME, myconstants.UNIQE_LISTS_SHEET_NAME, myconstants.SETTINGS_SHEET_NAME]:
-                        # Скрываем строки с признаком 'hide'
-                        for curr_row in range(1, myconstants.NUM_ROWS_FOR_HIDE + 1):
-                            cell_value = self._wb.Sheets[curr_sheet_name].Cells(curr_row, 1).Value
-                            if type(cell_value) == str and cell_value is not None and cell_value.replace(" ", "") == myconstants.HIDE_MARKER:
-                                pass
-                                self._wb.Sheets[curr_sheet_name].Rows(curr_row).Hidden = True
-                        # Скрываем столбцы с признаком 'hide'
-                        for curr_col in range(1, myconstants.NUM_COLUMNS_FOR_HIDE + 1):
-                            cell_value = self._wb.Sheets[curr_sheet_name].Cells(1, curr_col).Value
-                            if type(cell_value) == str and cell_value is not None and cell_value.replace(" ", "") == myconstants.HIDE_MARKER:
-                                self._wb.Sheets[curr_sheet_name].Columns(curr_col).Hidden = True
-                            else:
-                                pass
+                if curr_sheet_name not in [myconstants.RAW_DATA_SHEET_NAME, myconstants.UNIQE_LISTS_SHEET_NAME, myconstants.SETTINGS_SHEET_NAME]:
+                    # Скрываем строки с признаком 'hide'
+                    for curr_row in range(1, myconstants.NUM_ROWS_FOR_HIDE + 1):
+                        cell_value = self._wb.Sheets[curr_sheet_name].Cells(curr_row, 1).Value
+                        if type(cell_value) == str and cell_value is not None and cell_value.replace(" ", "") == myconstants.HIDE_MARKER:
+                            pass
+                            self._wb.Sheets[curr_sheet_name].Rows(curr_row).Hidden = True
+                    # Скрываем столбцы с признаком 'hide'
+                    for curr_col in range(1, myconstants.NUM_COLUMNS_FOR_HIDE + 1):
+                        cell_value = self._wb.Sheets[curr_sheet_name].Cells(1, curr_col).Value
+                        if type(cell_value) == str and cell_value is not None and cell_value.replace(" ", "") == myconstants.HIDE_MARKER:
+                            self._wb.Sheets[curr_sheet_name].Columns(curr_col).Hidden = True
+                        else:
+                            pass
         # -----------------------------------
