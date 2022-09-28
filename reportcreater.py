@@ -89,10 +89,10 @@ def send_df_2_xls(report_parameters):
     ui_handle.set_status(f"{num_poz}. Выбран файл с данными:\n>>   {raw_file_name}")
     num_poz += 1
     if p_delete_vip:
-        ui_handle.set_status(f"{num_poz}. Данные VIP удалены.")
+        ui_handle.set_status(f"{num_poz}. Данные о VIP удалены.")
         num_poz += 1
     if p_curr_month_half:
-        ui_handle.set_status(f"{num_poz}. В текущем месяце для расчета FTE использовано пол нормы.")
+        ui_handle.set_status(f"{num_poz}. В текущем месяце для расчета FTE использована половина нормы.")
         num_poz += 1
     if p_delete_without_fact:
         ui_handle.set_status(f"{num_poz}. Исключены строки с фактом равным нулю.")
