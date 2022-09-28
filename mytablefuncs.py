@@ -209,6 +209,18 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     
     data_df["UserHourCost"] = data_df["UserHourCost"].apply(lambda param: 0.00 if pd.isna(param) else param)
     data_df["UserMonthCost"] = data_df["UserMonthCost"].apply(lambda param: 0.00 if pd.isna(param) else param)
+
+    data_df["UHCost_KV1"] = data_df["UHCost_KV1"].apply(lambda param: 0.00 if pd.isna(param) else param)
+    data_df["UMCost_KV1"] = data_df["UMCost_KV1"].apply(lambda param: 0.00 if pd.isna(param) else param)
+
+    data_df["UHCost_KV2"] = data_df["UHCost_KV2"].apply(lambda param: 0.00 if pd.isna(param) else param)
+    data_df["UMCost_KV2"] = data_df["UMCost_KV2"].apply(lambda param: 0.00 if pd.isna(param) else param)
+
+    data_df["UHCost_KV3"] = data_df["UHCost_KV3"].apply(lambda param: 0.00 if pd.isna(param) else param)
+    data_df["UMCost_KV3"] = data_df["UMCost_KV3"].apply(lambda param: 0.00 if pd.isna(param) else param)
+
+    data_df["UHCost_KV4"] = data_df["UHCost_KV4"].apply(lambda param: 0.00 if pd.isna(param) else param)
+    data_df["UMCost_KV4"] = data_df["UMCost_KV4"].apply(lambda param: 0.00 if pd.isna(param) else param)
     
     data_df["ProjectType"] = \
         data_df[["Project", "ProjectType"]].apply(
