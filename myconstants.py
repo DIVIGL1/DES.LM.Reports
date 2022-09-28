@@ -76,6 +76,14 @@ RESULT_DATA_COLUMNS = [
     "Pdr_Proj_Month",
     "Proj_Pdr",
     "Proj_Pdr_Month",
+    "UHCost_KV1",
+    "UMCost_KV1",
+    "UHCost_KV2",
+    "UMCost_KV2",
+    "UHCost_KV3",
+    "UMCost_KV3",
+    "UHCost_KV4",
+    "UMCost_KV4",
 ]
 
 START_PARAMETERS_FILE = "Settings.xlsx"
@@ -166,5 +174,5 @@ DELETE_ROW_MARKER = "delete"
 HIDE_MARKER = "hide"
 EXCELWINDOWSTATE_MAX = -4137 # Максимизировано
 EXCELWINDOWSTATE_MIN = -4140 # Минимизировано
-NUM_ROWS_FOR_HIDE = 20
+NUM_ROWS_FOR_HIDE = 300
 NUM_COLUMNS_FOR_HIDE = 150
