@@ -76,6 +76,7 @@ RESULT_DATA_COLUMNS = [
     "Pdr_Proj_Month",
     "Proj_Pdr",
     "Proj_Pdr_Month",
+    "FN_Month",
     "UHCost_KV1",
     "UMCost_KV1",
     "UHCost_KV2",
@@ -84,6 +85,7 @@ RESULT_DATA_COLUMNS = [
     "UMCost_KV3",
     "UHCost_KV4",
     "UMCost_KV4",
+    "ISDogName",
 ]
 
 START_PARAMETERS_FILE = "Settings.xlsx"
@@ -116,6 +118,7 @@ COSTS_TABLE = "UCosts.xlsx"
 EMAILS_TABLE = "EMails.xlsx"
 VIP_TABLE = "VIP.xlsx"
 PORTFEL_TABLE = "BProg.xlsx"
+ISDOGNAME_TABLE = "CrossingIS.xlsx"
 EMAIL_INFO_COLUMNS = ["Personal_email", "user_email", "boss_email"]
 SECRET_COSTS_LOCATION = "C:/Tmp"
 

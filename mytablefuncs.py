@@ -153,6 +153,7 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     emails_df = load_parameter_table(myconstants.EMAILS_TABLE)
     vip_df = load_parameter_table(myconstants.VIP_TABLE)
     portfolio_df = load_parameter_table(myconstants.PORTFEL_TABLE)
+    is_dog_name_df = load_parameter_table(myconstants.ISDOGNAME_TABLE)
     
     if p_curr_month_half:
         sCurrMonth = f"{dt.datetime.now().year}-{dt.datetime.now().month:0{2}}-01"
@@ -238,6 +239,10 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     data_df["Contract"] = data_df["Contract"].fillna("")
     data_df["IS_Service_type"] = data_df["IS_Service_type"].fillna("")
     data_df["IS_Product_type"] = data_df["IS_Product_type"].fillna("")
+
+    data_df = data_df.merge(is_dog_name_df, left_on="ShortProject", right_on="ID_DES.LM_project", how="left", suffixes=("", "_will_droped"))
+    data_df["ISDogName"].fillna(data_df["Project"], inplace=True)
+    
     for one_type in myconstants.NO_CONTRACT_TYPES:
         data_df.loc[data_df["ProjectType"] == one_type, "Contract"] = myconstants.NO_CONTRACT_TEXT
     for one_type in myconstants.NO_PORTFOLIO_TYPES:
