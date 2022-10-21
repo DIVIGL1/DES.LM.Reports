@@ -94,6 +94,8 @@ RAW_DATA_DROP_COLUMNS = ["MVZ", "KoBo", "Unnamed15", "Unnamed16"]
 SHEETS_DONT_DELETE_FORMULAS = ["ИсходныеДанные", "УникальныеСписки", "Настройки"]
 DELETE_SHEETS_LIST_IF_NO_FORMULAS = ["ИсходныеДанные", "УникальныеСписки"]
 DONT_REPLACE_ENTER = ["Month"]
+COLUMNS_FILLNA = ["Division", "FN", "Portfolio"]
+FILLNA_STRING = "???"
 
 BOOLEAN_VALUES_SUBST = {"ЛОЖЬ": False, "ИСТИНА": True}
 

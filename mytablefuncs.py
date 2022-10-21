@@ -239,6 +239,10 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     data_df["Contract"] = data_df["Contract"].fillna("")
     data_df["IS_Service_type"] = data_df["IS_Service_type"].fillna("")
     data_df["IS_Product_type"] = data_df["IS_Product_type"].fillna("")
+    
+    # Возможны пропуски в некоторых колонках. Поставим там признак, чтобы бросался в глаза в отчёте:
+    for one_column in myconstants.COLUMNS_FILLNA:
+        data_df[one_column] = data_df[[one_column]].fillna(myconstants.FILLNA_STRING)
 
     data_df = data_df.merge(is_dog_name_df, left_on="ShortProject", right_on="ID_DES.LM_project", how="left", suffixes=("", "_will_droped"))
     data_df["ISDogName"].fillna(data_df["Project"], inplace=True)
