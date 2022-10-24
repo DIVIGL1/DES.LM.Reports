@@ -56,7 +56,7 @@ class MyExcel:
         return True
     
     def get_sheets_list(self):
-        return([one_sheet.Name for one_sheet in self._wb.Sheets])
+        return ([one_sheet.Name for one_sheet in self._wb.Sheets])
 
     def save_report(self):
         self._oExcel.Calculation = self._n_save_excel_calc_status

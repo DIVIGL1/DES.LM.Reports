@@ -23,12 +23,12 @@ def get_all_params(filename="saved.pkl"):
     with open(filename, "rb") as file_handle:
         params_dict = pickle.load(file_handle)
 
-    return(params_dict)
+    return (params_dict)
 
 def load_param(param_name, default="", filename="saved.pkl"):
     params_dict = get_all_params(filename="saved.pkl")
     
-    return(params_dict.get(param_name, default))
+    return (params_dict.get(param_name, default))
 
 def get_files_list(path2files="", files_starts="", files_ends=".xlsx", reverse=True):
     path2files = os.path.join(os.getcwd(), path2files)
@@ -40,7 +40,7 @@ def get_files_list(path2files="", files_starts="", files_ends=".xlsx", reverse=T
                         one_file.lower().endswith(files_ends.lower()))]
     
     files_list = sorted(files_list, reverse=reverse)
-    return(files_list)
+    return (files_list)
 
 def is_all_parametars_exist():
     s_section_path = mytablefuncs.get_parameter_value(myconstants.PARAMETERS_SECTION_NAME) + "/"
@@ -126,7 +126,7 @@ def get_excel_and_wb(excel_file_name):
     return oExcel, currwindow, wb, n_save_excel_calc_status
 
 def get_sheets_list(wb):
-    return([one_sheet.Name for one_sheet in wb.Sheets])
+    return ([one_sheet.Name for one_sheet in wb.Sheets])
 
 def hide_and_delete_rows_and_columns(oExcel, wb):
     # -----------------------------------

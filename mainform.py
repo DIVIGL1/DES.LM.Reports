@@ -256,7 +256,7 @@ class Ui_MainWindow(object):
 
         self.listView.setCurrentIndex(self.model.indexFromItem(item))
         
-        return(True)
+        return (True)
 
     def setup_rawdata_list(self, rawdata_list=[]):
     
@@ -270,7 +270,7 @@ class Ui_MainWindow(object):
         item = self.model.item(0)
         self.listViewRawData.setCurrentIndex(self.model.indexFromItem(item))
         
-        return(True)
+        return (True)
 
     def on_click_DoIt(self):
         raw_file_name = self.listViewRawData.currentIndex().data()

@@ -34,7 +34,7 @@ def load_parameter_table(tablename):
         
     parameter_df.dropna(how='all', inplace=True)
     
-    return(parameter_df)
+    return (parameter_df)
 
 def load_raw_data(raw_file, ui_handle):
     # Загружаем сырые данные
@@ -75,7 +75,7 @@ def udata_2_date(data):
     else:
         ret_date = data
     
-    return(ret_date)
+    return (ret_date)
 
 def calc_fact_fte(FactHours, Northern, CHour, NHour, Project, PlanFTE):
     if Project.find(myconstants.FACT_IS_PLAN_MARKER) >= 0:
@@ -86,7 +86,7 @@ def calc_fact_fte(FactHours, Northern, CHour, NHour, Project, PlanFTE):
             fact_fte = round(FactHours / month_hours, myconstants.ROUND_FTE_VALUE)
         else:
             fact_fte = FactHours / month_hours
-    return(fact_fte)
+    return (fact_fte)
 
 def add_combine_columns(df):
     df["Project7Letters"] = df["Project"].str[:7]
@@ -280,4 +280,4 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
 
     ui_handle.set_status(f"Добавленны производные столбцы (конкатинация) (всего строк данных: {data_df.shape[0]})")
     
-    return(data_df[myconstants.RESULT_DATA_COLUMNS])
+    return (data_df[myconstants.RESULT_DATA_COLUMNS])

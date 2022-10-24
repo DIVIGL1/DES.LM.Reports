@@ -31,10 +31,10 @@ class ReportCreater(object):
         warnings.filterwarnings("ignore")
     
     def get_reports_list(self):
-        return(self.reports_list)
+        return (self.reports_list)
     
     def get_report_file_name_by_num(self, num):
-        return(self.reports_list[num])
+        return (self.reports_list[num])
     
     def create_report(self):
         if self.parent.report_parameters.report_file_name is None:
