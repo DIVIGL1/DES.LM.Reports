@@ -155,12 +155,6 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     portfolio_df = load_parameter_table(myconstants.PORTFEL_TABLE)
     is_dog_name_df = load_parameter_table(myconstants.ISDOGNAME_TABLE)
     
-    if p_curr_month_half:
-        sCurrMonth = f"{dt.datetime.now().year}-{dt.datetime.now().month:0{2}}-01"
-        hours_of_month = month_hours_df[month_hours_df["FirstDate"] == sCurrMonth][["CHour", "NHour"]].values[0]
-        month_hours_df.loc[(month_hours_df["FirstDate"] == sCurrMonth), ["CHour", "NHour"]] = [hours_of_month[0] / 2, hours_of_month[1] / 2]
-#        month_hours_df.loc[(month_hours_df["FirstDate"] == sCurrMonth), ["CHour", "NHour"]] = [hours_of_month[0] * 2, hours_of_month[1] * 2]
-
     ui_handle.set_status(f"Загружены таблицы с параметрами (всего строк данных: {data_df.shape[0]})")
 
     for column_name in set(data_df.dtypes.keys()) - set(myconstants.DONT_REPLACE_ENTER):
@@ -184,6 +178,11 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     data_df["FactFTE"] = \
         data_df[["FactHours", "Northern", "CHour", "NHour", "Project", "PlanFTE"]].apply( \
             lambda param: calc_fact_fte(*param), axis=1)
+
+    if p_curr_month_half:
+        sCurrMonth = f"{dt.datetime.now().year}-{dt.datetime.now().month:0{2}}-01"
+        data_df.loc[(data_df["FirstDate"] == sCurrMonth), ["FactFTE"]] = data_df[data_df["FirstDate"] == sCurrMonth]["FactFTE"] * 2
+
     if p_delete_without_fact:
         data_df = data_df[data_df["FactFTE"] != 0]
         ui_handle.set_status("Удаляены строки без данных о факте.")
