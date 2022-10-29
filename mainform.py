@@ -469,7 +469,7 @@ class Ui_MainWindow(object):
         
 class MyWindow(QtWidgets.QMainWindow):
     ui = None
-    esc_counter = 0
+    f12_counter = 0
     start_flag = True
     
     def __init__(self, parent):
@@ -498,6 +498,20 @@ class MyWindow(QtWidgets.QMainWindow):
         else:
             data = self.saveGeometry()
             save_param(myconstants.PARAMETER_SAVED_MAIN_WINDOW_POZ, data)
+
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key_F12:
+            self.f12_counter += 1
+            if self.f12_counter >= myconstants.PARAMETER_TIMES_TO_PRESS_F12:
+                self.f12_counter = 0
+                self.setGeometry(
+                    myconstants.PARAMETER_DEFAULT_MAIN_WINDOW_L,
+                    myconstants.PARAMETER_DEFAULT_MAIN_WINDOW_T,
+                    myconstants.PARAMETER_DEFAULT_MAIN_WINDOW_W,
+                    myconstants.PARAMETER_DEFAULT_MAIN_WINDOW_H
+                )
+                
+        event.accept()
         
     def closeEvent(self, e):
         result = QtWidgets.QMessageBox.question(self, "Подтверждение закрытия окна", 
