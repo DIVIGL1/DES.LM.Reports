@@ -469,6 +469,8 @@ class Ui_MainWindow(object):
         
 class MyWindow(QtWidgets.QMainWindow):
     ui = None
+    esc_counter = 0
+    start_flag = True
     
     def __init__(self, parent):
         self.parent = parent
@@ -478,6 +480,24 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.ui.parent = self
         self.ui.save_app_link(self._app)
+
+    def resizeEvent(self, event):
+        super(MyWindow, self).resizeEvent(event)
+        self.save_coordinats()
+
+    def moveEvent(self, event):
+        super(MyWindow, self).moveEvent(event)
+        self.save_coordinats()
+    
+    def save_coordinats(self):
+        if self.start_flag:
+            self.start_flag = False
+            data = load_param(myconstants.PARAMETER_SAVED_MAIN_WINDOW_POZ, "")
+            if data:
+                self.restoreGeometry(data)
+        else:
+            data = self.saveGeometry()
+            save_param(myconstants.PARAMETER_SAVED_MAIN_WINDOW_POZ, data)
         
     def closeEvent(self, e):
         result = QtWidgets.QMessageBox.question(self, "Подтверждение закрытия окна", 
