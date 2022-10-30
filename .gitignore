@@ -12,6 +12,7 @@ RawData/*.*
 build/*.*
 dist/*.*
 mef.bat
+requirements.bat
 *.spec
 *.pkl
 *.ipynb
