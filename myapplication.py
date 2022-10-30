@@ -7,6 +7,25 @@ import reportcreater
 import mytablefuncs
 import myutils
 
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+
+class MyHandler(FileSystemEventHandler):
+    def on_created(self, event):
+        if event.is_directory:
+            return
+        print("on_created", event.src_path)
+
+    def on_deleted(self, event):
+        if event.is_directory:
+            return
+        print("on_deleted", event.src_path)
+
+    def on_moved(self, event):
+        if event.is_directory:
+            return
+        print("on_moved", event.src_path, os.path.basename(event.dest_path))
+
 class MyApplication:
     def __init__(self):
         myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
@@ -17,7 +36,12 @@ class MyApplication:
                                         myutils.get_files_list(reportcreater.get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)))
 
         self._mainwindow.show()
-        self.report_parameters.is_all_parametars_exist()
+        if self.report_parameters.is_all_parametars_exist():
+            self.event_handler = MyHandler()
+            self.observer = Observer()
+            control_path = mytablefuncs.get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)
+            self.observer.schedule(self.event_handler, path=control_path, recursive=False)
+            self.observer.start()
         
         sys.exit(self._mainwindow._app.exec_())
     
