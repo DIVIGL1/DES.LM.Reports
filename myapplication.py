@@ -18,7 +18,7 @@ class MyApplication:
 
         self._mainwindow.show()
         self.report_parameters.is_all_parametars_exist()
-
+        
         sys.exit(self._mainwindow._app.exec_())
     
 class MyReportParameters:
@@ -85,23 +85,47 @@ class MyReportParameters:
     
     def is_all_parametars_exist(self):
         self.slasterror = ""
-        s_section_path = mytablefuncs.get_parameter_value(myconstants.PARAMETERS_SECTION_NAME) + "/"
-        files_list = [
-            (myconstants.MONTH_WORKING_HOURS_TABLE, "Таблица с количеством рабочих часов в месяцах"), 
-            (myconstants.DIVISIONS_NAMES_TABLE, "Таблица с наименованиями подразделений"),
-            (myconstants.FNS_NAMES_TABLE, "Таблица с наименованиями функциональных направлений"), 
-            (myconstants.P_FN_SUBST_TABLE, "Таблица подстановок названий функциональных направлений"), 
-            (myconstants.PROJECTS_SUB_TYPES_TABLE, "Таблица с наименованиями подтипов проектов"), 
-            (myconstants.PROJECTS_TYPES_DESCR, "Таблица расшифровок типов проектов"), 
-            (myconstants.PROJECTS_SUB_TYPES_DESCR, "Таблица с расшифровок подтипов проектов"), 
-            (myconstants.COSTS_TABLE, "Таблица часовых ставок"), 
-        ]
         ret_value = True
-        for one_file_info in files_list:
-            if not os.path.isfile(s_section_path + "/" + one_file_info[0]):
-                self.slasterror = f"(!) Отсутствует файл настройки: {one_file_info[1]}.\nИмя файла: {one_file_info[0]}\n\nВыполнение программы не возможно."
+        
+        # Для начала проверим наличие всех необходимых папок,
+        # в которых должны храниться данные программы:
+        foldefs_list = [
+            (myconstants.PARAMETERS_SECTION_NAME, "Параметры"),
+            (myconstants.RAW_DATA_SECTION_NAME, "Исходные (сырые) данные"),
+            (myconstants.REPORTS_SECTION_NAME, "Отчёты"),
+            (myconstants.REPORTS_PREPARED_SECTION_NAME, "Сформированные отчёты"),
+        ]
+        for one_folder_info in foldefs_list:
+            if not os.path.isdir(os.path.join(os.getcwd(), mytablefuncs.get_parameter_value(one_folder_info[0]))):
+                spath = one_folder_info[0].replace('\\', '/')
+                self.slasterror = f"(!) Отсутствует необходимая дирректория: {one_folder_info[1]}.\nИмя дирректории: {spath}\n\nВыполнение программы невозможно."
                 self.parent._mainwindow.ui.plainTextEdit.setPlainText(self.slasterror)
                 ret_value = False
                 break
+        
+        if ret_value:
+            # Проверим параметры:
+            s_section_path = mytablefuncs.get_parameter_value(myconstants.PARAMETERS_SECTION_NAME) + "/"
+            files_list = [
+                (myconstants.MONTH_WORKING_HOURS_TABLE, "Таблица с количеством рабочих часов в месяцах"), 
+                (myconstants.DIVISIONS_NAMES_TABLE, "Таблица с наименованиями подразделений"),
+                (myconstants.FNS_NAMES_TABLE, "Таблица с наименованиями функциональных направлений"), 
+                (myconstants.P_FN_SUBST_TABLE, "Таблица подстановок названий функциональных направлений"), 
+                (myconstants.PROJECTS_SUB_TYPES_TABLE, "Таблица с наименованиями подтипов проектов"), 
+                (myconstants.PROJECTS_TYPES_DESCR, "Таблица с расшифровкой типов (букв) проектов"), 
+                (myconstants.PROJECTS_SUB_TYPES_DESCR, "Таблица с расшифровок подтипов проектов"), 
+                (myconstants.COSTS_TABLE, "Таблица часовых ставок"), 
+                (myconstants.EMAILS_TABLE, "Таблица адресов электроной почты"), 
+                (myconstants.VIP_TABLE, "Таблица списка VIP"), 
+                (myconstants.PORTFEL_TABLE, "Таблица списка портфелей проектов"), 
+                (myconstants.ISDOGNAME_TABLE, "Таблица наименований ИС из контракта"), 
+            ]
+
+            for one_file_info in files_list:
+                if not os.path.isfile(s_section_path + "/" + one_file_info[0]):
+                    self.slasterror = f"(!) Отсутствует файл настройки: {one_file_info[1]}.\nИмя файла: {one_file_info[0]}\n\nВыполнение программы невозможно."
+                    self.parent._mainwindow.ui.plainTextEdit.setPlainText(self.slasterror)
+                    ret_value = False
+                    break
             
         return ret_value

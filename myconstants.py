@@ -101,15 +101,15 @@ BOOLEAN_VALUES_SUBST = {"ЛОЖЬ": False, "ИСТИНА": True}
 
 PARAMETERS_SECTION_NAME = "Parameters"
 RAW_DATA_SECTION_NAME = "RawDataPath"
+REPORTS_SECTION_NAME = "ReportsPath"
+REPORTS_PREPARED_SECTION_NAME = "ReportsPrepared"
+
 ROUND_FTE_SECTION_NAME = "RoundFTE"
 ROUND_FTE_DEFVALUE = 3
 ROUND_FTE_VALUE = ROUND_FTE_DEFVALUE
 MEANOURSPERMONTH_SECTION_NAME = "MeanOursPerMonth"
 MEANOURSPERMONTH_DEFVALUE = 1973 / 12
 MEANOURSPERMONTH_VALUE = MEANOURSPERMONTH_DEFVALUE
-
-REPORTS_SECTION_NAME = "ReportsPath"
-REPORTS_PREPARED_SECTION_NAME = "ReportsPrepared"
 
 MONTH_WORKING_HOURS_TABLE = "WHours.xlsx"
 DIVISIONS_NAMES_TABLE = "ShortDivisionNames.xlsx"
@@ -121,12 +121,12 @@ EMAILS_TABLE = "EMails.xlsx"
 VIP_TABLE = "VIP.xlsx"
 PORTFEL_TABLE = "BProg.xlsx"
 ISDOGNAME_TABLE = "CrossingIS.xlsx"
-EMAIL_INFO_COLUMNS = ["Personal_email", "user_email", "boss_email"]
-SECRET_COSTS_LOCATION = "C:/Tmp"
-
 PROJECTS_TYPES_DESCR = "ProjectsTypesDescriptions.xlsx"
 PROJECTS_SUB_TYPES_TABLE = "ProjectsSubTypes.xlsx"
 PROJECTS_SUB_TYPES_DESCR = "ProjectsSubTypesDescriptions.xlsx"
+
+EMAIL_INFO_COLUMNS = ["Personal_email", "user_email", "boss_email"]
+SECRET_COSTS_LOCATION = "C:/Tmp"
 
 FACT_IS_PLAN_MARKER = "(факт=плану)"
 OTHER_PROJECT_SUB_TYPE = "_Прочее"
@@ -163,7 +163,7 @@ PARAMETER_SAVED_VALUE_DELETE_PERSDATA = "Удалять проекты с пер
 PARAMETER_SAVED_VALUE_DELETE_VAC = "Удалять ли вакансии из отчёта?"
 PARAMETER_SAVED_VALUE_ADD_VFTE = "Дабавить к списку сырых данных искусственные FTE?"
 PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS = "Сохранять отчёт без формул?"
-PARAMETER_SAVED_VALUE_DEL_RAWSHEET = "Удаить лист с исходными данными?"
+PARAMETER_SAVED_VALUE_DEL_RAWSHEET = "Удалить лист с исходными данными?"
 PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL = "Открывать ли сформированный отчет в Excel?"
 
 DO_IT_PREFFIX = ""
