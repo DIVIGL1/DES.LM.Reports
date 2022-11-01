@@ -10,21 +10,53 @@ import myutils
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
+from PyQt5 import QtGui
 class MyHandler(FileSystemEventHandler):
+    def __init__(self, parent):
+        self.parent = parent
+    
     def on_created(self, event):
         if event.is_directory:
             return
         print("on_created", event.src_path)
+        self.refresh_files_list()
 
     def on_deleted(self, event):
         if event.is_directory:
             return
         print("on_deleted", event.src_path)
+        self.refresh_files_list()
 
     def on_moved(self, event):
         if event.is_directory:
             return
         print("on_moved", event.src_path, os.path.basename(event.dest_path))
+        old_filename = os.path.splitext(os.path.basename(event.src_path))[0]
+        new_filename = os.path.splitext(os.path.basename(event.dest_path))[0]
+        self.refresh_files_list(old_filename, new_filename)
+    
+    def refresh_files_list(self, old_filename=None, new_filename=None):
+        selected_item = self.parent._mainwindow.ui.listViewRawData.currentIndex().data()
+        rawdata_list = myutils.get_files_list(reportcreater.get_parameter_value(myconstants.RAW_DATA_SECTION_NAME))
+
+        self.parent._mainwindow.ui.model = QtGui.QStandardItemModel()
+        self.parent._mainwindow.ui.listViewRawData.setModel(self.parent._mainwindow.ui.model)
+        
+        counter = 0
+        for one_file in rawdata_list:
+            item = QtGui.QStandardItem(one_file)
+            self.parent._mainwindow.ui.model.appendRow(item)
+            counter += 1
+            if (old_filename is None and selected_item == one_file) or (selected_item == old_filename and one_file == new_filename):
+                save_item = item
+    
+        if selected_item == old_filename or old_filename is None:
+            item = save_item
+        else:
+            item = self.parent._mainwindow.ui.model.item(0)
+        
+        self.parent._mainwindow.ui.listViewRawData.setCurrentIndex(self.parent._mainwindow.ui.model.indexFromItem(item))
+        
 
 class MyApplication:
     def __init__(self):
@@ -37,7 +69,7 @@ class MyApplication:
 
         self._mainwindow.show()
         if self.report_parameters.is_all_parametars_exist():
-            self.event_handler = MyHandler()
+            self.event_handler = MyHandler(self)
             self.observer = Observer()
             control_path = mytablefuncs.get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)
             self.observer.schedule(self.event_handler, path=control_path, recursive=False)
