@@ -480,6 +480,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.ui.parent = self
         self.ui.save_app_link(self._app)
+        self.setWindowTitle(f"DES.LM.Reporter ({myconstants.APP_VERSION})")
 
     def resizeEvent(self, event):
         super(MyWindow, self).resizeEvent(event)
