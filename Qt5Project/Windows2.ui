@@ -58,14 +58,14 @@
      <number>5</number>
     </property>
     <item row="0" column="0">
-     <widget class="QSplitter" name="splitter_2">
+     <widget class="QSplitter" name="VerticalSplitter">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
       <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
-         <widget class="QSplitter" name="splitter">
+         <widget class="QSplitter" name="HorisontalSplitter">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
