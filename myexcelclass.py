@@ -91,7 +91,7 @@ class MyExcel:
                 self._wb.Close()
                 myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
             else:
-                # отчёт был подготовлен. Закончим его обработку.
+                # Отчёт был подготовлен. Закончим его обработку.
                 report_prepared_name = self.report_parameters.report_prepared_name
                 self.report_parameters.parent._mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
                 self.report_parameters.parent._mainwindow.ui.set_status(f"Сохраняем в файл: {myutils.rel_path(report_prepared_name)}")
@@ -119,7 +119,7 @@ class MyExcel:
 
         self._oExcel.DisplayAlerts = self._p_save_DisplayAlerts
         
-        # Не нашёл другого места где кнопки должны быть разлокированы.
+        # Не нашёл другого места, где кнопки должны быть разблокированы.
         self.report_parameters.parent._mainwindow.ui.enable_buttons()
 
     def hide_and_delete_rows_and_columns(self):

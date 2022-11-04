@@ -101,7 +101,7 @@ class MyReportParameters:
         myconstants.ROUND_FTE_VALUE = mytablefuncs.get_parameter_value(myconstants.ROUND_FTE_SECTION_NAME, myconstants.ROUND_FTE_DEFVALUE)
         myconstants.MEANOURSPERMONTH_VALUE = mytablefuncs.get_parameter_value(myconstants.MEANOURSPERMONTH_SECTION_NAME, myconstants.MEANOURSPERMONTH_DEFVALUE)
 
-        # Парамертры без префиксов будем использовать для получения
+        # Параметры без префиксов будем использовать для получения
         self.p_delete_vip = self.parent._mainwindow.ui.checkBoxDeleteVIP.isChecked()
         self.p_delete_not_prod_units = self.parent._mainwindow.ui.checkBoxDeleteNotProduct.isChecked()
         self.p_delete_without_fact = self.parent._mainwindow.ui.checkBoxDeleteWithoutFact.isChecked()
@@ -154,7 +154,7 @@ class MyReportParameters:
         for one_folder_info in foldefs_list:
             if not os.path.isdir(os.path.join(os.getcwd(), mytablefuncs.get_parameter_value(one_folder_info[0]))):
                 spath = one_folder_info[0].replace('\\', '/')
-                self.slasterror = f"(!) Отсутствует необходимая дирректория: {one_folder_info[1]}.\nИмя дирректории: {spath}\n\nВыполнение программы невозможно."
+                self.slasterror = f"(!) Отсутствует необходимая директория: {one_folder_info[1]}.\nИмя директории: {spath}\n\nВыполнение программы невозможно."
                 self.parent._mainwindow.ui.plainTextEdit.setPlainText(self.slasterror)
                 ret_value = False
                 break
@@ -171,7 +171,7 @@ class MyReportParameters:
                 (myconstants.PROJECTS_TYPES_DESCR, "Таблица с расшифровкой типов (букв) проектов"), 
                 (myconstants.PROJECTS_SUB_TYPES_DESCR, "Таблица с расшифровок подтипов проектов"), 
                 (myconstants.COSTS_TABLE, "Таблица часовых ставок"), 
-                (myconstants.EMAILS_TABLE, "Таблица адресов электроной почты"), 
+                (myconstants.EMAILS_TABLE, "Таблица адресов электронной почты"),
                 (myconstants.VIP_TABLE, "Таблица списка VIP"), 
                 (myconstants.PORTFEL_TABLE, "Таблица списка портфелей проектов"), 
                 (myconstants.ISDOGNAME_TABLE, "Таблица наименований ИС из контракта"), 
