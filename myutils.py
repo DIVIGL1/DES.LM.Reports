@@ -36,7 +36,7 @@ def get_files_list(path2files="", files_starts="", files_ends=".xlsx", reverse=T
         [one_file[len(files_starts):][:-len(files_ends)] \
             for one_file \
                 in os.listdir(path2files) \
-                    if (one_file.lower().startswith(files_starts.lower()) and \
+                    if (one_file.lower().startswith(files_starts.lower()) and
                         one_file.lower().endswith(files_ends.lower()))]
     
     files_list = sorted(files_list, reverse=reverse)
@@ -163,7 +163,7 @@ def hide_and_delete_rows_and_columns(oExcel, wb):
                         break
                     last_row_with_del += 1
 
-                wb.Sheets[curr_sheet_name].Range(wb.Sheets[curr_sheet_name].Cells( \
+                wb.Sheets[curr_sheet_name].Range(wb.Sheets[curr_sheet_name].Cells(
                     first_row_with_del, 1), wb.Sheets[curr_sheet_name].Cells(last_row_with_del, 1)).Rows.EntireRow.Delete()
     # -----------------------------------
             # Скрываем строки и столбцы с признаком 'hide'
@@ -183,11 +183,16 @@ def hide_and_delete_rows_and_columns(oExcel, wb):
                         else:
                             pass
     # -----------------------------------
-   
+
+def rel_path(path):
+    home_dir = get_home_dir()
+    ret_value = os.path.relpath(path, home_dir)
+
+    return(ret_value)
+
+def get_home_dir():
+    return (os.path.abspath(os.curdir))
+
 
 if __name__ == "__main__":
-    #    param_name = myconstants.LAST_REPORT_PARAM_NAME
-    #    print(load_param(param_name, "<пусто>"))
-    #    save_param(param_name, 7)
-    #    print(load_param(param_name, "<пусто>"))
     print(get_files_list("RawData", "", ".xlsx"))

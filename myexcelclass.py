@@ -94,7 +94,7 @@ class MyExcel:
                 # отчёт был подготовлен. Закончим его обработку.
                 report_prepared_name = self.report_parameters.report_prepared_name
                 self.report_parameters.parent._mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
-                self.report_parameters.parent._mainwindow.ui.set_status(f"Сохраняем в файл: {report_prepared_name}")
+                self.report_parameters.parent._mainwindow.ui.set_status(f"Сохраняем в файл: {myutils.rel_path(report_prepared_name)}")
                 
                 self.hide_and_delete_rows_and_columns()
                 self.save_report()

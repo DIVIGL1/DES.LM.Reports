@@ -84,9 +84,11 @@ def send_df_2_xls(report_parameters):
     # ----------------------------------------------------
     num_poz = 1
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
-    ui_handle.set_status(f"{num_poz}. Выбран отчет:\n>>   {report_file_name}")
+    ui_handle.set_status(f"{num_poz}. Рабочий каталог: {myutils.get_home_dir()}")
     num_poz += 1
-    ui_handle.set_status(f"{num_poz}. Выбран файл с данными:\n>>   {raw_file_name}")
+    ui_handle.set_status(f"{num_poz}. Выбран отчет: {myutils.rel_path(report_file_name)}")
+    num_poz += 1
+    ui_handle.set_status(f"{num_poz}. Выбран файл с данными: {myutils.rel_path(raw_file_name)}")
     num_poz += 1
     if p_delete_vip:
         ui_handle.set_status(f"{num_poz}. Данные о VIP удалены.")
@@ -126,7 +128,7 @@ def send_df_2_xls(report_parameters):
         shutil.copyfile(report_file_name, report_prepared_name)
     except (OSError, shutil.Error):
         ui_handle.set_status("Не удалось скопировать файл с формой отчёта.")
-        ui_handle.set_status(f"проверьте, пожалуйста, не открыт ли у Вас файл: \n>>   {report_prepared_name}")
+        ui_handle.set_status(f"проверьте, пожалуйста, не открыт ли у Вас файл: {myutils.rel_path(report_prepared_name)}")
         ui_handle.set_status("Формирование отчёта не возможно.")
         myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.enable_buttons()
