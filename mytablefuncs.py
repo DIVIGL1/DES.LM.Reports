@@ -26,7 +26,7 @@ def get_parameter_value(paramname, defvalue=""):
     return (ret_value)
 
 def load_parameter_table(tablename):
-    # Загружаем соответствующу таблицу с параметрами
+    # Загружаем соответствующую таблицу с параметрами
     if (tablename == myconstants.COSTS_TABLE) and os.path.isfile(myconstants.SECRET_COSTS_LOCATION + "/" + myconstants.COSTS_TABLE):
         parameter_df = pd.read_excel(myconstants.SECRET_COSTS_LOCATION + "/" + myconstants.COSTS_TABLE, engine='openpyxl')
     else:
@@ -82,10 +82,7 @@ def calc_fact_fte(FactHours, Northern, CHour, NHour, Project, PlanFTE):
         fact_fte = PlanFTE
     else:
         month_hours = NHour if Northern else CHour
-        if myconstants.ROUND_FTE_VALUE != -1:
-            fact_fte = round(FactHours / month_hours, myconstants.ROUND_FTE_VALUE)
-        else:
-            fact_fte = FactHours / month_hours
+        fact_fte = FactHours / month_hours
     return (fact_fte)
 
 def add_combine_columns(df):
@@ -173,11 +170,24 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     ui_handle.set_status(f"Проведено объединение с таблицей с рабочими часами (всего строк данных: {data_df.shape[0]})")
     data_df["FDate"] = data_df["FDate"].dt.strftime('%Y_%m')
     
+    data_df["SumUserFHours"] = data_df.groupby(["User", "FDate"])["FactHours"].transform("sum")
+
     ui_handle.set_status("... начинаем пересчет фактических часов в FTE.")
     data_df["PlanFTE"] = data_df["PlanFTE"].fillna(0)
-    data_df["FactFTE"] = \
+    # Получим не округлённый FTE
+    data_df["FactFTEUnRounded"] = \
         data_df[["FactHours", "Northern", "CHour", "NHour", "Project", "PlanFTE"]].apply( \
             lambda param: calc_fact_fte(*param), axis=1)
+    # Получим округлённый FTE
+    data_df["FactFTE"] = data_df["FactFTEUnRounded"].apply(lambda x: round(x, myconstants.ROUND_FTE_VALUE))
+
+    data_df["SumUserFactFTE"] = data_df.groupby(["User", "FDate"])["FactFTE"].transform("sum")
+    data_df["SumUserFactFTEUR"] = data_df.groupby(["User", "FDate"])["FactFTEUnRounded"].transform("sum")
+
+    data_df["HourTo1FTE"] = \
+        data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: round(x[1] / x[0], myconstants.ROUND_FTE_VALUE), axis=1)
+    data_df["HourTo1FTE_Math"] = \
+        data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: round(x[1] / max(x[0], 1), myconstants.ROUND_FTE_VALUE), axis=1)
 
     if p_curr_month_half:
         sCurrMonth = f"{dt.datetime.now().year}-{dt.datetime.now().month:0{2}}-01"
@@ -185,7 +195,7 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
 
     if p_delete_without_fact:
         data_df = data_df[data_df["FactFTE"] != 0]
-        ui_handle.set_status("Удаляены строки без данных о факте.")
+        ui_handle.set_status("Удалены строки без данных о факте.")
         
     ui_handle.set_status(f"Пересчитано (всего строк данных: {data_df.shape[0]})")
 
@@ -193,7 +203,7 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     ui_handle.set_status(f"Выполнено объединение с таблицей с подразделениями (всего строк данных: {data_df.shape[0]})")
     ui_handle.set_status("... ищем пустые и восстанавливаем.")
     data_df["Division"] = data_df[["ShortDivisionName", "DivisionRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
-    ui_handle.set_status(f"Все подразделенния заполнены (всего строк данных: {data_df.shape[0]})")
+    ui_handle.set_status(f"Все подразделения заполнены (всего строк данных: {data_df.shape[0]})")
 
     data_df = data_df.merge(p_fns_subst_df, left_on="Project", right_on="ProjectNum", how="left")
     data_df["FNRaw"] = data_df[["RealFNName", "FNRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
@@ -277,6 +287,6 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     
     add_combine_columns(data_df)
 
-    ui_handle.set_status(f"Добавленны производные столбцы (конкатинация) (всего строк данных: {data_df.shape[0]})")
+    ui_handle.set_status(f"Добавлены производные столбцы (конкатенация) (всего строк данных: {data_df.shape[0]})")
     
     return (data_df[myconstants.RESULT_DATA_COLUMNS])

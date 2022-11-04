@@ -86,6 +86,11 @@ RESULT_DATA_COLUMNS = [
     "UHCost_KV4",
     "UMCost_KV4",
     "ISDogName",
+    "SumUserFHours",
+    "SumUserFactFTE",
+    "SumUserFactFTEUR",
+    "HourTo1FTE",
+    "HourTo1FTE_Math",
 ]
 
 START_PARAMETERS_FILE = "Settings.xlsx"
@@ -196,4 +201,4 @@ EXCELWINDOWSTATE_MIN = -4140 # Минимизировано
 NUM_ROWS_FOR_HIDE = 300
 NUM_COLUMNS_FOR_HIDE = 150
 
-APP_VERSION = "v:2.30102223"
+APP_VERSION = "v:2.40.041122.10"
