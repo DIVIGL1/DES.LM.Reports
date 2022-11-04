@@ -60,6 +60,7 @@ class MyExcel:
 
     def save_report(self):
         self._oExcel.Calculation = self._n_save_excel_calc_status
+        self._oExcel.Calculate()
         self._wb.Save()
         if self.report_parameters.p_save_without_formulas: 
             for curr_sheet_name in self.get_sheets_list():
@@ -95,7 +96,8 @@ class MyExcel:
                 report_prepared_name = self.report_parameters.report_prepared_name
                 self.report_parameters.parent._mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
                 self.report_parameters.parent._mainwindow.ui.set_status(f"Сохраняем в файл: {myutils.rel_path(report_prepared_name)}")
-                
+
+                self._oExcel.Calculate()
                 self.hide_and_delete_rows_and_columns()
                 self.save_report()
                 
@@ -125,8 +127,9 @@ class MyExcel:
     def hide_and_delete_rows_and_columns(self):
         # -----------------------------------
         # Произведём пересчёт ячеек иначе, если не сработают формулы используемые для проставления признаков скрываемых/удаляемых строк/столбцов.
-        self._oExcel.Calculation = myconstants.EXCEL_AUTOMATIC_CALC
-        self._oExcel.Calculation = myconstants.EXCEL_MANUAL_CALC
+        self._oExcel.Calculate()
+#        self._oExcel.Calculation = myconstants.EXCEL_AUTOMATIC_CALC
+#        self._oExcel.Calculation = myconstants.EXCEL_MANUAL_CALC
         for curr_sheet_name in self.get_sheets_list():
             if curr_sheet_name not in myconstants.SHEETS_DONT_DELETE_FORMULAS:
                 row_counter = 0
