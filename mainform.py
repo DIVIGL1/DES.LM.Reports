@@ -478,7 +478,7 @@ class MyWindow(QtWidgets.QMainWindow):
     ui = None
     f12_counter = 0
     start_flag = True
-    first_step_after_restore = False
+    ready_to_save_position = False
 
     def __init__(self, parent):
         self.parent = parent
@@ -490,8 +490,24 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.save_app_link(self.app)
         self.setWindowTitle(f"DES.LM.Reporter ({myconstants.APP_VERSION})")
         self.ui.plainTextEdit.setWordWrapMode(QtGui.QTextOption.NoWrap)
+        # Установим исходные (сохранённые) координаты и размеры:
+        data = load_param(myconstants.PARAMETER_SAVED_MAIN_WINDOW_POZ, "")
+        left_and_right_boxes_widths = load_param(myconstants.PARAMETER_SAVED_VALUE_LEFT_AND_RIGHT_BOXES,
+                                                 myconstants.PARAMETER_DEFAULT_VALUE_LEFT_AND_RIGHT_BOXES)
+        top_and_bottom_boxes_widths = load_param(myconstants.PARAMETER_SAVED_VALUE_TOP_AND_BOTTOM_BOXES,
+                                                 myconstants.PARAMETER_DEFAULT_VALUE_TOP_AND_BOTTOM_BOXES)
+
+        self.ui.HorisontalSplitter.setSizes(top_and_bottom_boxes_widths)
+        if data:
+            self.restoreGeometry(data)
+            self.ui.VerticalSplitter.setSizes(left_and_right_boxes_widths)
+
         self.ui.VerticalSplitter.splitterMoved.connect(self.save_coordinates)
         self.ui.HorisontalSplitter.splitterMoved.connect(self.save_coordinates)
+
+    def showEvent(self, event):
+        super(MyWindow, self).showEvent(event)
+        self.ready_to_save_position = True
 
     def resizeEvent(self, event):
         super(MyWindow, self).resizeEvent(event)
@@ -502,20 +518,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.save_coordinates()
     
     def save_coordinates(self):
-        if self.first_step_after_restore:
-            self.first_step_after_restore = False
-
-        if self.start_flag:
-            self.start_flag = False
-            data = load_param(myconstants.PARAMETER_SAVED_MAIN_WINDOW_POZ, "")
-            left_and_right_boxes_widths = load_param(myconstants.PARAMETER_SAVED_VALUE_LEFT_AND_RIGHT_BOXES, myconstants.PARAMETER_DEFAULT_VALUE_LEFT_AND_RIGHT_BOXES)
-            top_and_bottom_boxes_widths = load_param(myconstants.PARAMETER_SAVED_VALUE_TOP_AND_BOTTOM_BOXES, myconstants.PARAMETER_DEFAULT_VALUE_TOP_AND_BOTTOM_BOXES)
-
-            self.ui.HorisontalSplitter.setSizes(top_and_bottom_boxes_widths)
-            if data:
-                self.restoreGeometry(data)
-                self.ui.VerticalSplitter.setSizes(left_and_right_boxes_widths)
-        else:
+        if self.ready_to_save_position:
             data = self.saveGeometry()
             save_param(myconstants.PARAMETER_SAVED_MAIN_WINDOW_POZ, data)
 
