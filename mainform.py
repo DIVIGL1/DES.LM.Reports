@@ -315,21 +315,6 @@ class Ui_MainWindow(object):
         
         return (True)
 
-#    def setup_rawdata_list(self, rawdata_list=None):
-#        if rawdata_list is None:
-#            rawdata_list = []
-#        self.model = QtGui.QStandardItemModel()
-#        self.listViewRawData.setModel(self.model)
-
-#        for one_file in rawdata_list:
-#            item = QtGui.QStandardItem(one_file)
-#            self.model.appendRow(item)
-
-#        item = self.model.item(0)
-#        self.listViewRawData.setCurrentIndex(self.model.indexFromItem(item))
-        
-#        return (True)
-
     def on_click_DoIt(self):
         raw_file_name = self.listViewRawData.currentIndex().data()
         report_file_name = self.listView.currentIndex().data()
@@ -403,12 +388,11 @@ class Ui_MainWindow(object):
         
         self.checkBoxDelRawData.setVisible(self.checkBoxSaveWithOutFotmulas.isChecked())
 
-    def setup_form(self, reports_list, raw_files_list):
+    def setup_form(self, reports_list):
         self.reports_list = reports_list
         self.pushButtonOpenLastReport.setVisible(False)
 
         self.setup_reports_list(reports_list)
-#        self.setup_rawdata_list(raw_files_list)
         self.parent.refresh_raw_files_list()
 
         self.pushButtonDoIt.clicked.connect(self.on_click_DoIt)

@@ -21,13 +21,11 @@ class MyHandler(FileSystemEventHandler):
         if event.is_directory:
             return
         self.parent.mainwindow.refresh_raw_files_list()
-        #self.refresh_files_list()
 
     def on_deleted(self, event):
         if event.is_directory:
             return
         self.parent.mainwindow.refresh_raw_files_list()
-        #self.refresh_files_list()
 
     def on_moved(self, event):
         if event.is_directory:
@@ -35,33 +33,7 @@ class MyHandler(FileSystemEventHandler):
         old_filename = os.path.splitext(os.path.basename(event.src_path))[0]
         new_filename = os.path.splitext(os.path.basename(event.dest_path))[0]
         self.parent.mainwindow.refresh_raw_files_list(new_filename)
-        #self.refresh_files_list(old_filename, new_filename)
-    
-    def refresh_files_list(self, old_filename=None, new_filename=None):
-        selected_item = self.parent.mainwindow.ui.listViewRawData.currentIndex().data()
-        rawdata_list = myutils.get_files_list(reportcreater.get_parameter_value(myconstants.RAW_DATA_SECTION_NAME))
 
-        self.parent.mainwindow.ui.model = QtGui.QStandardItemModel()
-        self.parent.mainwindow.ui.listViewRawData.setModel(self.parent.mainwindow.ui.model)
-        
-        counter = 0
-        save_item = None
-        for one_file in rawdata_list:
-            item = QtGui.QStandardItem(one_file)
-            self.parent.mainwindow.ui.model.appendRow(item)
-            counter += 1
-            if (old_filename is None and selected_item == one_file) or \
-                    (selected_item == old_filename and one_file == new_filename) or \
-                    (old_filename == "" and new_filename == one_file):
-                save_item = item
-    
-        if selected_item == old_filename or old_filename is None or old_filename == "":
-            item = save_item
-        else:
-            item = self.parent.mainwindow.ui.model.item(0)
-        
-        self.parent.mainwindow.ui.listViewRawData.setCurrentIndex(self.parent.mainwindow.ui.model.indexFromItem(item))
-        
 
 class MyApplication:
     def __init__(self):
@@ -69,8 +41,7 @@ class MyApplication:
         self.report_parameters = MyReportParameters(self)
         self.reporter = reportcreater.ReportCreater(self)
         self.mainwindow = mainform.MyWindow(self)
-        self.mainwindow.ui.setup_form(self.reporter.get_reports_list(),
-                                        myutils.get_files_list(reportcreater.get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)))
+        self.mainwindow.ui.setup_form(self.reporter.get_reports_list())
 
         self.mainwindow.show()
         if self.report_parameters.is_all_parameters_exist():
