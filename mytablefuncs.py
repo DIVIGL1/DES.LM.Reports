@@ -5,6 +5,7 @@ import os
 import myconstants
 import myutils
 
+
 def get_parameter_value(paramname, defvalue=""):
     # Читаем настройки
     if not os.path.isfile(myconstants.START_PARAMETERS_FILE):
@@ -23,7 +24,8 @@ def get_parameter_value(paramname, defvalue=""):
             if ret_value[-1] == "/":
                 ret_value = ret_value[:-1:]
     
-    return (ret_value)
+    return ret_value
+
 
 def load_parameter_table(tablename):
     # Загружаем соответствующую таблицу с параметрами
@@ -34,7 +36,8 @@ def load_parameter_table(tablename):
         
     parameter_df.dropna(how='all', inplace=True)
     
-    return (parameter_df)
+    return parameter_df
+
 
 def load_raw_data(raw_file, ui_handle):
     # Загружаем сырые данные
@@ -44,14 +47,14 @@ def load_raw_data(raw_file, ui_handle):
         # Проверим наличие файла:
         virtual_fte_file = \
             os.path.join(
-                os.path.join(os.getcwd(), get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)), \
+                os.path.join(os.getcwd(), get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)),
                 myconstants.VIRTUAL_FTE_FILE_NAME)
         if not os.path.isfile(virtual_fte_file):
             ui_handle.set_status("Не обнаружен файл с искусственными FTE.")
             df = pd.read_excel(raw_file, engine='openpyxl')
         else:
             df = pd.concat(
-                [pd.read_excel(raw_file, engine='openpyxl'), pd.read_excel(virtual_fte_file, engine='openpyxl')],\
+                [pd.read_excel(raw_file, engine='openpyxl'), pd.read_excel(virtual_fte_file, engine='openpyxl')],
                 sort=False, axis=0, ignore_index=True)
     else:
         df = pd.read_excel(raw_file, engine='openpyxl')
@@ -62,11 +65,12 @@ def load_raw_data(raw_file, ui_handle):
     exist_drop_columns_list = list(set(myconstants.RAW_DATA_DROP_COLUMNS) & set(df.dtypes.keys()))
     df.drop(columns=exist_drop_columns_list, inplace=True)
 
-    return (df)
+    return df
+
 
 def udata_2_date(data):
 
-    if (data != data):
+    if data != data:
         ret_date = data
     elif type(data) == str:
         ret_date = dt.datetime.strptime("01." + data, '%d.%m.%Y')
@@ -75,7 +79,8 @@ def udata_2_date(data):
     else:
         ret_date = data
     
-    return (ret_date)
+    return ret_date
+
 
 def calc_fact_fte(FactHours, Northern, CHour, NHour, Project, PlanFTE):
     if Project.find(myconstants.FACT_IS_PLAN_MARKER) >= 0:
@@ -83,7 +88,8 @@ def calc_fact_fte(FactHours, Northern, CHour, NHour, Project, PlanFTE):
     else:
         month_hours = NHour if Northern else CHour
         fact_fte = FactHours / month_hours
-    return (fact_fte)
+    return fact_fte
+
 
 def add_combine_columns(df):
     df["Project7Letters"] = df["Project"].str[:7]
@@ -136,6 +142,7 @@ def add_combine_columns(df):
 
     df["FN_Month"] = df["FN"] + "#" + df["Month"]
 
+
 def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_without_fact, p_curr_month_half, p_delete_pers_data, p_delete_vacation, ui_handle):
     data_df = load_raw_data(raw_file_name, ui_handle)
     
@@ -183,7 +190,7 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     data_df["PlanFTE"] = data_df["PlanFTE"].fillna(0)
     # Получим не округлённый FTE
     data_df["FactFTEUnRounded"] = \
-        data_df[["FactHours", "Northern", "CHour", "NHour", "Project", "PlanFTE"]].apply( \
+        data_df[["FactHours", "Northern", "CHour", "NHour", "Project", "PlanFTE"]].apply(
             lambda param: calc_fact_fte(*param), axis=1)
     # Получим округлённый FTE
     data_df["FactFTE"] = data_df["FactFTEUnRounded"].apply(lambda x: round(x, myconstants.ROUND_FTE_VALUE))
@@ -192,7 +199,7 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     data_df["SumUserFactFTEUR"] = data_df.groupby(["User", "FDate"])["FactFTEUnRounded"].transform("sum")
 
     data_df["HourTo1FTE"] = \
-        data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: round((x[1] / (1 if x[0]==0 else x[0])), myconstants.ROUND_FTE_VALUE), axis=1)
+        data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: round((x[1] / (1 if x[0] == 0 else x[0])), myconstants.ROUND_FTE_VALUE), axis=1)
     data_df["HourTo1FTE_Math"] = \
         data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: round(x[1] / max(x[0], 1), myconstants.ROUND_FTE_VALUE), axis=1)
 
@@ -296,4 +303,4 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
 
     ui_handle.set_status(f"Добавлены производные столбцы (конкатенация) (всего строк данных: {data_df.shape[0]})")
     
-    return (data_df[myconstants.RESULT_DATA_COLUMNS])
+    return data_df[myconstants.RESULT_DATA_COLUMNS]

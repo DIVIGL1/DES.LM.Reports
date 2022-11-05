@@ -2,27 +2,28 @@ import win32com.client
 import myconstants
 import myutils
 
+
 class MyExcel:
     def __init__(self, report_parameters):
-        self._oExcel = win32com.client.Dispatch("Excel.Application")
-        self._oExcel.Visible = self._oExcel.WorkBooks.Count > 0
-        self._p_save_DisplayAlerts = self._oExcel.DisplayAlerts
-        self._oExcel.DisplayAlerts = False
+        self.oexcel = win32com.client.Dispatch("Excel.Application")
+        self.oexcel.Visible = self.oexcel.WorkBooks.Count > 0
+        self.save_DisplayAlerts = self.oexcel.DisplayAlerts
+        self.oexcel.DisplayAlerts = False
         
         self.report_parameters = report_parameters
         
-        self._wb = self._oExcel.Workbooks.Open(report_parameters.report_prepared_name)
-        self._currwindow = self._oExcel.ActiveWindow
-        self._currwindow.WindowState = myconstants.EXCELWINDOWSTATE_MIN
-        self._n_save_excel_calc_status = self._oExcel.Calculation
-        self._oExcel.Calculation = myconstants.EXCEL_MANUAL_CALC
+        self.work_book = self.oexcel.Workbooks.Open(report_parameters.report_prepared_name)
+        self.currwindow = self.oexcel.ActiveWindow
+        self.currwindow.WindowState = myconstants.EXCELWINDOWSTATE_MIN
+        self.save_excel_calc_status = self.oexcel.Calculation
+        self.oexcel.Calculation = myconstants.EXCEL_MANUAL_CALC
         self.not_ready = not self.test_structure()
         
         self.report_prepared = False
         
     def test_structure(self):
-        ui_handle = self.report_parameters.parent._mainwindow.ui
-        if (myconstants.RAW_DATA_SHEET_NAME not in self.get_sheets_list()):
+        ui_handle = self.report_parameters.parent.mainwindow.ui
+        if myconstants.RAW_DATA_SHEET_NAME not in self.get_sheets_list():
             ui_handle.set_status("")
             ui_handle.set_status("")
             ui_handle.set_status("[Ошибка в структуре отчета]")
@@ -31,7 +32,7 @@ class MyExcel:
             ui_handle.set_status("Формирование отчёта не возможно.")
 
             return False
-        elif (myconstants.UNIQE_LISTS_SHEET_NAME not in self.get_sheets_list()):
+        elif myconstants.UNIQE_LISTS_SHEET_NAME not in self.get_sheets_list():
             ui_handle.set_status("")
             ui_handle.set_status("")
             ui_handle.set_status("[Ошибка в структуре отчета]")
@@ -40,7 +41,7 @@ class MyExcel:
             ui_handle.set_status("Формирование отчёта не возможно.")
 
             return False
-        elif (myconstants.SETTINGS_SHEET_NAME not in self.get_sheets_list()):
+        elif myconstants.SETTINGS_SHEET_NAME not in self.get_sheets_list():
             ui_handle.set_status("")
             ui_handle.set_status("")
             ui_handle.set_status("[Ошибка в структуре отчета]")
@@ -56,89 +57,87 @@ class MyExcel:
         return True
     
     def get_sheets_list(self):
-        return ([one_sheet.Name for one_sheet in self._wb.Sheets])
+        return [one_sheet.Name for one_sheet in self.work_book.Sheets]
 
     def save_report(self):
-        self._oExcel.Calculation = self._n_save_excel_calc_status
-        self._oExcel.Calculate()
-        self._wb.Save()
+        self.oexcel.Calculation = self.save_excel_calc_status
+        self.oexcel.Calculate()
+        self.work_book.Save()
         if self.report_parameters.p_save_without_formulas: 
             for curr_sheet_name in self.get_sheets_list():
                 if curr_sheet_name not in myconstants.SHEETS_DONT_DELETE_FORMULAS:
-                    column1 = self._wb.Sheets[curr_sheet_name].UsedRange.Column
-                    column2 = self._wb.Sheets[curr_sheet_name].UsedRange.Columns(self._wb.Sheets[curr_sheet_name].UsedRange.Columns.Count).Column
+                    column1 = self.work_book.Sheets[curr_sheet_name].UsedRange.Column
+                    column2 = self.work_book.Sheets[curr_sheet_name].UsedRange.Columns(self.work_book.Sheets[curr_sheet_name].UsedRange.Columns.Count).Column
                     
-                    row1 = self._wb.Sheets[curr_sheet_name].UsedRange.Row
-                    row2 = self._wb.Sheets[curr_sheet_name].UsedRange.Rows(self._wb.Sheets[curr_sheet_name].UsedRange.Rows.Count).Row
+                    row1 = self.work_book.Sheets[curr_sheet_name].UsedRange.Row
+                    row2 = self.work_book.Sheets[curr_sheet_name].UsedRange.Rows(self.work_book.Sheets[curr_sheet_name].UsedRange.Rows.Count).Row
                     
-                    cell1 = self._wb.Sheets[curr_sheet_name].Cells(row1 + 3, column1).Address
-                    cell2 = self._wb.Sheets[curr_sheet_name].Cells(row2, column2).Address
+                    cell1 = self.work_book.Sheets[curr_sheet_name].Cells(row1 + 3, column1).Address
+                    cell2 = self.work_book.Sheets[curr_sheet_name].Cells(row2, column2).Address
                     
-                    self._wb.Sheets[curr_sheet_name].Range(cell1, cell2).Value = self._wb.Sheets[curr_sheet_name].Range(cell1, cell2).Value
+                    self.work_book.Sheets[curr_sheet_name].Range(cell1, cell2).Value = self.work_book.Sheets[curr_sheet_name].Range(cell1, cell2).Value
             
             if self.report_parameters.p_delete_rawdata_sheet:
                 for one_sheet_name in myconstants.DELETE_SHEETS_LIST_IF_NO_FORMULAS:
                     if one_sheet_name in self.get_sheets_list():
-                        self._wb.Sheets[one_sheet_name].Delete()
+                        self.work_book.Sheets[one_sheet_name].Delete()
             
-            self._wb.Save()
+            self.work_book.Save()
 
     def __del__(self):
         if self.not_ready:
             pass
         else:
             if not self.report_prepared:
-                self._oExcel.Calculation = self._n_save_excel_calc_status
-                self._wb.Close()
+                self.oexcel.Calculation = self.save_excel_calc_status
+                self.work_book.Close()
                 myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
             else:
                 # Отчёт был подготовлен. Закончим его обработку.
                 report_prepared_name = self.report_parameters.report_prepared_name
-                self.report_parameters.parent._mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
-                self.report_parameters.parent._mainwindow.ui.set_status(f"Сохраняем в файл: {myutils.rel_path(report_prepared_name)}")
+                self.report_parameters.parent.mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+                self.report_parameters.parent.mainwindow.ui.set_status(f"Сохраняем в файл: {myutils.rel_path(report_prepared_name)}")
 
-                self._oExcel.Calculate()
+                self.oexcel.Calculate()
                 self.hide_and_delete_rows_and_columns()
                 self.save_report()
                 
-                self.report_parameters.parent._mainwindow.ui.set_status("Отчёт сохранён.")
+                self.report_parameters.parent.mainwindow.ui.set_status("Отчёт сохранён.")
                 myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, report_prepared_name)
 
                 # Скроем вспомогательные листы
                 if myconstants.UNIQE_LISTS_SHEET_NAME in self.get_sheets_list():
-                    self._wb.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME].Visible = False
+                    self.work_book.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME].Visible = False
                 
                 if myconstants.SETTINGS_SHEET_NAME in self.get_sheets_list():
-                    self._wb.Sheets[myconstants.SETTINGS_SHEET_NAME].Visible = False
+                    self.work_book.Sheets[myconstants.SETTINGS_SHEET_NAME].Visible = False
                 # ------------------------------
                 if self.report_parameters.p_open_in_excel:
-                    self._oExcel.Visible = True
-                    self._currwindow.WindowState = myconstants.EXCELWINDOWSTATE_MAX
+                    self.oexcel.Visible = True
+                    self.currwindow.WindowState = myconstants.EXCELWINDOWSTATE_MAX
                 else:
-                    self._wb.Close()
+                    self.work_book.Close()
                 
                 self.report_parameters.parent.reporter.show_timer()
 
-        self._oExcel.DisplayAlerts = self._p_save_DisplayAlerts
+        self.oexcel.DisplayAlerts = self.save_DisplayAlerts
         
         # Не нашёл другого места, где кнопки должны быть разблокированы.
-        self.report_parameters.parent._mainwindow.ui.enable_buttons()
+        self.report_parameters.parent.mainwindow.ui.enable_buttons()
 
     def hide_and_delete_rows_and_columns(self):
         # -----------------------------------
         # Произведём пересчёт ячеек иначе, если не сработают формулы используемые для проставления признаков скрываемых/удаляемых строк/столбцов.
-        self._oExcel.Calculate()
-#        self._oExcel.Calculation = myconstants.EXCEL_AUTOMATIC_CALC
-#        self._oExcel.Calculation = myconstants.EXCEL_MANUAL_CALC
+        self.oexcel.Calculate()
+#        self.oexcel.Calculation = myconstants.EXCEL_AUTOMATIC_CALC
+#        self.oexcel.Calculation = myconstants.EXCEL_MANUAL_CALC
         for curr_sheet_name in self.get_sheets_list():
             if curr_sheet_name not in myconstants.SHEETS_DONT_DELETE_FORMULAS:
                 row_counter = 0
-                first_row_with_del = 0
-                last_row_with_del = 0
                 p_found_first_row = False
                 last_row_4_test = myconstants.PARAMETER_MAX_ROWS_TEST_IN_REPORT
                 range_from_excel = \
-                    self._wb.Sheets[curr_sheet_name].Range(self._wb.Sheets[curr_sheet_name].Cells(1, 1), self._wb.Sheets[curr_sheet_name].Cells(last_row_4_test, 1)).Value
+                    self.work_book.Sheets[curr_sheet_name].Range(self.work_book.Sheets[curr_sheet_name].Cells(1, 1), self.work_book.Sheets[curr_sheet_name].Cells(last_row_4_test, 1)).Value
 
                 # Ищем первый признак 'delete'
                 for row_counter in range(len(range_from_excel)):
@@ -147,7 +146,7 @@ class MyExcel:
                         p_found_first_row = False
                         break
                     
-                    if (type(row_del_flag_value) == str):
+                    if type(row_del_flag_value) == str:
                         row_del_flag_value = row_del_flag_value.replace(" ", "")
                         if row_del_flag_value == myconstants.DELETE_ROW_MARKER:
                             p_found_first_row = True
@@ -162,21 +161,21 @@ class MyExcel:
                             break
                         last_row_with_del += 1
 
-                    self._wb.Sheets[curr_sheet_name].Range(self._wb.Sheets[curr_sheet_name].Cells( \
-                        first_row_with_del, 1), self._wb.Sheets[curr_sheet_name].Cells(last_row_with_del, 1)).Rows.EntireRow.Delete()
+                    self.work_book.Sheets[curr_sheet_name].Range(self.work_book.Sheets[curr_sheet_name].Cells(
+                        first_row_with_del, 1), self.work_book.Sheets[curr_sheet_name].Cells(last_row_with_del, 1)).Rows.EntireRow.Delete()
         # -----------------------------------
                 if curr_sheet_name not in [myconstants.RAW_DATA_SHEET_NAME, myconstants.UNIQE_LISTS_SHEET_NAME, myconstants.SETTINGS_SHEET_NAME]:
                     # Скрываем строки с признаком 'hide'
                     for curr_row in range(1, myconstants.NUM_ROWS_FOR_HIDE + 1):
-                        cell_value = self._wb.Sheets[curr_sheet_name].Cells(curr_row, 1).Value
+                        cell_value = self.work_book.Sheets[curr_sheet_name].Cells(curr_row, 1).Value
                         if type(cell_value) == str and cell_value is not None and cell_value.replace(" ", "") == myconstants.HIDE_MARKER:
                             pass
-                            self._wb.Sheets[curr_sheet_name].Rows(curr_row).Hidden = True
+                            self.work_book.Sheets[curr_sheet_name].Rows(curr_row).Hidden = True
                     # Скрываем столбцы с признаком 'hide'
                     for curr_col in range(1, myconstants.NUM_COLUMNS_FOR_HIDE + 1):
-                        cell_value = self._wb.Sheets[curr_sheet_name].Cells(1, curr_col).Value
+                        cell_value = self.work_book.Sheets[curr_sheet_name].Cells(1, curr_col).Value
                         if type(cell_value) == str and cell_value is not None and cell_value.replace(" ", "") == myconstants.HIDE_MARKER:
-                            self._wb.Sheets[curr_sheet_name].Columns(curr_col).Hidden = True
+                            self.work_book.Sheets[curr_sheet_name].Columns(curr_col).Hidden = True
                         else:
                             pass
         # -----------------------------------

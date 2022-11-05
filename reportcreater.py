@@ -10,6 +10,7 @@ from mytablefuncs import get_parameter_value, prepare_data
 import myutils
 from myexcelclass import MyExcel
 
+
 def thread(my_func):
     """
     Запускает функцию в отдельном потоке
@@ -18,6 +19,7 @@ def thread(my_func):
         my_thread = threading.Thread(target=my_func, args=args, kwargs=kwargs)
         my_thread.start()
     return wrapper
+
 
 class ReportCreater(object):
     def __init__(self, parent, *args):
@@ -29,27 +31,28 @@ class ReportCreater(object):
                 myconstants.REPORT_FILE_PREFFIX, ".xlsx", reverse=False
             )
         warnings.filterwarnings("ignore")
+        self.start_prog_time = None
     
     def get_reports_list(self):
-        return (self.reports_list)
+        return self.reports_list
     
     def get_report_file_name_by_num(self, num):
-        return (self.reports_list[num])
+        return self.reports_list[num]
     
     def create_report(self):
         if self.parent.report_parameters.report_file_name is None:
             myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
-            self.parent._mainwindow.ui.set_status("Необходимо выбрать отчётную форму.")
-            self.parent._mainwindow.ui.enable_buttons()
+            self.parent.mainwindow.ui.set_status("Необходимо выбрать отчётную форму.")
+            self.parent.mainwindow.ui.enable_buttons()
             return False
         if self.parent.report_parameters.raw_file_name is None:
             myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
-            self.parent._mainwindow.ui.set_status("Необходимо выбрать файл, выгруженный из DES.LM для формирования отчёта.")
-            self.parent._mainwindow.ui.enable_buttons()
+            self.parent.mainwindow.ui.set_status("Необходимо выбрать файл, выгруженный из DES.LM для формирования отчёта.")
+            self.parent.mainwindow.ui.enable_buttons()
             return False
         
         self.start_timer()
-        self.parent._mainwindow.ui.clear_status()
+        self.parent.mainwindow.ui.clear_status()
         send_df_2_xls(self.parent.report_parameters)
         
         return True
@@ -60,7 +63,8 @@ class ReportCreater(object):
     def show_timer(self):
         end_prog_time = time.time()
         duration_in_seconds = int(end_prog_time - self.start_prog_time)
-        self.parent._mainwindow.ui.set_status("Время выполнения: {0:0>2}:{1:0>2}".format(duration_in_seconds // 60, duration_in_seconds % 60))
+        self.parent.mainwindow.ui.set_status("Время выполнения: {0:0>2}:{1:0>2}".format(duration_in_seconds // 60, duration_in_seconds % 60))
+
 
 @thread
 def send_df_2_xls(report_parameters):
@@ -80,7 +84,7 @@ def send_df_2_xls(report_parameters):
     p_save_without_formulas = report_parameters.p_save_without_formulas
     p_delete_rawdata_sheet = report_parameters.p_delete_rawdata_sheet
 
-    ui_handle = report_parameters.parent._mainwindow.ui
+    ui_handle = report_parameters.parent.mainwindow.ui
     # ----------------------------------------------------
     num_poz = 1
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
@@ -136,8 +140,8 @@ def send_df_2_xls(report_parameters):
 
     pythoncom.CoInitializeEx(0)
     
-    oExcel = MyExcel(report_parameters)
-    if oExcel.not_ready:
+    oexcel = MyExcel(report_parameters)
+    if oexcel.not_ready:
         # Что-то пошло не так.
         return False
 
@@ -145,8 +149,8 @@ def send_df_2_xls(report_parameters):
     ui_handle.set_status(f"Таблица для загрузки полностью подготовлена (всего строк данных: {report_df.shape[0]})")
 
     ui_handle.set_status("Начинаем перенос строк в Excel:")
-    data_sheet = oExcel._wb.Sheets[myconstants.RAW_DATA_SHEET_NAME]
-    ulist_sheet = oExcel._wb.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME]
+    data_sheet = oexcel.work_book.Sheets[myconstants.RAW_DATA_SHEET_NAME]
+    ulist_sheet = oexcel.work_book.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME]
 
     data_array = report_df.to_numpy()
     data_sheet.Range(data_sheet.Cells(2, 1), data_sheet.Cells(len(data_array) + 1, len(data_array[0]))).Value = data_array    
@@ -165,7 +169,7 @@ def send_df_2_xls(report_parameters):
             ui_handle.set_status("")
             ui_handle.set_status("[Ошибка в структуре отчета]")
             ui_handle.set_status("")
-            ui_handle.set_status("В файле для выбранной формы на листе для уникальных списков в строке 1:1 " + \
+            ui_handle.set_status("В файле для выбранной формы на листе для уникальных списков в строке 1:1 " +
                                     "в качестве наименований списков должны быть символьные значения. Формирование отчёта остановлено.")
 
             return False
@@ -183,7 +187,7 @@ def send_df_2_xls(report_parameters):
         ui_handle.set_status("")
         ui_handle.set_status("[Ошибка в структуре отчета]")
         ui_handle.set_status("")
-        ui_handle.set_status("В файле для выбранной формы на листе для уникальных списков не указан " + \
+        ui_handle.set_status("В файле для выбранной формы на листе для уникальных списков не указан " +
                                 "уникальный список из возможного перечня. Формирование отчёта остановлено.")
         myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
 
@@ -191,13 +195,14 @@ def send_df_2_xls(report_parameters):
 
     ui_handle.set_status(f"Всего списков c уникальными данными: {len(columns_4_unique_list)} шт.")
     ui_handle.set_status("")
+    unique_elements_list = None
     for index, one_column in enumerate(columns_4_unique_list):
         unique_elements_list = sorted(report_df[one_column].unique())
         ui_handle.change_last_status_line(f"{index + 1} из {len(columns_4_unique_list)} ({one_column}): {len(unique_elements_list)}")
 
         data_array = [[one_uelement] for one_uelement in unique_elements_list]
         ulist_sheet.Range(
-            ulist_sheet.Cells(2, values_dict[one_column]), ulist_sheet.Cells(len(data_array) + 1, values_dict[one_column])\
+            ulist_sheet.Cells(2, values_dict[one_column]), ulist_sheet.Cells(len(data_array) + 1, values_dict[one_column])
         ).Value = data_array
         
     if len(columns_4_unique_list) == 1:
@@ -205,7 +210,7 @@ def send_df_2_xls(report_parameters):
     else:
         ui_handle.change_last_status_line("Собраны и сохранены списки с уникальными значениями.")
 
-    oExcel.report_prepared = True
+    oexcel.report_prepared = True
     return True
 
 

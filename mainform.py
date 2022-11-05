@@ -13,10 +13,12 @@ from PyQt5.QtCore import pyqtSignal, QObject
 import myconstants
 from myutils import load_param, save_param
 
+
 class Communicate(QObject):
     updateStatusText = pyqtSignal()
-
 # ------------------------------------------------------------------- #
+
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -292,7 +294,9 @@ class Ui_MainWindow(object):
     exit_in_process = False
     parent = None
     
-    def setup_reports_list(self, reports_list=[]):
+    def setup_reports_list(self, reports_list=None):
+        if reports_list is None:
+            reports_list = []
     
         self.model = QtGui.QStandardItemModel()
         self.listView.setModel(self.model)
@@ -307,8 +311,9 @@ class Ui_MainWindow(object):
         
         return (True)
 
-    def setup_rawdata_list(self, rawdata_list=[]):
-    
+    def setup_rawdata_list(self, rawdata_list=None):
+        if rawdata_list is None:
+            rawdata_list = []
         self.model = QtGui.QStandardItemModel()
         self.listViewRawData.setModel(self.model)
 
@@ -325,7 +330,7 @@ class Ui_MainWindow(object):
         raw_file_name = self.listViewRawData.currentIndex().data()
         report_file_name = self.listView.currentIndex().data()
 
-        if not self.parent.parent.report_parameters.is_all_parametars_exist():
+        if not self.parent.parent.report_parameters.is_all_parameters_exist():
             return
 
         self.pushButtonDoIt.setEnabled(False)
@@ -371,25 +376,25 @@ class Ui_MainWindow(object):
         else:
             s_preff = self.listView.currentIndex().data() + " --> "
             
-        self.checkBoxDeleteVIP.setChecked(\
+        self.checkBoxDeleteVIP.setChecked(
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VIP, myconstants.PARAMETER_SAVED_VALUE_DELETE_VIP_DEFVALUE))
-        self.checkBoxDeleteNotProduct.setChecked(\
+        self.checkBoxDeleteNotProduct.setChecked(
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD_DEFVALUE))
-        self.checkBoxDeleteWithoutFact.setChecked(\
+        self.checkBoxDeleteWithoutFact.setChecked(
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT, myconstants.PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT_DEFVALUE))
-        self.checkBoxCurrMonthAHalf.setChecked(\
+        self.checkBoxCurrMonthAHalf.setChecked(
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_CURRMONTHHALF, myconstants.PARAMETER_SAVED_VALUE_DELETE_CURRMONTHHALF_DEFVALUE))
-        self.checkBoxDelPDn.setChecked(\
+        self.checkBoxDelPDn.setChecked(
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA_DEFVALUE))
-        self.checkBoxDeleteVac.setChecked(\
+        self.checkBoxDeleteVac.setChecked(
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC_DEFVALUE))
-        self.checkBoxAddVFTE.setChecked(\
+        self.checkBoxAddVFTE.setChecked(
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE, myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE_DEFVALUE))
-        self.checkBoxSaveWithOutFotmulas.setChecked(\
+        self.checkBoxSaveWithOutFotmulas.setChecked(
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS, myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS_DEFVALUE))
-        self.checkBoxDelRawData.setChecked(\
+        self.checkBoxDelRawData.setChecked(
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DEL_RAWSHEET, myconstants.PARAMETER_SAVED_VALUE_DEL_RAWSHEET_DEFVALUE))
-        self.checkBoxOpenExcel.setChecked(\
+        self.checkBoxOpenExcel.setChecked(
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL, myconstants.PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL_DEFVALUE))
         
         self.checkBoxDelRawData.setVisible(self.checkBoxSaveWithOutFotmulas.isChecked())
@@ -468,6 +473,7 @@ class Ui_MainWindow(object):
     def save_app_link(self, app):
         self.app = app
         
+
 class MyWindow(QtWidgets.QMainWindow):
     ui = None
     f12_counter = 0
@@ -476,12 +482,12 @@ class MyWindow(QtWidgets.QMainWindow):
 
     def __init__(self, parent):
         self.parent = parent
-        self._app = QtWidgets.QApplication(sys.argv)
+        self.app = QtWidgets.QApplication(sys.argv)
         QtWidgets.QMainWindow.__init__(self, None)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.parent = self
-        self.ui.save_app_link(self._app)
+        self.ui.save_app_link(self.app)
         self.setWindowTitle(f"DES.LM.Reporter ({myconstants.APP_VERSION})")
         self.ui.plainTextEdit.setWordWrapMode(QtGui.QTextOption.NoWrap)
         self.ui.VerticalSplitter.splitterMoved.connect(self.save_coordinates)
@@ -506,7 +512,6 @@ class MyWindow(QtWidgets.QMainWindow):
             top_and_bottom_boxes_widths = load_param(myconstants.PARAMETER_SAVED_VALUE_TOP_AND_BOTTOM_BOXES, myconstants.PARAMETER_DEFAULT_VALUE_TOP_AND_BOTTOM_BOXES)
 
             self.ui.HorisontalSplitter.setSizes(top_and_bottom_boxes_widths)
-            first_step_after_splitter_move = True
             if data:
                 self.restoreGeometry(data)
                 self.ui.VerticalSplitter.setSizes(left_and_right_boxes_widths)
@@ -544,6 +549,7 @@ class MyWindow(QtWidgets.QMainWindow):
             QtWidgets.QMainWindow.closeEvent(self, e)
         else:
             e.ignore()
+
 
 if __name__ == "__main__":
     pass
