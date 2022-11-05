@@ -459,8 +459,8 @@ class Ui_MainWindow(object):
         self.resize_text_and_button()
     
     def resize_text_and_button(self):
-        slastreportfilename = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT)
-        if slastreportfilename == "":
+        last_report_filename = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT)
+        if last_report_filename == "":
             self.pushButtonOpenLastReport.setVisible(False)
         else:
             self.pushButtonOpenLastReport.setVisible(True)
@@ -472,7 +472,8 @@ class MyWindow(QtWidgets.QMainWindow):
     ui = None
     f12_counter = 0
     start_flag = True
-    
+    first_step_after_restore = False
+
     def __init__(self, parent):
         self.parent = parent
         self._app = QtWidgets.QApplication(sys.argv)
@@ -483,32 +484,38 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.save_app_link(self._app)
         self.setWindowTitle(f"DES.LM.Reporter ({myconstants.APP_VERSION})")
         self.ui.plainTextEdit.setWordWrapMode(QtGui.QTextOption.NoWrap)
-        self.ui.VerticalSplitter.splitterMoved.connect(self.save_coordinats)
-        self.ui.HorisontalSplitter.splitterMoved.connect(self.save_coordinats)
+        self.ui.VerticalSplitter.splitterMoved.connect(self.save_coordinates)
+        self.ui.HorisontalSplitter.splitterMoved.connect(self.save_coordinates)
 
     def resizeEvent(self, event):
         super(MyWindow, self).resizeEvent(event)
-        self.save_coordinats()
+        self.save_coordinates()
 
     def moveEvent(self, event):
         super(MyWindow, self).moveEvent(event)
-        self.save_coordinats()
+        self.save_coordinates()
     
-    def save_coordinats(self):
+    def save_coordinates(self):
+        if self.first_step_after_restore:
+            self.first_step_after_restore = False
+
         if self.start_flag:
             self.start_flag = False
             data = load_param(myconstants.PARAMETER_SAVED_MAIN_WINDOW_POZ, "")
             left_and_right_boxes_widths = load_param(myconstants.PARAMETER_SAVED_VALUE_LEFT_AND_RIGHT_BOXES, myconstants.PARAMETER_DEFAULT_VALUE_LEFT_AND_RIGHT_BOXES)
             top_and_bottom_boxes_widths = load_param(myconstants.PARAMETER_SAVED_VALUE_TOP_AND_BOTTOM_BOXES, myconstants.PARAMETER_DEFAULT_VALUE_TOP_AND_BOTTOM_BOXES)
+
+            self.ui.HorisontalSplitter.setSizes(top_and_bottom_boxes_widths)
+            first_step_after_splitter_move = True
             if data:
                 self.restoreGeometry(data)
                 self.ui.VerticalSplitter.setSizes(left_and_right_boxes_widths)
-                self.ui.HorisontalSplitter.setSizes(top_and_bottom_boxes_widths)
         else:
             data = self.saveGeometry()
+            save_param(myconstants.PARAMETER_SAVED_MAIN_WINDOW_POZ, data)
+
             left_and_right_boxes_widths = [self.ui.layoutWidget.width(), self.ui.layoutWidget3.width()]
             top_and_bottom_boxes_widths = [self.ui.layoutWidget1.height(), self.ui.layoutWidget2.height()]
-            save_param(myconstants.PARAMETER_SAVED_MAIN_WINDOW_POZ, data)
             save_param(myconstants.PARAMETER_SAVED_VALUE_LEFT_AND_RIGHT_BOXES, left_and_right_boxes_widths)
             save_param(myconstants.PARAMETER_SAVED_VALUE_TOP_AND_BOTTOM_BOXES, top_and_bottom_boxes_widths)
 
