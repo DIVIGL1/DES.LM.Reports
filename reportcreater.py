@@ -155,7 +155,7 @@ def send_df_2_xls(report_parameters):
 
     ui_handle.set_status("Формируем списки с уникальными значениями.")
     
-    # Запоним списки уникальными значениями
+    # Заполним списки уникальными значениями
     column = 1
     values_dict = dict()
     while True:
