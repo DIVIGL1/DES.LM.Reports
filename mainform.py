@@ -479,6 +479,7 @@ class MyWindow(QtWidgets.QMainWindow):
     f12_counter = 0
     start_flag = True
     ready_to_save_position = False
+    ctrl_is_pressed = False
 
     def __init__(self, parent):
         self.parent = parent
@@ -527,7 +528,14 @@ class MyWindow(QtWidgets.QMainWindow):
             save_param(myconstants.PARAMETER_SAVED_VALUE_LEFT_AND_RIGHT_BOXES, left_and_right_boxes_widths)
             save_param(myconstants.PARAMETER_SAVED_VALUE_TOP_AND_BOTTOM_BOXES, top_and_bottom_boxes_widths)
 
+    def keyReleaseEvent(self, event):
+        if event.key() == QtCore.Qt.Key_Control:
+            self.ctrl_is_pressed = False
+
     def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key_Control:
+            self.ctrl_is_pressed = True
+
         if event.key() == QtCore.Qt.Key_F12:
             self.f12_counter += 1
             if self.f12_counter >= myconstants.PARAMETER_TIMES_TO_PRESS_F12:
@@ -542,11 +550,15 @@ class MyWindow(QtWidgets.QMainWindow):
         event.accept()
         
     def closeEvent(self, e):
-        result = QtWidgets.QMessageBox.question(self, "Подтверждение закрытия окна", 
-                                                "Вы действительно хотите закрыть программу?\n\nЕсли у Вас формируется отчёт,\nто скорее всего, его формирование не прекратится.", 
-                                                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, 
-                                                QtWidgets.QMessageBox.No)
-        if result == QtWidgets.QMessageBox.Yes:
+        result = None
+        if not self.ctrl_is_pressed:
+            result = QtWidgets.QMessageBox.question(self, "Подтверждение закрытия окна",
+                                                    "Вы действительно хотите закрыть программу?\n\n"+
+                                                    "Если у Вас формируется отчёт,\n"+
+                                                    "то скорее всего, его формирование не прекратится.",
+                                                    QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+                                                    QtWidgets.QMessageBox.No)
+        if self.ctrl_is_pressed or result == QtWidgets.QMessageBox.Yes:
             self.ui.exit_in_process = True
             e.accept()
             QtWidgets.QMainWindow.closeEvent(self, e)
