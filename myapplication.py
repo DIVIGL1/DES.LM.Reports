@@ -20,19 +20,22 @@ class MyHandler(FileSystemEventHandler):
     def on_created(self, event):
         if event.is_directory:
             return
-        self.refresh_files_list()
+        self.parent.mainwindow.refresh_raw_files_list()
+        #self.refresh_files_list()
 
     def on_deleted(self, event):
         if event.is_directory:
             return
-        self.refresh_files_list()
+        self.parent.mainwindow.refresh_raw_files_list()
+        #self.refresh_files_list()
 
     def on_moved(self, event):
         if event.is_directory:
             return
         old_filename = os.path.splitext(os.path.basename(event.src_path))[0]
         new_filename = os.path.splitext(os.path.basename(event.dest_path))[0]
-        self.refresh_files_list(old_filename, new_filename)
+        self.parent.mainwindow.refresh_raw_files_list(new_filename)
+        #self.refresh_files_list(old_filename, new_filename)
     
     def refresh_files_list(self, old_filename=None, new_filename=None):
         selected_item = self.parent.mainwindow.ui.listViewRawData.currentIndex().data()

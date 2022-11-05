@@ -13,8 +13,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSignal, QObject
 
 import myconstants
-import mytablefuncs
-from myutils import load_param, save_param
+from mytablefuncs import get_parameter_value
+from myutils import load_param, save_param, get_files_list
 
 
 class Communicate(QObject):
@@ -315,20 +315,20 @@ class Ui_MainWindow(object):
         
         return (True)
 
-    def setup_rawdata_list(self, rawdata_list=None):
-        if rawdata_list is None:
-            rawdata_list = []
-        self.model = QtGui.QStandardItemModel()
-        self.listViewRawData.setModel(self.model)
+#    def setup_rawdata_list(self, rawdata_list=None):
+#        if rawdata_list is None:
+#            rawdata_list = []
+#        self.model = QtGui.QStandardItemModel()
+#        self.listViewRawData.setModel(self.model)
 
-        for one_file in rawdata_list:
-            item = QtGui.QStandardItem(one_file)
-            self.model.appendRow(item)
+#        for one_file in rawdata_list:
+#            item = QtGui.QStandardItem(one_file)
+#            self.model.appendRow(item)
 
-        item = self.model.item(0)
-        self.listViewRawData.setCurrentIndex(self.model.indexFromItem(item))
+#        item = self.model.item(0)
+#        self.listViewRawData.setCurrentIndex(self.model.indexFromItem(item))
         
-        return (True)
+#        return (True)
 
     def on_click_DoIt(self):
         raw_file_name = self.listViewRawData.currentIndex().data()
@@ -408,7 +408,8 @@ class Ui_MainWindow(object):
         self.pushButtonOpenLastReport.setVisible(False)
 
         self.setup_reports_list(reports_list)
-        self.setup_rawdata_list(raw_files_list)
+#        self.setup_rawdata_list(raw_files_list)
+        self.parent.refresh_raw_files_list()
 
         self.pushButtonDoIt.clicked.connect(self.on_click_DoIt)
         
@@ -513,6 +514,31 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.VerticalSplitter.splitterMoved.connect(self.save_coordinates)
         self.ui.HorisontalSplitter.splitterMoved.connect(self.save_coordinates)
 
+    def refresh_raw_files_list(self, select_row_with_text=""):
+        # Получим название текущего элемента:
+        if select_row_with_text == "":
+            # Есл название не указано, то берём сейчас выделенную строку:
+            select_row_with_text = self.ui.listViewRawData.currentIndex().data()
+        # Получим список файлов из папки с "сырыми" данными:
+        rawdata_list = get_files_list(get_parameter_value(myconstants.RAW_DATA_SECTION_NAME))
+
+        # ???
+        self.ui.model = QtGui.QStandardItemModel()
+        self.ui.listViewRawData.setModel(self.ui.model)
+
+        item2select = None
+        # Добавим в список все файлы, найденные в папке:
+        for curr_file_name in rawdata_list:
+            item = QtGui.QStandardItem(curr_file_name)
+            self.ui.model.appendRow(item)
+            if curr_file_name == select_row_with_text:
+                item2select = item
+        else:
+            if item2select is None:
+                item2select = self.ui.model.item(0)
+
+        self.ui.listViewRawData.setCurrentIndex(self.ui.model.indexFromItem(item2select))
+
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
             event.accept()
@@ -523,7 +549,7 @@ class MyWindow(QtWidgets.QMainWindow):
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         for one_file_path in files:
             this_file_name = os.path.basename(one_file_path)
-            raw_file_path = mytablefuncs.get_parameter_value(myconstants.RAW_DATA_SECTION_NAME) + "/" + this_file_name
+            raw_file_path = get_parameter_value(myconstants.RAW_DATA_SECTION_NAME) + "/" + this_file_name
             if os.path.isfile(raw_file_path):
                 result = QtWidgets.QMessageBox.question(self, "Заменить файл?",
                                                         "В папке, где находятся данные, выгруженные из DES.LM" +
@@ -539,7 +565,7 @@ class MyWindow(QtWidgets.QMainWindow):
                 shutil.copyfile(one_file_path, raw_file_path)
                 new_filename = os.path.splitext(os.path.basename(raw_file_path))[0]
                 if len(files) == 1:
-                    self.parent.event_handler.refresh_files_list(old_filename="", new_filename=new_filename)
+                    self.refresh_raw_files_list(new_filename)
             except (OSError, shutil.Error):
                 QtWidgets.QMessageBox.question(self, "Ошибка копирования?",
                                                "Не удалось скопировать файл с данными выгруженными из DES.LM.",
