@@ -166,7 +166,12 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     projects_list_add_info["Project4AddInfo"] = projects_list_add_info["Project4AddInfo"].str[:5]
 
     ui_handle.set_status(f"Загружены таблицы с параметрами (всего строк данных: {data_df.shape[0]})")
-
+    if data_df.shape[0] == 0:
+        ui_handle.set_status("------------------------------")
+        ui_handle.set_status("В данных нет ни одной строки!")
+        ui_handle.set_status("Сформировать отчёт невозможно!")
+        ui_handle.set_status("-------------------------------")
+        return None
     for column_name in set(data_df.dtypes.keys()) - set(myconstants.DONT_REPLACE_ENTER):
         if data_df.dtypes[column_name] == type(str):
             data_df[column_name] = data_df[column_name].str.replace("\n", "")
@@ -174,7 +179,9 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     ui_handle.set_status(f"Удалены переносы строк (всего строк данных: {data_df.shape[0]})")
 
     data_df["ShortProject"] = data_df["Project"].str[:5]
-    data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how="inner")
+    data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how="left")
+    for one_column in myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST.values():
+        data_df[one_column] = data_df[one_column].fillna(0.00)
 
     data_df["FDate"] = data_df["FDate"].apply(lambda param: udata_2_date(param))
     ui_handle.set_status(f"Обновлён формат данных даты первого дня месяца (всего строк данных: {data_df.shape[0]})")
@@ -182,6 +189,12 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     data_df['Northern'].replace(myconstants.BOOLEAN_VALUES_SUBST, inplace=True)
     data_df = data_df.merge(month_hours_df, left_on="FDate", right_on="FirstDate", how="inner")
     ui_handle.set_status(f"Проведено объединение с таблицей с рабочими часами (всего строк данных: {data_df.shape[0]})")
+    if data_df.shape[0] == 0:
+        ui_handle.set_status("------------------------------")
+        ui_handle.set_status("В данных нет ни одной строки!")
+        ui_handle.set_status("Сформировать отчёт невозможно!")
+        ui_handle.set_status("-------------------------------")
+        return None
     data_df["FDate"] = data_df["FDate"].dt.strftime('%Y_%m')
     
     data_df["SumUserFHours"] = data_df.groupby(["User", "FDate"])["FactHours"].transform("sum")
