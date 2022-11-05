@@ -151,7 +151,13 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     vip_df = load_parameter_table(myconstants.VIP_TABLE)
     portfolio_df = load_parameter_table(myconstants.PORTFEL_TABLE)
     is_dog_name_df = load_parameter_table(myconstants.ISDOGNAME_TABLE)
-    
+    projects_list_add_info = load_parameter_table(myconstants.PROJECTS_LIST_ADD_INFO)
+
+    projects_list_add_info.rename(columns = myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST, inplace = True)
+    projects_list_add_info = projects_list_add_info[projects_list_add_info["Project4AddInfo"].notna()]
+    projects_list_add_info.fillna(0.00, inplace = True)
+    projects_list_add_info["Project4AddInfo"] = projects_list_add_info["Project4AddInfo"].str[:5]
+
     ui_handle.set_status(f"Загружены таблицы с параметрами (всего строк данных: {data_df.shape[0]})")
 
     for column_name in set(data_df.dtypes.keys()) - set(myconstants.DONT_REPLACE_ENTER):
@@ -161,7 +167,8 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     ui_handle.set_status(f"Удалены переносы строк (всего строк данных: {data_df.shape[0]})")
 
     data_df["ShortProject"] = data_df["Project"].str[:5]
-    
+    data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how="inner")
+
     data_df["FDate"] = data_df["FDate"].apply(lambda param: udata_2_date(param))
     ui_handle.set_status(f"Обновлён формат данных даты первого дня месяца (всего строк данных: {data_df.shape[0]})")
 
@@ -185,7 +192,7 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     data_df["SumUserFactFTEUR"] = data_df.groupby(["User", "FDate"])["FactFTEUnRounded"].transform("sum")
 
     data_df["HourTo1FTE"] = \
-        data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: round(x[1] / x[0], myconstants.ROUND_FTE_VALUE), axis=1)
+        data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: round((x[1] / (1 if x[0]==0 else x[0])), myconstants.ROUND_FTE_VALUE), axis=1)
     data_df["HourTo1FTE_Math"] = \
         data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: round(x[1] / max(x[0], 1), myconstants.ROUND_FTE_VALUE), axis=1)
 
