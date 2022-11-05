@@ -174,7 +174,8 @@ class MyReportParameters:
                 (myconstants.EMAILS_TABLE, "Таблица адресов электронной почты"),
                 (myconstants.VIP_TABLE, "Таблица списка VIP"), 
                 (myconstants.PORTFEL_TABLE, "Таблица списка портфелей проектов"), 
-                (myconstants.ISDOGNAME_TABLE, "Таблица наименований ИС из контракта"), 
+                (myconstants.ISDOGNAME_TABLE, "Таблица наименований ИС из контракта"),
+                (myconstants.PROJECTS_LIST_ADD_INFO, "Таблица наименований ИС из контракта"),
             ]
 
             for one_file_info in files_list:
