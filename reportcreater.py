@@ -139,14 +139,17 @@ def send_df_2_xls(report_parameters):
         return False
 
     pythoncom.CoInitializeEx(0)
-    
+
+    report_df = prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_without_fact, p_curr_month_half, p_delete_pers_data, p_delete_vacation, ui_handle)
+    if report_df is None:
+        return False
+
+    ui_handle.set_status(f"Таблица для загрузки полностью подготовлена (всего строк данных: {report_df.shape[0]})")
+
     oexcel = MyExcel(report_parameters)
     if oexcel.not_ready:
         # Что-то пошло не так.
         return False
-
-    report_df = prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_without_fact, p_curr_month_half, p_delete_pers_data, p_delete_vacation, ui_handle)
-    ui_handle.set_status(f"Таблица для загрузки полностью подготовлена (всего строк данных: {report_df.shape[0]})")
 
     ui_handle.set_status("Начинаем перенос строк в Excel:")
     data_sheet = oexcel.work_book.Sheets[myconstants.RAW_DATA_SHEET_NAME]
