@@ -20,19 +20,16 @@ class MyHandler(FileSystemEventHandler):
     def on_created(self, event):
         if event.is_directory:
             return
-        print("on_created", event.src_path)
         self.refresh_files_list()
 
     def on_deleted(self, event):
         if event.is_directory:
             return
-        print("on_deleted", event.src_path)
         self.refresh_files_list()
 
     def on_moved(self, event):
         if event.is_directory:
             return
-        print("on_moved", event.src_path, os.path.basename(event.dest_path))
         old_filename = os.path.splitext(os.path.basename(event.src_path))[0]
         new_filename = os.path.splitext(os.path.basename(event.dest_path))[0]
         self.refresh_files_list(old_filename, new_filename)
@@ -50,10 +47,12 @@ class MyHandler(FileSystemEventHandler):
             item = QtGui.QStandardItem(one_file)
             self.parent.mainwindow.ui.model.appendRow(item)
             counter += 1
-            if (old_filename is None and selected_item == one_file) or (selected_item == old_filename and one_file == new_filename):
+            if (old_filename is None and selected_item == one_file) or \
+                    (selected_item == old_filename and one_file == new_filename) or \
+                    (old_filename == "" and new_filename == one_file):
                 save_item = item
     
-        if selected_item == old_filename or old_filename is None:
+        if selected_item == old_filename or old_filename is None or old_filename == "":
             item = save_item
         else:
             item = self.parent.mainwindow.ui.model.item(0)

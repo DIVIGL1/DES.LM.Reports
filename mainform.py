@@ -4,13 +4,16 @@
 #        MainWindow.setFixedSize(MainWindow.size().width(), MainWindow.size().height())
 #        MainWindow.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
 
+import os
 import sys
 import subprocess
+import shutil
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSignal, QObject
 
 import myconstants
+import mytablefuncs
 from myutils import load_param, save_param
 
 
@@ -91,6 +94,7 @@ class Ui_MainWindow(object):
         self.bottomBox.addWidget(self.labelRawData)
         self.listViewRawData = QtWidgets.QListView(self.layoutWidget2)
         self.listViewRawData.setMinimumSize(QtCore.QSize(200, 100))
+        self.listViewRawData.setAcceptDrops(True)
         self.listViewRawData.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.listViewRawData.setDragEnabled(True)
         self.listViewRawData.setObjectName("listViewRawData")
@@ -431,6 +435,9 @@ class Ui_MainWindow(object):
         self.previous_status_text = ""
         self.comminucate = Communicate()
         self.comminucate.updateStatusText.connect(self.update_status)
+
+        self.listViewRawData.setDragEnabled(True)
+
     
     def update_status(self):
         self.plainTextEdit.setPlainText(self.status_text)
@@ -472,7 +479,7 @@ class Ui_MainWindow(object):
         
     def save_app_link(self, app):
         self.app = app
-        
+
 
 class MyWindow(QtWidgets.QMainWindow):
     ui = None
@@ -505,6 +512,38 @@ class MyWindow(QtWidgets.QMainWindow):
 
         self.ui.VerticalSplitter.splitterMoved.connect(self.save_coordinates)
         self.ui.HorisontalSplitter.splitterMoved.connect(self.save_coordinates)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.accept()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        files = [u.toLocalFile() for u in event.mimeData().urls()]
+        for one_file_path in files:
+            this_file_name = os.path.basename(one_file_path)
+            raw_file_path = mytablefuncs.get_parameter_value(myconstants.RAW_DATA_SECTION_NAME) + "/" + this_file_name
+            if os.path.isfile(raw_file_path):
+                result = QtWidgets.QMessageBox.question(self, "Заменить файл?",
+                                                        "В папке, где находятся данные, выгруженные из DES.LM" +
+                                                        f"Файл с таким названием уже есть {this_file_name}\n\n" +
+                                                        "Вы действительно хотите переписать его новым файлом?",
+                                                        QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+                                                        QtWidgets.QMessageBox.No)
+
+                if result == QtWidgets.QMessageBox.No:
+                    continue
+
+            try:
+                shutil.copyfile(one_file_path, raw_file_path)
+                new_filename = os.path.splitext(os.path.basename(raw_file_path))[0]
+                if len(files) == 1:
+                    self.parent.event_handler.refresh_files_list(old_filename="", new_filename=new_filename)
+            except (OSError, shutil.Error):
+                QtWidgets.QMessageBox.question(self, "Ошибка копирования?",
+                                               "Не удалось скопировать файл с данными выгруженными из DES.LM.",
+                                               QtWidgets.QMessageBox.Yes)
 
     def showEvent(self, event):
         super(MyWindow, self).showEvent(event)
