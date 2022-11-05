@@ -91,6 +91,30 @@ RESULT_DATA_COLUMNS = [
     "SumUserFactFTEUR",
     "HourTo1FTE",
     "HourTo1FTE_Math",
+    "SumInCome01",
+    "SumInCome02",
+    "SumInCome03",
+    "SumInCome04",
+    "SumInCome05",
+    "SumInCome06",
+    "SumInCome07",
+    "SumInCome08",
+    "SumInCome09",
+    "SumInCome10",
+    "SumInCome11",
+    "SumInCome12",
+    "SumPodr01",
+    "SumPodr02",
+    "SumPodr03",
+    "SumPodr04",
+    "SumPodr05",
+    "SumPodr06",
+    "SumPodr07",
+    "SumPodr08",
+    "SumPodr09",
+    "SumPodr10",
+    "SumPodr11",
+    "SumPodr12",
 ]
 
 START_PARAMETERS_FILE = "Settings.xlsx"
@@ -129,6 +153,34 @@ ISDOGNAME_TABLE = "CrossingIS.xlsx"
 PROJECTS_TYPES_DESCR = "ProjectsTypesDescriptions.xlsx"
 PROJECTS_SUB_TYPES_TABLE = "ProjectsSubTypes.xlsx"
 PROJECTS_SUB_TYPES_DESCR = "ProjectsSubTypesDescriptions.xlsx"
+PROJECTS_LIST_ADD_INFO = "ProjectsAddInfo.xlsx"
+PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST = {
+    "Наименование проекта (только текст)": "Project4AddInfo",
+    "Выруч_Янв": "SumInCome01",
+    "Выруч_Фев": "SumInCome02",
+    "Выруч_Мар": "SumInCome03",
+    "Выруч_Апр": "SumInCome04",
+    "Выруч_Май": "SumInCome05",
+    "Выруч_Июн": "SumInCome06",
+    "Выруч_Июл": "SumInCome07",
+    "Выруч_Авг": "SumInCome08",
+    "Выруч_Сен": "SumInCome09",
+    "Выруч_Окт": "SumInCome10",
+    "Выруч_Ноя": "SumInCome11",
+    "Выруч_Дек": "SumInCome12",
+    "Подр_Янв": "SumPodr01",
+    "Подр_Фев": "SumPodr02",
+    "Подр_Мар": "SumPodr03",
+    "Подр_Апр": "SumPodr04",
+    "Подр_Май": "SumPodr05",
+    "Подр_Июн": "SumPodr06",
+    "Подр_Июл": "SumPodr07",
+    "Подр_Авг": "SumPodr08",
+    "Подр_Сен": "SumPodr09",
+    "Подр_Окт": "SumPodr10",
+    "Подр_Ноя": "SumPodr11",
+    "Подр_Дек": "SumPodr12",
+}
 
 EMAIL_INFO_COLUMNS = ["Personal_email", "user_email", "boss_email"]
 SECRET_COSTS_LOCATION = "C:/Tmp"
