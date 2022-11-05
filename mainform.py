@@ -1,7 +1,5 @@
-# pyuic5 -x Qt5Project/Windows.ui -o myQt_form.py
+# pyuic5 -x Qt5Project/Windows2.ui -o myQt_form.py
 # pyuic5 -x Qt5Project/_tmp_QLV.ui -o _tmp_QLV_form.py
-#        MainWindow.setFixedSize(MainWindow.size().width(), MainWindow.size().height())
-#        MainWindow.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
 
 import os
 import sys
@@ -39,7 +37,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         item = self.model.item(load_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT, 1) - 1)
 
         self.listView.setCurrentIndex(self.model.indexFromItem(item))
-        
+
         return (True)
 
     def on_click_DoIt(self):
@@ -54,7 +52,8 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         self.resize_text_and_button()
         self.parent.parent.report_parameters.update(raw_file_name, report_file_name)
         save_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT, self.reports_list.index(report_file_name) + 1)
-        
+        save_param(myconstants.PARAMETER_SAVED_SELECTED_RAW_FILE, raw_file_name)
+
         self.parent.parent.reporter.create_report()
 
     def on_dblClick_Reports_List(self):
@@ -120,7 +119,9 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         self.pushButtonOpenLastReport.setVisible(False)
 
         self.setup_reports_list(reports_list)
-        self.parent.refresh_raw_files_list()
+        last_raw_file = load_param(myconstants.PARAMETER_SAVED_SELECTED_RAW_FILE, "")
+
+        self.parent.refresh_raw_files_list(last_raw_file)
 
         self.pushButtonDoIt.clicked.connect(self.on_click_DoIt)
         
