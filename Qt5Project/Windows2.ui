@@ -161,6 +161,9 @@
                 <height>100</height>
                </size>
               </property>
+              <property name="acceptDrops">
+               <bool>true</bool>
+              </property>
               <property name="editTriggers">
                <set>QAbstractItemView::NoEditTriggers</set>
               </property>
@@ -178,6 +181,13 @@
           <property name="spacing">
            <number>0</number>
           </property>
+          <item>
+           <widget class="Line" name="line_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
@@ -203,9 +213,6 @@
               <property name="checked">
                <bool>true</bool>
               </property>
-              <property name="autoRepeat">
-               <bool>false</bool>
-              </property>
              </widget>
             </item>
             <item>
@@ -224,9 +231,6 @@
               </property>
               <property name="checked">
                <bool>true</bool>
-              </property>
-              <property name="autoRepeat">
-               <bool>false</bool>
               </property>
              </widget>
             </item>
@@ -249,7 +253,14 @@
             <property name="checked">
              <bool>true</bool>
             </property>
-            <property name="autoRepeat">
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBoxOnlyProjectsWithAdd">
+            <property name="text">
+             <string>Оставить только проекты с доп иформацией</string>
+            </property>
+            <property name="checked">
              <bool>false</bool>
             </property>
            </widget>
@@ -271,9 +282,6 @@
             <property name="checked">
              <bool>true</bool>
             </property>
-            <property name="autoRepeat">
-             <bool>false</bool>
-            </property>
            </widget>
           </item>
           <item>
@@ -292,9 +300,6 @@
             </property>
             <property name="checked">
              <bool>true</bool>
-            </property>
-            <property name="autoRepeat">
-             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -315,9 +320,6 @@
             <property name="checked">
              <bool>true</bool>
             </property>
-            <property name="autoRepeat">
-             <bool>false</bool>
-            </property>
            </widget>
           </item>
           <item>
@@ -336,9 +338,6 @@
             </property>
             <property name="checked">
              <bool>true</bool>
-            </property>
-            <property name="autoRepeat">
-             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -359,9 +358,6 @@
             <property name="checked">
              <bool>true</bool>
             </property>
-            <property name="autoRepeat">
-             <bool>false</bool>
-            </property>
            </widget>
           </item>
           <item>
@@ -380,9 +376,6 @@
             </property>
             <property name="checked">
              <bool>true</bool>
-            </property>
-            <property name="autoRepeat">
-             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -403,8 +396,12 @@
             <property name="checked">
              <bool>true</bool>
             </property>
-            <property name="autoRepeat">
-             <bool>false</bool>
+           </widget>
+          </item>
+          <item>
+           <widget class="Line" name="line">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
             </property>
            </widget>
           </item>
@@ -415,7 +412,7 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>295</width>
+              <width>200</width>
               <height>30</height>
              </size>
             </property>

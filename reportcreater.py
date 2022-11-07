@@ -76,6 +76,7 @@ def send_df_2_xls(report_parameters):
 
     p_delete_vip = report_parameters.p_delete_vip
     p_delete_not_prod_units = report_parameters.p_delete_not_prod_units
+    p_projects_with_add_info = report_parameters.p_projects_with_add_info
     p_delete_without_fact = report_parameters.p_delete_without_fact
     p_curr_month_half = report_parameters.p_curr_month_half
     p_delete_pers_data = report_parameters.p_delete_pers_data
@@ -104,6 +105,9 @@ def send_df_2_xls(report_parameters):
         ui_handle.set_status(f"{num_poz}. Исключены строки с фактом равным нулю.")
         num_poz += 1
     ui_handle.set_status(f"{num_poz}. {'В отчете включено только производство.' if p_delete_not_prod_units else 'В отчет включены производство и управленцы.'}")
+    num_poz += 1
+    ui_handle.set_status(
+        f"{num_poz}. Обрабатываются {'только проекты из списка с доп данными.' if p_projects_with_add_info else 'все проекты.'}")
     num_poz += 1
     ui_handle.set_status(f"{num_poz}. Персональные данные (больничные листы): {'исключены из отчета.' if p_delete_pers_data else 'оставлены в отчете.'}")
     num_poz += 1
@@ -140,7 +144,17 @@ def send_df_2_xls(report_parameters):
 
     pythoncom.CoInitializeEx(0)
 
-    report_df = prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_without_fact, p_curr_month_half, p_delete_pers_data, p_delete_vacation, ui_handle)
+    report_df = prepare_data(
+        raw_file_name,
+        p_delete_vip,
+        p_delete_not_prod_units,
+        p_projects_with_add_info,
+        p_delete_without_fact,
+        p_curr_month_half,
+        p_delete_pers_data,
+        p_delete_vacation,
+        ui_handle
+    )
     if report_df is None:
         return False
 

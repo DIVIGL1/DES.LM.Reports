@@ -143,7 +143,17 @@ def add_combine_columns(df):
     df["FN_Month"] = df["FN"] + "#" + df["Month"]
 
 
-def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_without_fact, p_curr_month_half, p_delete_pers_data, p_delete_vacation, ui_handle):
+def prepare_data(
+        raw_file_name,
+        p_delete_vip,
+        p_delete_not_prod_units,
+        p_projects_with_add_info,
+        p_delete_without_fact,
+        p_curr_month_half,
+        p_delete_pers_data,
+        p_delete_vacation,
+        ui_handle
+):
     data_df = load_raw_data(raw_file_name, ui_handle)
     
     month_hours_df = load_parameter_table(myconstants.MONTH_WORKING_HOURS_TABLE)
@@ -179,7 +189,11 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
     ui_handle.set_status(f"Удалены переносы строк (всего строк данных: {data_df.shape[0]})")
 
     data_df["ShortProject"] = data_df["Project"].str[:5]
-    data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how="left")
+    if p_projects_with_add_info:
+        data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how="inner")
+    else:
+        data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how="left")
+
     for one_column in myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST.values():
         data_df[one_column] = data_df[one_column].fillna(0.00)
 
@@ -301,7 +315,7 @@ def prepare_data(raw_file_name, p_delete_vip, p_delete_not_prod_units, p_delete_
         data_df = data_df[data_df["pNotProductUnit"] != 1]
 
     ui_handle.set_status(f"... и типы ПОДпроектов (всего строк данных: {data_df.shape[0]})")
-    
+
     if p_delete_vacation:
         vacancy_text = myconstants.VACANCY_NAME_TEXT
         vacancy_text = vacancy_text.lower()

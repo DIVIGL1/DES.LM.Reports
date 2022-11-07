@@ -70,9 +70,10 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         
         s_preff = self.listView.currentIndex().data() + " --> "
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VIP, self.checkBoxDeleteVIP.isChecked())
-        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, self.checkBoxDeleteNotProduct.isChecked())
-        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT, self.checkBoxDeleteWithoutFact.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_CURRMONTHHALF, self.checkBoxCurrMonthAHalf.isChecked())
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, self.checkBoxDeleteNotProduct.isChecked())
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD, self.checkBoxOnlyProjectsWithAdd.isChecked())
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT, self.checkBoxDeleteWithoutFact.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, self.checkBoxDelPDn.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, self.checkBoxDeleteVac.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE, self.checkBoxAddVFTE.isChecked())
@@ -95,6 +96,8 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VIP, myconstants.PARAMETER_SAVED_VALUE_DELETE_VIP_DEFVALUE))
         self.checkBoxDeleteNotProduct.setChecked(
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD_DEFVALUE))
+        self.checkBoxOnlyProjectsWithAdd.setChecked(
+            load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD, myconstants.PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD_DEFVALUE))
         self.checkBoxDeleteWithoutFact.setChecked(
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT, myconstants.PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT_DEFVALUE))
         self.checkBoxCurrMonthAHalf.setChecked(
@@ -127,6 +130,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         
         self.checkBoxDeleteVIP.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxDeleteNotProduct.clicked.connect(self.on_click_CheckBoxes)
+        self.checkBoxOnlyProjectsWithAdd.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxDeleteWithoutFact.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxCurrMonthAHalf.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxDelPDn.clicked.connect(self.on_click_CheckBoxes)

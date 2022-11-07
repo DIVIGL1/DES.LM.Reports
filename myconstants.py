@@ -219,9 +219,10 @@ TEXT_LINES_SEPARATOR = "-" * 110
 PARAMETER_FILENAME_OF_LAST_REPORT = "Последний сформированный отчёт"
 
 PARAMETER_SAVED_VALUE_DELETE_VIP = "Удалить VIP?"
-PARAMETER_SAVED_VALUE_DELETE_NONPROD = "Удалять не производственные подразделения?"
-PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT = "Удалять строки не содержащие факта (факт=0)?"
 PARAMETER_SAVED_VALUE_DELETE_CURRMONTHHALF = "Текущий месяц рассчитывать от половины нормы часов?"
+PARAMETER_SAVED_VALUE_DELETE_NONPROD = "Удалять не производственные подразделения?"
+PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD = "Оставлять только проекты, по которым есть доп информация?"
+PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT = "Удалять строки не содержащие факта (факт=0)?"
 PARAMETER_SAVED_VALUE_DELETE_PERSDATA = "Удалять проекты с персональными данными?"
 PARAMETER_SAVED_VALUE_DELETE_VAC = "Удалять ли вакансии из отчёта?"
 PARAMETER_SAVED_VALUE_ADD_VFTE = "Добавить к списку сырых данных искусственные FTE?"
@@ -232,9 +233,10 @@ PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL = "Открывать ли сформиро�
 DO_IT_PREFFIX = ""
 
 PARAMETER_SAVED_VALUE_DELETE_VIP_DEFVALUE = False
-PARAMETER_SAVED_VALUE_DELETE_NONPROD_DEFVALUE = False
-PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT_DEFVALUE = False
 PARAMETER_SAVED_VALUE_DELETE_CURRMONTHHALF_DEFVALUE = False
+PARAMETER_SAVED_VALUE_DELETE_NONPROD_DEFVALUE = False
+PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD_DEFVALUE = False
+PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT_DEFVALUE = False
 PARAMETER_SAVED_VALUE_DELETE_PERSDATA_DEFVALUE = False
 PARAMETER_SAVED_VALUE_DELETE_VAC_DEFVALUE = True
 PARAMETER_SAVED_VALUE_ADD_VFTE_DEFVALUE = False
@@ -254,4 +256,4 @@ EXCELWINDOWSTATE_MIN = -4140  # Минимизировано
 NUM_ROWS_FOR_HIDE = 300
 NUM_COLUMNS_FOR_HIDE = 150
 
-APP_VERSION = "v:3.01.061122.01"
+APP_VERSION = "v:3.02.071122.01"

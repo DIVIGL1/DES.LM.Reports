@@ -60,6 +60,8 @@ class MyReportParameters:
         self.slasterror = ""
         self.p_delete_vip = None
         self.p_delete_not_prod_units = None
+        self.p_projects_with_add_info = None
+        self.p_delete_without_fact = None
         self.p_delete_without_fact = None
         self.p_curr_month_half = None
         self.p_delete_pers_data = None
@@ -94,6 +96,7 @@ class MyReportParameters:
         # Параметры без префиксов будем использовать для получения
         self.p_delete_vip = self.parent.mainwindow.ui.checkBoxDeleteVIP.isChecked()
         self.p_delete_not_prod_units = self.parent.mainwindow.ui.checkBoxDeleteNotProduct.isChecked()
+        self.p_projects_with_add_info = self.parent.mainwindow.ui.checkBoxOnlyProjectsWithAdd.isChecked()
         self.p_delete_without_fact = self.parent.mainwindow.ui.checkBoxDeleteWithoutFact.isChecked()
         self.p_curr_month_half = self.parent.mainwindow.ui.checkBoxCurrMonthAHalf.isChecked()
         self.p_delete_pers_data = self.parent.mainwindow.ui.checkBoxDelPDn.isChecked()
