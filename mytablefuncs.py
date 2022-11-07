@@ -30,10 +30,15 @@ def get_parameter_value(paramname, defvalue=""):
 def load_parameter_table(tablename):
     # Загружаем соответствующую таблицу с параметрами
     if (tablename == myconstants.COSTS_TABLE) and os.path.isfile(myconstants.SECRET_COSTS_LOCATION + "/" + myconstants.COSTS_TABLE):
-        parameter_df = pd.read_excel(myconstants.SECRET_COSTS_LOCATION + "/" + myconstants.COSTS_TABLE, engine='openpyxl')
+        full_file_path = myconstants.SECRET_COSTS_LOCATION + "/" + myconstants.COSTS_TABLE
     else:
-        parameter_df = pd.read_excel(get_parameter_value(myconstants.PARAMETERS_SECTION_NAME) + "/" + tablename, engine='openpyxl')
-        
+        if (tablename == myconstants.PROJECTS_LIST_ADD_INFO) and os.path.isfile(
+                myconstants.SECRET_COSTS_LOCATION + "/" + myconstants.PROJECTS_LIST_ADD_INFO):
+            full_file_path = myconstants.SECRET_COSTS_LOCATION + "/" + myconstants.PROJECTS_LIST_ADD_INFO
+        else:
+            full_file_path = get_parameter_value(myconstants.PARAMETERS_SECTION_NAME) + "/" + tablename
+
+    parameter_df = pd.read_excel(full_file_path, engine='openpyxl')
     parameter_df.dropna(how='all', inplace=True)
     
     return parameter_df
@@ -173,7 +178,6 @@ def prepare_data(
     projects_list_add_info.rename(columns = myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST, inplace = True)
     projects_list_add_info = projects_list_add_info[projects_list_add_info["Project4AddInfo"].notna()]
     projects_list_add_info.fillna(0.00, inplace = True)
-    projects_list_add_info["Project4AddInfo"] = projects_list_add_info["Project4AddInfo"].str[:5]
 
     ui_handle.set_status(f"Загружены таблицы с параметрами (всего строк данных: {data_df.shape[0]})")
     if data_df.shape[0] == 0:
@@ -189,10 +193,10 @@ def prepare_data(
     ui_handle.set_status(f"Удалены переносы строк (всего строк данных: {data_df.shape[0]})")
 
     data_df["ShortProject"] = data_df["Project"].str[:5]
-    if p_projects_with_add_info:
-        data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how="inner")
-    else:
-        data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how="left")
+    projects_list_add_info["Project4AddInfo"] = projects_list_add_info["Project4AddInfo"].str[:5]
+
+    join_type = "inner" if p_projects_with_add_info else "left"
+    data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how=join_type)
 
     for one_column in myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST.values():
         data_df[one_column] = data_df[one_column].fillna(0.00)
@@ -294,7 +298,7 @@ def prepare_data(
     for one_column in myconstants.COLUMNS_FILLNA:
         data_df[one_column] = data_df[[one_column]].fillna(myconstants.FILLNA_STRING)
 
-    data_df = data_df.merge(is_dog_name_df, left_on="ShortProject", right_on="ID_DES.LM_project", how="left", suffixes=("", "_will_droped"))
+    data_df = data_df.merge(is_dog_name_df, left_on="ShortProject", right_on="ID_DES.LM_project", how="left", suffixes=("", "_will_dropped"))
     data_df["ISDogName"].fillna(data_df["Project"], inplace=True)
     
     for one_type in myconstants.NO_CONTRACT_TYPES:

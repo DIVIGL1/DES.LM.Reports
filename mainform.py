@@ -18,6 +18,7 @@ from myutils import load_param, save_param, get_files_list
 class Communicate(QObject):
     updateStatusText = pyqtSignal()
 
+
 class qtMainWindow(myQt_form.Ui_MainWindow):
     closeApp = pyqtSignal()
     exit_in_process = None
@@ -38,7 +39,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
 
         self.listView.setCurrentIndex(self.model.indexFromItem(item))
 
-        return (True)
+        return True
 
     def on_click_DoIt(self):
         raw_file_name = self.listViewRawData.currentIndex().data()
@@ -262,7 +263,8 @@ class MyWindow(QtWidgets.QMainWindow):
             event.ignore()
 
     def dropEvent(self, event):
-        files = [u.toLocalFile() for u in event.mimeData().urls()]
+        # Из тех файлов, которые "прилетели" выберем только *.xlsx:
+        files = [u.toLocalFile() for u in event.mimeData().urls() if u.toLocalFile()[-5:].lower() == ".xlsx"]
         for one_file_path in files:
             this_file_name = os.path.basename(one_file_path)
             raw_file_path = get_parameter_value(myconstants.RAW_DATA_SECTION_NAME) + "/" + this_file_name
@@ -334,8 +336,8 @@ class MyWindow(QtWidgets.QMainWindow):
         result = None
         if not self.ctrl_is_pressed:
             result = QtWidgets.QMessageBox.question(self, "Подтверждение закрытия окна",
-                                                    "Вы действительно хотите закрыть программу?\n\n"+
-                                                    "Если у Вас формируется отчёт,\n"+
+                                                    "Вы действительно хотите закрыть программу?\n\n" +
+                                                    "Если у Вас формируется отчёт,\n" +
                                                     "то скорее всего, его формирование не прекратится.",
                                                     QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
                                                     QtWidgets.QMessageBox.No)
