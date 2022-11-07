@@ -40,6 +40,17 @@ def load_parameter_table(tablename):
 
     parameter_df = pd.read_excel(full_file_path, engine='openpyxl')
     parameter_df.dropna(how='all', inplace=True)
+    unique_key_field = myconstants.PARAMETERS_ALL_TABLES[tablename][1]
+    if parameter_df.duplicated([unique_key_field]).sum() > 0:
+        return (
+            f"\n\n\n" +
+            f"{myconstants.TEXT_LINES_SEPARATOR}\n" +
+            f"В таблице {tablename} в колонке {unique_key_field} обнаружены повторяющиеся значения.\n" +
+            f"Сформировать отчёт невозможно, так как повторы искажают вычисления.\n"
+            f"\n"
+            f"Необходимо избавиться от повторов!\n"
+            f"{myconstants.TEXT_LINES_SEPARATOR}"
+        )
     
     return parameter_df
 
@@ -162,18 +173,70 @@ def prepare_data(
     data_df = load_raw_data(raw_file_name, ui_handle)
     
     month_hours_df = load_parameter_table(myconstants.MONTH_WORKING_HOURS_TABLE)
+    if type(month_hours_df) == str:
+        ui_handle.set_status(month_hours_df)
+        ui_handle.enable_buttons()
+        return None
     divisions_names_df = load_parameter_table(myconstants.DIVISIONS_NAMES_TABLE)
+    if type(divisions_names_df) == str:
+        ui_handle.set_status(divisions_names_df)
+        ui_handle.enable_buttons()
+        return None
     fns_names_df = load_parameter_table(myconstants.FNS_NAMES_TABLE)
+    if type(fns_names_df) == str:
+        ui_handle.set_status(fns_names_df)
+        ui_handle.enable_buttons()
+        return None
     p_fns_subst_df = load_parameter_table(myconstants.P_FN_SUBST_TABLE)
+    if type(p_fns_subst_df) == str:
+        ui_handle.set_status(p_fns_subst_df)
+        ui_handle.enable_buttons()
+        return None
     projects_sub_types_df = load_parameter_table(myconstants.PROJECTS_SUB_TYPES_TABLE)
+    if type(projects_sub_types_df) == str:
+        ui_handle.set_status(projects_sub_types_df)
+        ui_handle.enable_buttons()
+        return None
     projects_types_descr_df = load_parameter_table(myconstants.PROJECTS_TYPES_DESCR)
+    if type(projects_types_descr_df) == str:
+        ui_handle.set_status(projects_types_descr_df)
+        ui_handle.enable_buttons()
+        return None
     projects_sub_types_descr_df = load_parameter_table(myconstants.PROJECTS_SUB_TYPES_DESCR)
+    if type(projects_sub_types_descr_df) == str:
+        ui_handle.set_status(projects_sub_types_descr_df)
+        ui_handle.enable_buttons()
+        return None
     costs_df = load_parameter_table(myconstants.COSTS_TABLE)
+    if type(costs_df) == str:
+        ui_handle.set_status(costs_df)
+        ui_handle.enable_buttons()
+        return None
     emails_df = load_parameter_table(myconstants.EMAILS_TABLE)
+    if type(emails_df) == str:
+        ui_handle.set_status(emails_df)
+        ui_handle.enable_buttons()
+        return None
     vip_df = load_parameter_table(myconstants.VIP_TABLE)
+    if type(vip_df) == str:
+        ui_handle.set_status(vip_df)
+        ui_handle.enable_buttons()
+        return None
     portfolio_df = load_parameter_table(myconstants.PORTFEL_TABLE)
+    if type(portfolio_df) == str:
+        ui_handle.set_status(portfolio_df)
+        ui_handle.enable_buttons()
+        return None
     is_dog_name_df = load_parameter_table(myconstants.ISDOGNAME_TABLE)
+    if type(is_dog_name_df) == str:
+        ui_handle.set_status(is_dog_name_df)
+        ui_handle.enable_buttons()
+        return None
     projects_list_add_info = load_parameter_table(myconstants.PROJECTS_LIST_ADD_INFO)
+    if type(projects_list_add_info) == str:
+        ui_handle.set_status(projects_list_add_info)
+        ui_handle.enable_buttons()
+        return None
 
     projects_list_add_info.rename(columns = myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST, inplace = True)
     projects_list_add_info = projects_list_add_info[projects_list_add_info["Project4AddInfo"].notna()]
@@ -181,10 +244,13 @@ def prepare_data(
 
     ui_handle.set_status(f"Загружены таблицы с параметрами (всего строк данных: {data_df.shape[0]})")
     if data_df.shape[0] == 0:
-        ui_handle.set_status("------------------------------")
+        ui_handle.set_status("")
+        ui_handle.set_status("")
+        ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
         ui_handle.set_status("В данных нет ни одной строки!")
         ui_handle.set_status("Сформировать отчёт невозможно!")
-        ui_handle.set_status("-------------------------------")
+        ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
+        ui_handle.enable_buttons()
         return None
     for column_name in set(data_df.dtypes.keys()) - set(myconstants.DONT_REPLACE_ENTER):
         if data_df.dtypes[column_name] == type(str):
@@ -208,10 +274,13 @@ def prepare_data(
     data_df = data_df.merge(month_hours_df, left_on="FDate", right_on="FirstDate", how="inner")
     ui_handle.set_status(f"Проведено объединение с таблицей с рабочими часами (всего строк данных: {data_df.shape[0]})")
     if data_df.shape[0] == 0:
-        ui_handle.set_status("------------------------------")
+        ui_handle.set_status("")
+        ui_handle.set_status("")
+        ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
         ui_handle.set_status("В данных нет ни одной строки!")
         ui_handle.set_status("Сформировать отчёт невозможно!")
-        ui_handle.set_status("-------------------------------")
+        ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
+        ui_handle.enable_buttons()
         return None
     data_df["FDate"] = data_df["FDate"].dt.strftime('%Y_%m')
     

@@ -53,8 +53,9 @@ class ReportCreater(object):
         
         self.start_timer()
         self.parent.mainwindow.ui.clear_status()
+
         send_df_2_xls(self.parent.report_parameters)
-        
+
         return True
 
     def start_timer(self):

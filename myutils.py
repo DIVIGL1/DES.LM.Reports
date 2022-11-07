@@ -182,5 +182,16 @@ def get_home_dir():
     return os.path.abspath(os.curdir)
 
 
+def is_loading_error(test_data, ui_handle):
+    if type(test_data) == str:
+        return True
+
+    ui_handle.set_status("------------------------------")
+    ui_handle.set_status("В данных нет ни одной строки!")
+    ui_handle.set_status("Сформировать отчёт невозможно!")
+    ui_handle.set_status("-------------------------------")
+
+
+
 if __name__ == "__main__":
     print(get_files_list("RawData", "", ".xlsx"))

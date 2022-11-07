@@ -182,6 +182,22 @@ PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST = {
     "Подр_Дек": "SumPodr12",
 }
 
+PARAMETERS_ALL_TABLES = {
+    MONTH_WORKING_HOURS_TABLE: ("Таблица с количеством рабочих часов в месяцах", "FirstDate"),
+    DIVISIONS_NAMES_TABLE: ("Таблица с наименованиями подразделений", "FullDivisionName"),
+    FNS_NAMES_TABLE: ("Таблица с наименованиями функциональных направлений", "FullFNName"),
+    P_FN_SUBST_TABLE: ("Таблица подстановок названий функциональных направлений", "ProjectNum"),
+    PROJECTS_SUB_TYPES_TABLE: ("Таблица с наименованиями подтипов проектов", "ProjectName"),
+    PROJECTS_TYPES_DESCR: ("Таблица с расшифровкой типов (букв) проектов", "ProjectTypeName"),
+    PROJECTS_SUB_TYPES_DESCR: ("Таблица с расшифровок подтипов проектов", "ProjectSubTypeName"),
+    COSTS_TABLE: ("Таблица часовых ставок", "CostUserName"),
+    EMAILS_TABLE: ("Таблица адресов электронной почты", "FIO_4_email"),
+    VIP_TABLE: ("Таблица списка VIP", "FIO_VIP"),
+    PORTFEL_TABLE: ("Таблица списка портфелей проектов", "ID_DES.LM_project"),
+    ISDOGNAME_TABLE: ("Таблица наименований ИС из контракта", "ID_DES.LM_project"),
+    PROJECTS_LIST_ADD_INFO: ("Таблица наименований ИС из контракта", "Наименование проекта (только текст)"),
+}
+
 EMAIL_INFO_COLUMNS = ["Personal_email", "user_email", "boss_email"]
 SECRET_COSTS_LOCATION = "C:/Tmp"
 
