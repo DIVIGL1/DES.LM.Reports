@@ -6,7 +6,7 @@ import warnings
 import pythoncom
 
 import myconstants
-from mytablefuncs import get_parameter_value, prepare_data
+from mytablefuncs import get_parameter_value, prepare_data, test_secret_files_list
 import myutils
 from myexcelclass import MyExcel
 
@@ -129,7 +129,17 @@ def send_df_2_xls(report_parameters):
     ui_handle.set_status(f"{num_poz}. Округление до: {myconstants.ROUND_FTE_VALUE}-го знака после запятой")
     num_poz += 1
             
-    ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
+    # В случае наличия в специальной парке файлов с секретными данными и если
+    # в них есть какие-то не нулевые значения, то нужно удалять лист с данными:
+    test_result = test_secret_files_list()
+    if test_result:
+        ui_handle.set_status(test_result)
+        p_save_without_formulas = True
+        report_parameters.p_save_without_formulas = p_save_without_formulas
+        p_delete_rawdata_sheet = True
+        report_parameters.p_delete_rawdata_sheet = p_delete_rawdata_sheet
+    else:
+        ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
 
     ui_handle.set_status("Проверим структуру файла, содержащего форму отчёта.")
 
@@ -137,8 +147,9 @@ def send_df_2_xls(report_parameters):
         shutil.copyfile(report_file_name, report_prepared_name)
     except (OSError, shutil.Error):
         ui_handle.set_status("Не удалось скопировать файл с формой отчёта.")
-        ui_handle.set_status(f"проверьте, пожалуйста, не открыт ли у Вас файл: {myutils.rel_path(report_prepared_name)}")
-        ui_handle.set_status("Формирование отчёта не возможно.")
+        ui_handle.set_status(f"проверьте, пожалуйста, не открыт ли у Вас файл:")
+        ui_handle.set_status(f"{myutils.rel_path(report_prepared_name)}")
+        ui_handle.set_status("Формирование отчёта невозможно.")
         myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         ui_handle.enable_buttons()
         return False

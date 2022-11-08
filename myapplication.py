@@ -105,9 +105,6 @@ class MyReportParameters:
         self.p_save_without_formulas = self.parent.mainwindow.ui.checkBoxSaveWithOutFotmulas.isChecked()
         self.p_delete_rawdata_sheet = self.parent.mainwindow.ui.checkBoxDelRawData.isChecked()
         self.p_open_in_excel = self.parent.mainwindow.ui.checkBoxOpenExcel.isChecked()
-        if os.path.isfile(myconstants.SECRET_COSTS_LOCATION + "/" + myconstants.COSTS_TABLE):
-            self.p_save_without_formulas = True
-            self.p_delete_rawdata_sheet = True
 
         # Получим полные пути до файлов.
         report_prepared_name = \

@@ -27,6 +27,25 @@ def get_parameter_value(paramname, defvalue=""):
     return ret_value
 
 
+def test_secret_files_list():
+    ret_value = ""
+    for one_table in myconstants.TEST_SECRET_FILES_LIST:
+        full_file_path = myconstants.SECRET_COSTS_LOCATION + "/" + one_table
+        if os.path.isfile(full_file_path):
+            test_df = pd.read_excel(full_file_path, engine='openpyxl')
+            test_df.dropna(how='all', inplace=True)
+            if (test_df.select_dtypes(include='number') != 0).sum().sum() != 0:
+                ret_value = f"{myconstants.TEXT_LINES_SEPARATOR}\n" + \
+                            f"В таблице {one_table} в колонке присутствуют числовые значения.\n" + \
+                            f"Для исключения случайного распространения конфиденциальной информации\n" + \
+                            f"при пересылке файла, в отчете будет принудительно удалена закладка\n" + \
+                            f"с исходными данными, а формулы в отчете будут переведены в значения.\n" + \
+                            f"{myconstants.TEXT_LINES_SEPARATOR}"
+                break
+
+    return ret_value
+
+
 def load_parameter_table(tablename):
     # Загружаем соответствующую таблицу с параметрами
     if (tablename == myconstants.COSTS_TABLE) and os.path.isfile(myconstants.SECRET_COSTS_LOCATION + "/" + myconstants.COSTS_TABLE):
@@ -42,10 +61,17 @@ def load_parameter_table(tablename):
     parameter_df.dropna(how='all', inplace=True)
     unique_key_field = myconstants.PARAMETERS_ALL_TABLES[tablename][1]
     if parameter_df.duplicated([unique_key_field]).sum() > 0:
+        report_str = ""
+        counter = 0
+        for element in parameter_df[parameter_df.duplicated([unique_key_field])][unique_key_field].values:
+            counter += 1
+            report_str = report_str + f"   {counter}. {element}\n"
+
         return (
             f"\n\n\n" +
             f"{myconstants.TEXT_LINES_SEPARATOR}\n" +
-            f"В таблице {tablename} в колонке {unique_key_field} обнаружены повторяющиеся значения.\n" +
+            f"В таблице {tablename} в колонке {unique_key_field} обнаружены повторяющиеся значения:\n" +
+            report_str +
             f"Сформировать отчёт невозможно, так как повторы искажают вычисления.\n"
             f"\n"
             f"Необходимо избавиться от повторов!\n"
@@ -90,8 +116,7 @@ def load_raw_data(raw_file, ui_handle):
             f"\n\n\n" +
             f"{myconstants.TEXT_LINES_SEPARATOR}\n" +
             f"Выбранный файл имеет не правильную структуру!\n" +
-            f"Сформировать отчёт невозможно!"
-            f"\n"
+            f"Сформировать отчёт невозможно!\n"
             f"{myconstants.TEXT_LINES_SEPARATOR}"
         )
 
