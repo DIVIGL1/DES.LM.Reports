@@ -77,6 +77,24 @@ def load_raw_data(raw_file, ui_handle):
 
     ui_handle.set_status("Удаляем 'na'. Переименовываем столбцы и удаляем лишние.")
     df.dropna(how='all', inplace=True)
+    # Необходимо проверить файл на соответствие структуре, на случай если скопировали не тот файл:
+    set1 = (set(myconstants.RAW_DATA_COLUMNS.keys()) ^ {"Unnamed: 15"}) ^ {"Unnamed: 16"}
+    set1 = set1 ^ {"Unnamed: 15"}
+    set1 = set1 ^ {"Unnamed: 16"}
+    set2 = set(df.columns)
+    set2 = set2 ^ {"Unnamed: 15"}
+    set2 = set2 ^ {"Unnamed: 16"}
+    if not (set1 == set2):
+        # Структура файла не правильная!
+        return (
+            f"\n\n\n" +
+            f"{myconstants.TEXT_LINES_SEPARATOR}\n" +
+            f"Выбранный файл имеет не правильную структуру!\n" +
+            f"Сформировать отчёт невозможно!"
+            f"\n"
+            f"{myconstants.TEXT_LINES_SEPARATOR}"
+        )
+
     df.rename(columns=myconstants.RAW_DATA_COLUMNS, inplace=True)
     exist_drop_columns_list = list(set(myconstants.RAW_DATA_DROP_COLUMNS) & set(df.dtypes.keys()))
     df.drop(columns=exist_drop_columns_list, inplace=True)
@@ -171,7 +189,10 @@ def prepare_data(
         ui_handle
 ):
     data_df = load_raw_data(raw_file_name, ui_handle)
-    
+    if type(data_df) == str:
+        ui_handle.set_status(data_df)
+        ui_handle.enable_buttons()
+        return None
     month_hours_df = load_parameter_table(myconstants.MONTH_WORKING_HOURS_TABLE)
     if type(month_hours_df) == str:
         ui_handle.set_status(month_hours_df)
