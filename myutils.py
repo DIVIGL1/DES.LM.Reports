@@ -116,61 +116,6 @@ def get_sheets_list(wb):
     return [one_sheet.Name for one_sheet in wb.Sheets]
 
 
-def hide_and_delete_rows_and_columns(oexcel, wb):
-    # -----------------------------------
-    oexcel.Calculation = myconstants.EXCEL_AUTOMATIC_CALC
-    oexcel.Calculation = myconstants.EXCEL_MANUAL_CALC
-    for curr_sheet_name in get_sheets_list(wb):
-        if curr_sheet_name not in myconstants.SHEETS_DONT_DELETE_FORMULAS:
-            row_counter = 0
-            p_found_first_row = False
-            last_row_4_test = myconstants.PARAMETER_MAX_ROWS_TEST_IN_REPORT
-            range_from_excel = wb.Sheets[curr_sheet_name].Range(wb.Sheets[curr_sheet_name].Cells(1, 1), wb.Sheets[curr_sheet_name].Cells(last_row_4_test, 1)).Value
-
-            # Ищем первый признак 'delete'
-            for row_counter in range(len(range_from_excel)):
-                row_del_flag_value = range_from_excel[row_counter][0]
-                if row_del_flag_value is None:
-                    p_found_first_row = False
-                    break
-                
-                if type(row_del_flag_value) == str:
-                    row_del_flag_value = row_del_flag_value.replace(" ", "")
-                    if row_del_flag_value == myconstants.DELETE_ROW_MARKER:
-                        p_found_first_row = True
-                        break
-
-            if p_found_first_row:
-                first_row_with_del = row_counter + 1
-                last_row_with_del = row_counter
-                while last_row_with_del < len(range_from_excel):
-                    row_del_flag_value = range_from_excel[last_row_with_del][0]
-                    if (type(row_del_flag_value) != str) or row_del_flag_value.replace(" ", "") != myconstants.DELETE_ROW_MARKER:
-                        break
-                    last_row_with_del += 1
-
-                wb.Sheets[curr_sheet_name].Range(wb.Sheets[curr_sheet_name].Cells(
-                    first_row_with_del, 1), wb.Sheets[curr_sheet_name].Cells(last_row_with_del, 1)).Rows.EntireRow.Delete()
-    # -----------------------------------
-            # Скрываем строки и столбцы с признаком 'hide'
-            for one_sheet_name in get_sheets_list(wb):
-                if one_sheet_name not in [myconstants.RAW_DATA_SHEET_NAME, myconstants.UNIQE_LISTS_SHEET_NAME, myconstants.SETTINGS_SHEET_NAME]:
-                    # Скрываем строки с признаком 'hide'
-                    for curr_row in range(1, myconstants.NUM_ROWS_FOR_HIDE + 1):
-                        cell_value = wb.Sheets[one_sheet_name].Cells(curr_row, 1).Value
-                        if type(cell_value) == str and cell_value is not None and cell_value.replace(" ", "") == myconstants.HIDE_MARKER:
-                            pass
-                            wb.Sheets[one_sheet_name].Rows(curr_row).Hidden = True
-                    # Скрываем столбцы с признаком 'hide'
-                    for curr_col in range(1, myconstants.NUM_COLUMNS_FOR_HIDE + 1):
-                        cell_value = wb.Sheets[one_sheet_name].Cells(1, curr_col).Value
-                        if type(cell_value) == str and cell_value is not None and cell_value.replace(" ", "") == myconstants.HIDE_MARKER:
-                            wb.Sheets[one_sheet_name].Columns(curr_col).Hidden = True
-                        else:
-                            pass
-    # -----------------------------------
-
-
 def rel_path(path):
     home_dir = get_home_dir()
     ret_value = os.path.relpath(path, home_dir)

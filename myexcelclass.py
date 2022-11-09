@@ -61,9 +61,7 @@ class MyExcel:
 
     def save_report(self):
         self.oexcel.Calculation = self.save_excel_calc_status
-        self.oexcel.Calculate()
-        self.work_book.Save()
-        if self.report_parameters.p_save_without_formulas: 
+        if self.report_parameters.p_save_without_formulas:
             for curr_sheet_name in self.get_sheets_list():
                 if curr_sheet_name not in myconstants.SHEETS_DONT_DELETE_FORMULAS:
                     column1 = self.work_book.Sheets[curr_sheet_name].UsedRange.Column
@@ -81,8 +79,8 @@ class MyExcel:
                 for one_sheet_name in myconstants.DELETE_SHEETS_LIST_IF_NO_FORMULAS:
                     if one_sheet_name in self.get_sheets_list():
                         self.work_book.Sheets[one_sheet_name].Delete()
-            
-            self.work_book.Save()
+
+        self.work_book.Save()
 
     def __del__(self):
         if self.not_ready:
@@ -98,6 +96,9 @@ class MyExcel:
                 self.report_parameters.parent.mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
                 self.report_parameters.parent.mainwindow.ui.set_status(f"Сохраняем в файл: {myutils.rel_path(report_prepared_name)}")
 
+                # -----------------------------------
+                # Произведём пересчёт ячеек иначе, если не сработают формулы
+                # используемые для проставления признаков скрываемых/удаляемых строк/столбцов.
                 self.oexcel.Calculate()
                 self.hide_and_delete_rows_and_columns()
                 self.save_report()
@@ -126,11 +127,6 @@ class MyExcel:
         self.report_parameters.parent.mainwindow.ui.enable_buttons()
 
     def hide_and_delete_rows_and_columns(self):
-        # -----------------------------------
-        # Произведём пересчёт ячеек иначе, если не сработают формулы используемые для проставления признаков скрываемых/удаляемых строк/столбцов.
-        self.oexcel.Calculate()
-#        self.oexcel.Calculation = myconstants.EXCEL_AUTOMATIC_CALC
-#        self.oexcel.Calculation = myconstants.EXCEL_MANUAL_CALC
         for curr_sheet_name in self.get_sheets_list():
             if curr_sheet_name not in myconstants.SHEETS_DONT_DELETE_FORMULAS:
                 row_counter = 0
