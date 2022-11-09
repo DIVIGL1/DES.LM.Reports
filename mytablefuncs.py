@@ -338,16 +338,10 @@ def prepare_data(
     data_df["SumUserFactFTE"] = data_df.groupby(["User", "FDate"])["FactFTE"].transform("sum")
     data_df["SumUserFactFTEUR"] = data_df.groupby(["User", "FDate"])["FactFTEUnRounded"].transform("sum")
 
-#    data_df["HourTo1FTE"] = \
-#        data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: round((x[1] / (1 if x[0] == 0 else x[0])), myconstants.ROUND_FTE_VALUE), axis=1)
-#    data_df["HourTo1FTE_Math"] = \
-#        data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: round(x[1] / max(x[0], 1), myconstants.ROUND_FTE_VALUE), axis=1)
-
     data_df["HourTo1FTE"] = \
         data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: x[1] / x[0], axis=1)
     data_df["HourTo1FTE_Math"] = \
         data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: x[1] / max(x[0], 1), axis=1)
-
 
     join_type = "inner" if p_projects_with_add_info else "left"
     data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how=join_type)
