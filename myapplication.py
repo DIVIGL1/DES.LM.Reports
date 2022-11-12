@@ -30,7 +30,6 @@ class MyHandler(FileSystemEventHandler):
     def on_moved(self, event):
         if event.is_directory:
             return
-        old_filename = os.path.splitext(os.path.basename(event.src_path))[0]
         new_filename = os.path.splitext(os.path.basename(event.dest_path))[0]
         self.parent.mainwindow.refresh_raw_files_list(new_filename)
 
