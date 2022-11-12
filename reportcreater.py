@@ -165,6 +165,7 @@ def send_df_2_xls(report_parameters):
         p_curr_month_half,
         p_delete_pers_data,
         p_delete_vacation,
+        p_virtual_FTE,
         ui_handle
     )
     if report_df is None:
