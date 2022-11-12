@@ -40,7 +40,10 @@ def get_files_list(path2files="", files_starts="", files_ends=".xlsx", reverse=T
             for one_file
                 in os.listdir(path2files)
                     if (one_file.lower().startswith(files_starts.lower()) and
-                        one_file.lower().endswith(files_ends.lower()))]
+                        one_file.lower().endswith(files_ends.lower()) and
+                        one_file[0] != "~"
+                    )
+        ]
     
     files_list = sorted(files_list, reverse=reverse)
     return files_list
