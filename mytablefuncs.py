@@ -81,50 +81,90 @@ def load_parameter_table(tablename):
     return parameter_df
 
 
-def load_raw_data(raw_file, ui_handle):
+def load_raw_data(raw_file, p_virtual_FTE, ui_handle):
     # Загружаем сырые данные
     ui_handle.set_status("Начинаем загрузку и обработку исходных данных.")
-    _, _, _, p_add_vfte, _, _, _ = myutils.get_report_parameters()
-    if p_add_vfte:
+    df = None
+    df_raw = open_and_test_raw_struct(raw_file)
+    if type(df_raw) == str:
+        return(df_raw)
+
+    if p_virtual_FTE:
         # Проверим наличие файла:
         virtual_fte_file = \
             os.path.join(
                 os.path.join(os.getcwd(), get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)),
                 myconstants.VIRTUAL_FTE_FILE_NAME)
         if not os.path.isfile(virtual_fte_file):
+            ui_handle.set_status("")
+            ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
             ui_handle.set_status("Не обнаружен файл с искусственными FTE.")
-            df = pd.read_excel(raw_file, engine='openpyxl')
+            ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
+            ui_handle.set_status("")
+            df = df_raw
         else:
-            df = pd.concat(
-                [pd.read_excel(raw_file, engine='openpyxl'), pd.read_excel(virtual_fte_file, engine='openpyxl')],
-                sort=False, axis=0, ignore_index=True)
+            df_virtual = open_and_test_raw_struct(virtual_fte_file, short_text=True)
+            if type(df_virtual) == str:
+                return (
+                    "\n\n\n" +
+                    f"{myconstants.TEXT_LINES_SEPARATOR}\n" +
+                    f"Неудачная загрузка файла с виртуальными FTE.\n" +
+                    "\n" +
+                    df_virtual +
+                    f"\nФайл виртуальных FTE пропущен.\n" +
+                    f"{myconstants.TEXT_LINES_SEPARATOR}"
+                )
+
+            df = pd.concat([df_raw, df_virtual], sort=False, axis=0, ignore_index=True)
     else:
-        df = pd.read_excel(raw_file, engine='openpyxl')
+        df = df_raw
 
     ui_handle.set_status("Удаляем 'na'. Переименовываем столбцы и удаляем лишние.")
     df.dropna(how='all', inplace=True)
-    # Необходимо проверить файл на соответствие структуре, на случай если скопировали не тот файл:
-    set1 = (set(myconstants.RAW_DATA_COLUMNS.keys()) ^ {"Unnamed: 15"}) ^ {"Unnamed: 16"}
-    set1 = set1 ^ {"Unnamed: 15"}
-    set1 = set1 ^ {"Unnamed: 16"}
-    set2 = set(df.columns)
-    set2 = set2 ^ {"Unnamed: 15"}
-    set2 = set2 ^ {"Unnamed: 16"}
-    if not (set1 == set2):
-        # Структура файла не правильная!
-        return (
-            f"\n\n\n" +
-            f"{myconstants.TEXT_LINES_SEPARATOR}\n" +
-            f"Выбранный файл имеет не правильную структуру!\n" +
-            f"Сформировать отчёт невозможно!\n"
-            f"{myconstants.TEXT_LINES_SEPARATOR}"
-        )
-
     df.rename(columns=myconstants.RAW_DATA_COLUMNS, inplace=True)
     exist_drop_columns_list = list(set(myconstants.RAW_DATA_DROP_COLUMNS) & set(df.dtypes.keys()))
     df.drop(columns=exist_drop_columns_list, inplace=True)
 
     return df
+
+
+def open_and_test_raw_struct(xls_raw_file, short_text=False):
+    # Откроем файл:
+    try:
+        df = pd.read_excel(xls_raw_file, engine='openpyxl')
+    except FileNotFoundError:
+        ret_error_value = \
+            f"Файл c не найден...\n" + \
+            f"Сформировать отчёт невозможно!"
+    except:
+        ret_error_value = \
+            f"Формат файла не является форматом xlsx.\n" + \
+            f"Такой формат файлов не поддерживается."
+    else:
+        # Необходимо проверить файл на соответствие структуре, на случай если в папку скопировали не тот файл:
+        set1 = (set(myconstants.RAW_DATA_COLUMNS.keys()) ^ {"Unnamed: 15"}) ^ {"Unnamed: 16"}
+        set1 = set1 ^ {"Unnamed: 15"}
+        set1 = set1 ^ {"Unnamed: 16"}
+        set2 = set(df.columns)
+        set2 = set2 ^ {"Unnamed: 15"}
+        set2 = set2 ^ {"Unnamed: 16"}
+        if not (set1 == set2):
+            # Структура файла не правильная!
+            ret_error_value = \
+                f"Выбранный файл имеет не правильную структуру!"
+        else:
+            # Структура правильная. Возвращаем DataFrame.
+            return df
+
+    if not short_text:
+        ret_error_value = (
+            "\n\n\n" +
+            f"{myconstants.TEXT_LINES_SEPARATOR}\n" +
+            ret_error_value +
+            f"\nСформировать отчёт невозможно!\n"
+            f"{myconstants.TEXT_LINES_SEPARATOR}"
+        )
+    return ret_error_value
 
 
 def udata_2_date(data):
@@ -211,9 +251,10 @@ def prepare_data(
         p_curr_month_half,
         p_delete_pers_data,
         p_delete_vacation,
+        p_virtual_FTE,
         ui_handle
 ):
-    data_df = load_raw_data(raw_file_name, ui_handle)
+    data_df = load_raw_data(raw_file_name, p_virtual_FTE, ui_handle)
     if type(data_df) == str:
         ui_handle.set_status(data_df)
         ui_handle.enable_buttons()
@@ -343,14 +384,14 @@ def prepare_data(
     data_df["HourTo1FTE_Math"] = \
         data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: x[1] / max(x[0], 1), axis=1)
 
+    ui_handle.set_status(f"Добавлена доп информация по проектам.")
     join_type = "inner" if p_projects_with_add_info else "left"
     data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how=join_type)
 
     for one_column in myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST.values():
         data_df[one_column] = data_df[one_column].fillna(0.00)
 
-    ui_handle.set_status(f"Добавлена доп информация по проектам.")
-    ui_handle.set_status(f"Пересчитано (всего строк данных: {data_df.shape[0]})")
+    ui_handle.set_status(f"Пересчитано с учетом добавления доп информации (всего строк данных: {data_df.shape[0]})")
 
     if p_curr_month_half:
         sCurrMonth = f"{dt.datetime.now().year}-{dt.datetime.now().month:0{2}}-01"
@@ -359,8 +400,7 @@ def prepare_data(
     if p_delete_without_fact:
         data_df = data_df[data_df["FactFTE"] != 0]
         ui_handle.set_status("Удалены строки без данных о факте.")
-        
-    ui_handle.set_status(f"Пересчитано (всего строк данных: {data_df.shape[0]})")
+        ui_handle.set_status(f"Пересчитано (всего строк данных: {data_df.shape[0]})")
 
     data_df = data_df.merge(divisions_names_df, left_on="DivisionRaw", right_on="FullDivisionName", how="left")
     ui_handle.set_status(f"Выполнено объединение с таблицей с подразделениями (всего строк данных: {data_df.shape[0]})")

@@ -11,7 +11,7 @@ from PyQt5.QtCore import pyqtSignal, QObject
 
 import myconstants
 import myQt_form
-from mytablefuncs import get_parameter_value
+from mytablefuncs import get_parameter_value, open_and_test_raw_struct
 from myutils import load_param, save_param, get_files_list
 
 
@@ -236,10 +236,10 @@ class MyWindow(QtWidgets.QMainWindow):
         if select_row_with_text == "":
             # Есл название не указано, то берём сейчас выделенную строку:
             select_row_with_text = self.ui.listViewRawData.currentIndex().data()
+
         # Получим список файлов из папки с "сырыми" данными:
         rawdata_list = get_files_list(get_parameter_value(myconstants.RAW_DATA_SECTION_NAME))
 
-        # ???
         self.ui.model = QtGui.QStandardItemModel()
         self.ui.listViewRawData.setModel(self.ui.model)
 
@@ -267,6 +267,13 @@ class MyWindow(QtWidgets.QMainWindow):
         files = [u.toLocalFile() for u in event.mimeData().urls() if u.toLocalFile()[-5:].lower() == ".xlsx"]
         for one_file_path in files:
             this_file_name = os.path.basename(one_file_path)
+            ret_value = open_and_test_raw_struct(one_file_path, short_text=True)
+            if type(ret_value) == str:
+                QtWidgets.QMessageBox.question(self, f"Файл: {this_file_name}",
+                                               ret_value,
+                                               QtWidgets.QMessageBox.Yes)
+                continue
+
             raw_file_path = get_parameter_value(myconstants.RAW_DATA_SECTION_NAME) + "/" + this_file_name
             if os.path.isfile(raw_file_path):
                 result = QtWidgets.QMessageBox.question(self, "Заменить файл?",
@@ -285,7 +292,7 @@ class MyWindow(QtWidgets.QMainWindow):
                 if len(files) == 1:
                     self.refresh_raw_files_list(new_filename)
             except (OSError, shutil.Error):
-                QtWidgets.QMessageBox.question(self, "Ошибка копирования?",
+                QtWidgets.QMessageBox.question(self, "Ошибка копирования.",
                                                "Не удалось скопировать файл с данными выгруженными из DES.LM.",
                                                QtWidgets.QMessageBox.Yes)
 
