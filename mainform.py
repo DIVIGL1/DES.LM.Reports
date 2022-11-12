@@ -1,6 +1,7 @@
 # pyuic5 -x Qt5Project/Windows2.ui -o myQt_form.py
 # pyuic5 -x Qt5Project/_tmp_QLV.ui -o _tmp_QLV_form.py
 
+import datetime
 import os
 import sys
 import subprocess
@@ -84,9 +85,30 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         
         self.checkBoxDelRawData.setVisible(self.checkBoxSaveWithOutFotmulas.isChecked())
 
+    def on_click_radioButtonDD(self):
+        drug_and_drop_type = (
+            self.radioButtonDD1.isChecked() * 1 +
+            self.radioButtonDD2.isChecked() * 2 +
+            self.radioButtonDD3.isChecked() * 3 +
+            self.radioButtonDD4.isChecked() * 4
+        )
+
+        save_param(myconstants.PARAMETER_SAVED_DRAG_AND_DROP_VARIANT, drug_and_drop_type)
+
+    def setup_radio_buttons_dd(self):
+        value = load_param(
+            myconstants.PARAMETER_SAVED_DRAG_AND_DROP_VARIANT,
+            myconstants.PARAMETER_SAVED_VALUE_DRAG_AND_DROP_VARIANT_DEFVALUE
+        )
+
+        self.radioButtonDD1.setChecked(value == 1)
+        self.radioButtonDD2.setChecked(value == 2)
+        self.radioButtonDD3.setChecked(value == 3)
+        self.radioButtonDD4.setChecked(value == 4)
+
     def on_Click_Reports_List(self):
         self.setup_check_boxes()
-        
+
     def setup_check_boxes(self):
         if self.listView.currentIndex().data() is None:
             s_preff = ""
@@ -140,8 +162,14 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         self.checkBoxOpenExcel.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxSaveWithOutFotmulas.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxDelRawData.clicked.connect(self.on_click_CheckBoxes)
-        
+
+        self.radioButtonDD1.clicked.connect(self.on_click_radioButtonDD)
+        self.radioButtonDD2.clicked.connect(self.on_click_radioButtonDD)
+        self.radioButtonDD3.clicked.connect(self.on_click_radioButtonDD)
+        self.radioButtonDD4.clicked.connect(self.on_click_radioButtonDD)
+
         self.setup_check_boxes()
+        self.setup_radio_buttons_dd()
 
         self.listView.clicked.connect(self.on_Click_Reports_List)
         
@@ -263,45 +291,132 @@ class MyWindow(QtWidgets.QMainWindow):
             event.ignore()
 
     def dropEvent(self, event):
+        # Установим флаг, который используется при проверке изменений на диске (FileSystemEventHandler)
         self.parent.drag_and_prop_in_process = True
-        counter = 0
-        # Из тех файлов, которые "прилетели" выберем только *.xlsx:
-        files = [u.toLocalFile() for u in event.mimeData().urls() if u.toLocalFile()[-5:].lower() == ".xlsx"]
-        section_path = get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)
-        for one_file_path in files:
-            this_file_name = os.path.basename(one_file_path)
-            ret_value = open_and_test_raw_struct(one_file_path, short_text=True)
-            if type(ret_value) == str:
-                QtWidgets.QMessageBox.question(self, f"Файл: {this_file_name}",
-                                               ret_value,
-                                               QtWidgets.QMessageBox.Yes)
-                continue
 
-            raw_file_path = section_path + "/" + this_file_name
+        drug_and_drop_type = (
+            self.ui.radioButtonDD1.isChecked() * 1 +
+            self.ui.radioButtonDD2.isChecked() * 2 +
+            self.ui.radioButtonDD3.isChecked() * 3 +
+            self.ui.radioButtonDD4.isChecked() * 4
+        )
+
+        # Из тех файлов выберем те, которые обрабатывать не будем:
+        not_xls_files = [u.toLocalFile() for u in event.mimeData().urls() if u.toLocalFile()[-5:].lower() != ".xlsx"]
+        # Из тех файлов, которые "прилетели" выберем только *.xlsx:
+        xls_files = [u.toLocalFile() for u in event.mimeData().urls() if u.toLocalFile()[-5:].lower() == ".xlsx"]
+
+        if xls_files or not_xls_files:
+            self.ui.clear_status()
+        if not_xls_files:
+            self.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+            if len(not_xls_files) == 1:
+                self.ui.set_status("Исключен из обработки:")
+                self.ui.set_status(f"   {not_xls_files[0]}")
+            else:
+                self.ui.set_status("Исключены из обработки:")
+
+                for num, one_file in enumerate(not_xls_files):
+                    self.ui.set_status(f"   {num + 1}. {one_file}")
+
+            self.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+
+        if not xls_files:
+            return
+
+        if not not_xls_files and xls_files:
+            self.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+
+        raw_section_path = get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)
+        counter = 0
+
+        self.ui.set_status("Обрабатываем Excel файл" + ("ы:" if len(xls_files) > 1 else ":"))
+        for file_num, one_file_path in enumerate(xls_files):
+            if file_num > 0:
+                self.ui.set_status("")
+
+            if len(xls_files) == 1:
+                self.ui.set_status(f"   {one_file_path}")
+            else:
+                self.ui.set_status(f"   {file_num + 1}. {one_file_path}")
+            this_file_name = os.path.basename(one_file_path)
+
+            if drug_and_drop_type >= 2:
+                # Проверим структуру файла:
+                ret_value = open_and_test_raw_struct(one_file_path, short_text=True)
+                if type(ret_value) == str:
+                    QtWidgets.QMessageBox.question(self, f"Файл: {this_file_name}",
+                                                   ret_value,
+                                                   QtWidgets.QMessageBox.Yes)
+
+                    self.ui.set_status("   Структура файла не соответствует требованиям.")
+                    self.ui.set_status("   Копирование не отклонено.")
+                    continue
+
+            if drug_and_drop_type >= 3:
+                # Определим новое имя файла исходя из его данных.
+                # Сначала определим дату файла:
+                file_dt = datetime.datetime.fromtimestamp(os.path.getmtime(one_file_path))
+                creation_str = f"{file_dt:%Y-%d-%m %H-%M}"
+                # Определим данные за какой период присутствуют:
+                month_column = list(myconstants.RAW_DATA_COLUMNS.keys())[0]
+
+                start_month = ret_value[month_column].min()
+                report_year = int(start_month * 10000 - int(start_month) * 10000)
+                start_month = int(start_month)
+                end_month = int(ret_value[month_column].max())
+
+                file_period = f"{myconstants.MONTHS[start_month]} {myconstants.MONTHS[end_month]} {report_year}"
+                new_filename = f"{creation_str} ({file_period}).xlsx"
+                if new_filename != this_file_name:
+                    self.ui.set_status(f"   Имя файла меняется на {new_filename}.")
+
+            else:
+                new_filename = this_file_name
+
+            raw_file_path = raw_section_path + "/" + new_filename
             if os.path.isfile(raw_file_path):
                 result = QtWidgets.QMessageBox.question(self, "Заменить файл?",
                                                         "В папке, где находятся данные, выгруженные из DES.LM" +
-                                                        f"Файл с таким названием уже есть {this_file_name}\n\n" +
+                                                        f"Файл с таким названием уже есть {new_filename}\n\n" +
                                                         "Вы действительно хотите переписать его новым файлом?",
                                                         QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
                                                         QtWidgets.QMessageBox.No)
 
                 if result == QtWidgets.QMessageBox.No:
+                    self.ui.set_status("   Пользователь отказался от копирования.")
                     continue
 
             try:
                 shutil.copy(one_file_path, raw_file_path)
-                new_filename = os.path.splitext(os.path.basename(raw_file_path))[0]
+                select_filename = os.path.splitext(os.path.basename(raw_file_path))[0]
                 counter += 1
+                self.ui.set_status("   Файл скопирован.")
             except (OSError, shutil.Error):
                 QtWidgets.QMessageBox.question(self, "Ошибка копирования.",
                                                "Не удалось скопировать файл с данными выгруженными из DES.LM.",
                                                QtWidgets.QMessageBox.Yes)
 
+                self.ui.set_status("   Копирование не удалось - возникли ошибки.")
+                continue
+
+            if drug_and_drop_type == 4:
+                new_src_file_path = os.path.join(os.path.dirname(one_file_path), new_filename)
+                try:
+                    os.rename(one_file_path, new_src_file_path)
+                    self.ui.set_status("   Исходный файл так же переименован.")
+                except (OSError, shutil.Error):
+                    QtWidgets.QMessageBox.question(self, "Ошибка копирования.",
+                                                   "Не удалось скопировать файл с данными выгруженными из DES.LM.",
+                                                   QtWidgets.QMessageBox.Yes)
+                    self.ui.set_status("   Переименование исходного файла не удалось.")
+
         if counter == 1:
-            self.refresh_raw_files_list(new_filename)
+            self.refresh_raw_files_list(select_filename)
         else:
             self.refresh_raw_files_list()
+
+        self.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
         self.parent.drag_and_prop_in_process = False
 
     def showEvent(self, event):
