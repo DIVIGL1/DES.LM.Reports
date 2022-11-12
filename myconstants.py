@@ -117,6 +117,21 @@ RESULT_DATA_COLUMNS = [
     "SumPodr12",
 ]
 
+MONTHS = {
+    1: "Январь",
+    2: "Февраль",
+    3: "Март",
+    4: "Апрель",
+    5: "Май",
+    6: "Июнь",
+    7: "Июль",
+    8: "Август",
+    9: "Сентябрь",
+    10: "Октябрь",
+    11: "Ноябрь",
+    12: "Декабрь",
+}
+
 START_PARAMETERS_FILE = "Settings.xlsx"
 
 RAW_DATA_DROP_COLUMNS = ["MVZ", "KoBo", "Unnamed15", "Unnamed16"]
@@ -235,6 +250,8 @@ FIRED_NAME_TEXT = "(Уволен) "
 TEXT_LINES_SEPARATOR = "-" * 110
 PARAMETER_FILENAME_OF_LAST_REPORT = "Последний сформированный отчёт"
 
+PARAMETER_SAVED_DRAG_AND_DROP_VARIANT = "Как выполняем Drag&Drop?"
+
 PARAMETER_SAVED_VALUE_DELETE_VIP = "Удалить VIP?"
 PARAMETER_SAVED_VALUE_DELETE_CURRMONTHHALF = "Текущий месяц рассчитывать от половины нормы часов?"
 PARAMETER_SAVED_VALUE_DELETE_NONPROD = "Удалять не производственные подразделения?"
@@ -248,6 +265,8 @@ PARAMETER_SAVED_VALUE_DEL_RAWSHEET = "Удалить лист с исходны�
 PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL = "Открывать ли сформированный отчет в Excel?"
 
 DO_IT_PREFFIX = ""
+
+PARAMETER_SAVED_VALUE_DRAG_AND_DROP_VARIANT_DEFVALUE = 1
 
 PARAMETER_SAVED_VALUE_DELETE_VIP_DEFVALUE = False
 PARAMETER_SAVED_VALUE_DELETE_CURRMONTHHALF_DEFVALUE = False
@@ -273,4 +292,4 @@ EXCELWINDOWSTATE_MIN = -4140  # Минимизировано
 NUM_ROWS_FOR_HIDE = 300
 NUM_COLUMNS_FOR_HIDE = 150
 
-APP_VERSION = "v:3.03.071122.03"
+APP_VERSION = "v:3.04.091122.05"
