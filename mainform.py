@@ -263,8 +263,11 @@ class MyWindow(QtWidgets.QMainWindow):
             event.ignore()
 
     def dropEvent(self, event):
+        self.parent.drag_and_prop_in_process = True
+        counter = 0
         # Из тех файлов, которые "прилетели" выберем только *.xlsx:
         files = [u.toLocalFile() for u in event.mimeData().urls() if u.toLocalFile()[-5:].lower() == ".xlsx"]
+        section_path = get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)
         for one_file_path in files:
             this_file_name = os.path.basename(one_file_path)
             ret_value = open_and_test_raw_struct(one_file_path, short_text=True)
@@ -274,7 +277,7 @@ class MyWindow(QtWidgets.QMainWindow):
                                                QtWidgets.QMessageBox.Yes)
                 continue
 
-            raw_file_path = get_parameter_value(myconstants.RAW_DATA_SECTION_NAME) + "/" + this_file_name
+            raw_file_path = section_path + "/" + this_file_name
             if os.path.isfile(raw_file_path):
                 result = QtWidgets.QMessageBox.question(self, "Заменить файл?",
                                                         "В папке, где находятся данные, выгруженные из DES.LM" +
@@ -287,14 +290,19 @@ class MyWindow(QtWidgets.QMainWindow):
                     continue
 
             try:
-                shutil.copyfile(one_file_path, raw_file_path)
+                shutil.copy(one_file_path, raw_file_path)
                 new_filename = os.path.splitext(os.path.basename(raw_file_path))[0]
-                if len(files) == 1:
-                    self.refresh_raw_files_list(new_filename)
+                counter += 1
             except (OSError, shutil.Error):
                 QtWidgets.QMessageBox.question(self, "Ошибка копирования.",
                                                "Не удалось скопировать файл с данными выгруженными из DES.LM.",
                                                QtWidgets.QMessageBox.Yes)
+
+        if counter == 1:
+            self.refresh_raw_files_list(new_filename)
+        else:
+            self.refresh_raw_files_list()
+        self.parent.drag_and_prop_in_process = False
 
     def showEvent(self, event):
         super(MyWindow, self).showEvent(event)

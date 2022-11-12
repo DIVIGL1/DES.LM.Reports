@@ -18,16 +18,22 @@ class MyHandler(FileSystemEventHandler):
         self.parent = parent
     
     def on_created(self, event):
+        if self.parent.drag_and_prop_in_process:
+            return
         if event.is_directory:
             return
         self.parent.mainwindow.refresh_raw_files_list()
 
     def on_deleted(self, event):
+        if self.parent.drag_and_prop_in_process:
+            return
         if event.is_directory:
             return
         self.parent.mainwindow.refresh_raw_files_list()
 
     def on_moved(self, event):
+        if self.parent.drag_and_prop_in_process:
+            return
         if event.is_directory:
             return
         new_filename = os.path.splitext(os.path.basename(event.dest_path))[0]
@@ -35,6 +41,7 @@ class MyHandler(FileSystemEventHandler):
 
 
 class MyApplication:
+    drag_and_prop_in_process = False
     def __init__(self):
         myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         self.report_parameters = MyReportParameters(self)
