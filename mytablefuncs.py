@@ -4,6 +4,7 @@ import os
 
 import myconstants
 import myutils
+from myutils import iif
 
 
 def get_parameter_value(paramname, defvalue=""):
@@ -134,11 +135,11 @@ def open_and_test_raw_struct(xls_raw_file, short_text=False):
         df = pd.read_excel(xls_raw_file, engine='openpyxl')
     except FileNotFoundError:
         ret_error_value = \
-            f"Файл c не найден...\n" + \
-            f"Сформировать отчёт невозможно!"
+            f"Не найден файл: {myutils.rel_path(xls_raw_file)}."
     except:
         ret_error_value = \
-            f"Формат файла не является форматом xlsx.\n" + \
+            f"Формат файла {myutils.rel_path(xls_raw_file)}\n" \
+            f"не является форматом xlsx.\n" + \
             f"Такой формат файлов не поддерживается."
     else:
         # Необходимо проверить файл на соответствие структуре, на случай если в папку скопировали не тот файл:
@@ -325,11 +326,26 @@ def prepare_data(
         ui_handle.enable_buttons()
         return None
 
+    if ui_handle.checkBoxOnlyProjectsWithAdd.isChecked():
+        # Отмечено, что нужно выбрать только определённые проекты.
+        # Наименование столбца содержащего призначки для фильтрации:
+        # Найдём реальное название (с учетом регистра):
+        tbl_clmns = projects_list_add_info.columns
+        all_columns = [clmn.upper() for clmn in tbl_clmns]
+        grp_clmn_name = tbl_clmns[all_columns.index(myconstants.GROUP_COLUMN_FOR_FILTER)]
+        projects_list_add_info[[grp_clmn_name]].fillna("", inplace=True)
+
+        # Из таблицы с дополнительными данными о проектах удалим всё лишне:
+        group_value = ui_handle.comboBoxPGroups.currentText()
+        if group_value == myconstants.TEXT_4_ALL_GROUPS:
+            projects_list_add_info = projects_list_add_info[projects_list_add_info[grp_clmn_name] != ""]
+        else:
+            projects_list_add_info = projects_list_add_info[projects_list_add_info[grp_clmn_name] == group_value]
+
     projects_list_add_info.rename(columns = myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST, inplace = True)
-    projects_list_add_info = projects_list_add_info[projects_list_add_info["Project4AddInfo"].notna()]
     projects_list_add_info.fillna(0.00, inplace = True)
 
-    ui_handle.set_status(f"Загружены таблицы с параметрами (всего строк данных: {data_df.shape[0]})")
+    ui_handle.set_status(f"Загружены таблицы с параметрами (всего строк 'сырых' данных: {data_df.shape[0]})")
     if data_df.shape[0] == 0:
         ui_handle.set_status("")
         ui_handle.set_status("")
@@ -343,17 +359,17 @@ def prepare_data(
         if data_df.dtypes[column_name] == type(str):
             data_df[column_name] = data_df[column_name].str.replace("\n", "")
             data_df[column_name] = data_df[column_name].str.strip()
-    ui_handle.set_status(f"Удалены переносы строк (всего строк данных: {data_df.shape[0]})")
+    ui_handle.set_status(f"Удалены переносы строк (всего строк обработанных данных: {data_df.shape[0]})")
 
     data_df["ShortProject"] = data_df["Project"].str[:5]
     projects_list_add_info["Project4AddInfo"] = projects_list_add_info["Project4AddInfo"].str[:5]
 
     data_df["FDate"] = data_df["FDate"].apply(lambda param: udata_2_date(param))
-    ui_handle.set_status(f"Обновлён формат данных даты первого дня месяца (всего строк данных: {data_df.shape[0]})")
+    ui_handle.set_status(f"Обновлён формат данных даты первого дня месяца (всего строк обработанных данных: {data_df.shape[0]})")
 
     data_df['Northern'].replace(myconstants.BOOLEAN_VALUES_SUBST, inplace=True)
     data_df = data_df.merge(month_hours_df, left_on="FDate", right_on="FirstDate", how="inner")
-    ui_handle.set_status(f"Проведено объединение с таблицей с рабочими часами (всего строк данных: {data_df.shape[0]})")
+    ui_handle.set_status(f"Проведено объединение с таблицей с рабочими часами (всего строк обработанных данных: {data_df.shape[0]})")
     if data_df.shape[0] == 0:
         ui_handle.set_status("")
         ui_handle.set_status("")
@@ -385,13 +401,11 @@ def prepare_data(
         data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: x[1] / max(x[0], 1), axis=1)
 
     ui_handle.set_status(f"Добавлена доп информация по проектам.")
-    join_type = "inner" if p_projects_with_add_info else "left"
+
+    join_type = iif(ui_handle.checkBoxOnlyProjectsWithAdd.isChecked(), "inner", "left")
     data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how=join_type)
 
-    for one_column in myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST.values():
-        data_df[one_column] = data_df[one_column].fillna(0.00)
-
-    ui_handle.set_status(f"Пересчитано с учетом добавления доп информации (всего строк данных: {data_df.shape[0]})")
+    ui_handle.set_status(f"Пересчитано с учетом присоединения дополнительной информации (всего строк данных: {data_df.shape[0]})")
 
     if p_curr_month_half:
         sCurrMonth = f"{dt.datetime.now().year}-{dt.datetime.now().month:0{2}}-01"
@@ -400,46 +414,41 @@ def prepare_data(
     if p_delete_without_fact:
         data_df = data_df[data_df["FactFTE"] != 0]
         ui_handle.set_status("Удалены строки без данных о факте.")
-        ui_handle.set_status(f"Пересчитано (всего строк данных: {data_df.shape[0]})")
+        ui_handle.set_status(f"Пересчитано (всего строк обработанных данных: {data_df.shape[0]})")
 
     data_df = data_df.merge(divisions_names_df, left_on="DivisionRaw", right_on="FullDivisionName", how="left")
-    ui_handle.set_status(f"Выполнено объединение с таблицей с подразделениями (всего строк данных: {data_df.shape[0]})")
+    ui_handle.set_status(f"Выполнено объединение с таблицей с подразделениями (всего строк обработанных данных: {data_df.shape[0]})")
     ui_handle.set_status("... ищем пустые и восстанавливаем.")
     data_df["Division"] = data_df[["ShortDivisionName", "DivisionRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
-    ui_handle.set_status(f"Все подразделения заполнены (всего строк данных: {data_df.shape[0]})")
+    ui_handle.set_status(f"Все подразделения заполнены (всего строк обработанных данных: {data_df.shape[0]})")
 
     data_df = data_df.merge(p_fns_subst_df, left_on="Project", right_on="ProjectNum", how="left")
     data_df["FNRaw"] = data_df[["RealFNName", "FNRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
     data_df = data_df.merge(fns_names_df, left_on="FNRaw", right_on="FullFNName", how="left")
     data_df["FN"] = data_df[["ShortFNName", "FNRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
-    ui_handle.set_status(f"Данные объединены с таблицей с ФН (всего строк данных: {data_df.shape[0]})")
+    ui_handle.set_status(f"Данные объединены с таблицей с ФН (всего строк обработанных данных: {data_df.shape[0]})")
 
     data_df["JustUserName"] = data_df["User"].apply(lambda param: param.replace(myconstants.FIRED_NAME_TEXT, ""))
-    data_df = data_df.merge(costs_df, left_on="JustUserName", right_on="CostUserName", how="left")
+    if ui_handle.checkBoxSelectUsers.isChecked():
+        group_field_name = myconstants.GROUP_COLUMNS_STARTER + ui_handle.comboBoxSelectUsers.currentText()
+        costs_df[[group_field_name]].fillna("", inplace=True)
+        costs_df = costs_df[costs_df[group_field_name] != ""]
+        data_df = data_df.merge(costs_df, left_on="JustUserName", right_on="CostUserName", how="inner")
+    else:
+        data_df = data_df.merge(costs_df, left_on="JustUserName", right_on="CostUserName", how="left")
+
     data_df = data_df.merge(emails_df, left_on="JustUserName", right_on="FIO_4_email", how="left")
     for one_column in myconstants.EMAIL_INFO_COLUMNS:
         data_df[one_column] = data_df[one_column].fillna("")
-    
-    data_df["UserHourCost"] = data_df["UserHourCost"].apply(lambda param: 0.00 if pd.isna(param) else param)
-    data_df["UserMonthCost"] = data_df["UserMonthCost"].apply(lambda param: 0.00 if pd.isna(param) else param)
 
-    data_df["UHCost_KV1"] = data_df["UHCost_KV1"].apply(lambda param: 0.00 if pd.isna(param) else param)
-    data_df["UMCost_KV1"] = data_df["UMCost_KV1"].apply(lambda param: 0.00 if pd.isna(param) else param)
+    data_df[myconstants.RAW_DATA_COLUMNS_ZERO_IF_NULL].fillna(0.00, inplace=True)
 
-    data_df["UHCost_KV2"] = data_df["UHCost_KV2"].apply(lambda param: 0.00 if pd.isna(param) else param)
-    data_df["UMCost_KV2"] = data_df["UMCost_KV2"].apply(lambda param: 0.00 if pd.isna(param) else param)
-
-    data_df["UHCost_KV3"] = data_df["UHCost_KV3"].apply(lambda param: 0.00 if pd.isna(param) else param)
-    data_df["UMCost_KV3"] = data_df["UMCost_KV3"].apply(lambda param: 0.00 if pd.isna(param) else param)
-
-    data_df["UHCost_KV4"] = data_df["UHCost_KV4"].apply(lambda param: 0.00 if pd.isna(param) else param)
-    data_df["UMCost_KV4"] = data_df["UMCost_KV4"].apply(lambda param: 0.00 if pd.isna(param) else param)
-    
     data_df["ProjectType"] = \
         data_df[["Project", "ProjectType"]].apply(
             lambda param: "S" if param[0].find(myconstants.FACT_IS_PLAN_MARKER) >= 0 else param[1], axis=1)
+
     data_df = data_df.merge(projects_types_descr_df, left_on="ProjectType", right_on="ProjectTypeName", how="left")
-    ui_handle.set_status(f"Уточнены типы проектов (всего строк данных: {data_df.shape[0]})")
+    ui_handle.set_status(f"Уточнены типы проектов (всего строк обработанных данных: {data_df.shape[0]})")
 
     data_df = data_df.merge(projects_sub_types_df, left_on="Project", right_on="ProjectName", how="left")
     data_df["ProjectSubType"] = \
@@ -476,7 +485,7 @@ def prepare_data(
     if p_delete_not_prod_units:
         data_df = data_df[data_df["pNotProductUnit"] != 1]
 
-    ui_handle.set_status(f"... и типы ПОДпроектов (всего строк данных: {data_df.shape[0]})")
+    ui_handle.set_status(f"... и типы ПОДпроектов (всего строк обработанных данных: {data_df.shape[0]})")
 
     if p_delete_vacation:
         vacancy_text = myconstants.VACANCY_NAME_TEXT
@@ -486,7 +495,7 @@ def prepare_data(
                 lambda param: vacancy_text if param.replace(" ", "").lower()[:len(vacancy_text)] == vacancy_text else param)
         
         data_df = data_df[data_df["User"] != vacancy_text]
-        ui_handle.set_status(f"Удалены вакансии (всего строк данных: {data_df.shape[0]})")
+        ui_handle.set_status(f"Удалены вакансии (всего строк обработанных данных: {data_df.shape[0]})")
     
     add_combine_columns(data_df)
 

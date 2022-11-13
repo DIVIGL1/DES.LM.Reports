@@ -181,9 +181,13 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             return None
         else:
             all_columns = [clmn.upper() for clmn in df.columns]
-            if myconstants.GROUP_COLUMN_FOR_FILTER.upper() in all_columns:
-                df = df[[myconstants.GROUP_COLUMN_FOR_FILTER]].fillna("")
-                groups = sorted(df[myconstants.GROUP_COLUMN_FOR_FILTER].unique())
+            if myconstants.GROUP_COLUMN_FOR_FILTER in all_columns:
+                tbl_clmns = df.columns
+                all_grp_columns = [clmn.upper() for clmn in tbl_clmns]
+                selected_clmn = tbl_clmns[all_grp_columns.index(myconstants.GROUP_COLUMN_FOR_FILTER)]
+
+                df = df[[selected_clmn]].fillna("")
+                groups = sorted(df[selected_clmn].unique())
                 groups = [grn for grn in groups if grn != ""]
 
                 groups_list = groups_list + groups
@@ -196,7 +200,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         if type(df) == str:
             return None
         else:
-            all_grp_columns = [clmn[1:] for clmn in df.columns if clmn[0] == myconstants.GROUP_COLUMN_STERTER]
+            all_grp_columns = [clmn[1:] for clmn in df.columns if clmn[0] == myconstants.GROUP_COLUMNS_STARTER]
 
         self.comboBoxSelectUsers.addItems(all_grp_columns)
 
