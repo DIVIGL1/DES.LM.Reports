@@ -3,7 +3,7 @@ import os
 
 import myconstants
 import mainform
-import reportcreater
+import ReportCreator
 import mytablefuncs
 import myutils
 
@@ -45,7 +45,7 @@ class MyApplication:
     def __init__(self):
         myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         self.report_parameters = MyReportParameters(self)
-        self.reporter = reportcreater.ReportCreater(self)
+        self.reporter = ReportCreator.ReportCreator(self)
         self.mainwindow = mainform.MyWindow(self)
         self.mainwindow.ui.setup_form(self.reporter.get_reports_list())
 

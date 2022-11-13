@@ -21,9 +21,9 @@ def thread(my_func):
     return wrapper
 
 
-class ReportCreater(object):
+class ReportCreator(object):
     def __init__(self, parent, *args):
-        super(ReportCreater, self).__init__(*args)
+        super(ReportCreator, self).__init__(*args)
         self.parent = parent
         self.reports_list = \
             myutils.get_files_list(
