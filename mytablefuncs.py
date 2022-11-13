@@ -328,7 +328,7 @@ def prepare_data(
 
     if ui_handle.checkBoxOnlyProjectsWithAdd.isChecked():
         # Отмечено, что нужно выбрать только определённые проекты.
-        # Наименование столбца содержащего призначки для фильтрации:
+        # Наименование столбца содержащего признаки для фильтрации:
         # Найдём реальное название (с учетом регистра):
         tbl_clmns = projects_list_add_info.columns
         all_columns = [clmn.upper() for clmn in tbl_clmns]
@@ -430,12 +430,20 @@ def prepare_data(
 
     data_df["JustUserName"] = data_df["User"].apply(lambda param: param.replace(myconstants.FIRED_NAME_TEXT, ""))
     if ui_handle.checkBoxSelectUsers.isChecked():
+        # Отмечено, что нужно выбрать только определённые группы пользователей.
+        # Наименование столбца содержащего признаки для фильтрации:
         group_field_name = myconstants.GROUP_COLUMNS_STARTER + ui_handle.comboBoxSelectUsers.currentText()
-        costs_df[[group_field_name]].fillna("", inplace=True)
+        costs_df[group_field_name].fillna("", inplace=True)
         costs_df = costs_df[costs_df[group_field_name] != ""]
+        print(costs_df)
+        costs_df = costs_df[["CostUserName"] + myconstants.RAW_DATA_COLUMNS_ZERO_IF_NULL]
         data_df = data_df.merge(costs_df, left_on="JustUserName", right_on="CostUserName", how="inner")
+        ui_handle.set_status(f"Установлен фильтр по людям (всего строк обработанных данных: {data_df.shape[0]})")
     else:
         data_df = data_df.merge(costs_df, left_on="JustUserName", right_on="CostUserName", how="left")
+
+    projects_list_add_info.rename(columns = myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST, inplace = True)
+    projects_list_add_info.fillna(0.00, inplace = True)
 
     data_df = data_df.merge(emails_df, left_on="JustUserName", right_on="FIO_4_email", how="left")
     for one_column in myconstants.EMAIL_INFO_COLUMNS:
