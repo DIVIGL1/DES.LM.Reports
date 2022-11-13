@@ -354,6 +354,19 @@
            </widget>
           </item>
           <item>
+           <widget class="QComboBox" name="comboBoxPGroups"/>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBoxSelectUsers">
+            <property name="text">
+             <string>Выбрать только людей из группы:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="comboBoxSelectUsers"/>
+          </item>
+          <item>
            <widget class="QCheckBox" name="checkBoxDeleteWithoutFact">
             <property name="enabled">
              <bool>true</bool>
