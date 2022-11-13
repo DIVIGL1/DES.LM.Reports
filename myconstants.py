@@ -134,6 +134,18 @@ MONTHS = {
 
 START_PARAMETERS_FILE = "Settings.xlsx"
 
+RAW_DATA_COLUMNS_ZERO_IF_NULL = [
+    "UserHourCost",
+    "UserMonthCost",
+    "UHCost_KV1",
+    "UMCost_KV1",
+    "UHCost_KV2",
+    "UMCost_KV2",
+    "UHCost_KV3",
+    "UMCost_KV3",
+    "UHCost_KV4",
+    "UMCost_KV4",
+]
 RAW_DATA_DROP_COLUMNS = ["MVZ", "KoBo", "Unnamed15", "Unnamed16"]
 SHEETS_DONT_DELETE_FORMULAS = ["ИсходныеДанные", "УникальныеСписки", "Настройки"]
 DELETE_SHEETS_LIST_IF_NO_FORMULAS = ["ИсходныеДанные", "УникальныеСписки"]
@@ -171,7 +183,6 @@ PROJECTS_SUB_TYPES_DESCR = "ProjectsSubTypesDescriptions.xlsx"
 PROJECTS_LIST_ADD_INFO = "ProjectsAddInfo.xlsx"
 PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST = {
     "Наименование проекта (только текст)": "Project4AddInfo",
-    "Группа": "ProjectUserGroup",
     "Выруч_Янв": "SumInCome01",
     "Выруч_Фев": "SumInCome02",
     "Выруч_Мар": "SumInCome03",
@@ -198,8 +209,9 @@ PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST = {
     "Подр_Дек": "SumPodr12",
 }
 GROUP_COLUMN_FOR_FILTER = "Группа"
+GROUP_COLUMN_FOR_FILTER = GROUP_COLUMN_FOR_FILTER.upper()
 TEXT_4_ALL_GROUPS = "< Все группы >"
-GROUP_COLUMN_STERTER = "#"
+GROUP_COLUMNS_STARTER = "#"
 
 PARAMETERS_ALL_TABLES = {
     MONTH_WORKING_HOURS_TABLE: ("Таблица с количеством рабочих часов в месяцах", "FirstDate"),
