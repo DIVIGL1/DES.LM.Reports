@@ -6,6 +6,13 @@ import myconstants
 import mytablefuncs
 
 
+def iif(if_condition, true_ret_value, false_ret_value):
+    if if_condition:
+        return true_ret_value
+    else:
+        return false_ret_value
+
+
 def save_param(param_name, param_value, filename="saved.pkl"):
     params_dict = get_all_params(filename="saved.pkl")
     params_dict[param_name] = param_value
