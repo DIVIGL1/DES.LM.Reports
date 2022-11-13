@@ -12,7 +12,7 @@ from PyQt5.QtCore import pyqtSignal, QObject
 
 import myconstants
 import myQt_form
-from mytablefuncs import get_parameter_value, open_and_test_raw_struct
+from mytablefuncs import get_parameter_value, open_and_test_raw_struct, load_parameter_table
 from myutils import load_param, save_param, get_files_list
 
 
@@ -74,7 +74,6 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VIP, self.checkBoxDeleteVIP.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_CURRMONTHHALF, self.checkBoxCurrMonthAHalf.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, self.checkBoxDeleteNotProduct.isChecked())
-        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD, self.checkBoxOnlyProjectsWithAdd.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT, self.checkBoxDeleteWithoutFact.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, self.checkBoxDelPDn.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, self.checkBoxDeleteVac.isChecked())
@@ -108,19 +107,23 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
 
     def on_Click_Reports_List(self):
         self.setup_check_boxes()
+        self.setup_checkBoxOnlyProjectsWithAdd()
+        self.setup_checkBoxSelectUsers()
 
-    def setup_check_boxes(self):
+    def get_preff(self):
         if self.listView.currentIndex().data() is None:
             s_preff = ""
         else:
             s_preff = self.listView.currentIndex().data() + " --> "
-            
+        return(s_preff)
+
+    def setup_check_boxes(self):
+        s_preff = self.get_preff()
+
         self.checkBoxDeleteVIP.setChecked(
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VIP, myconstants.PARAMETER_SAVED_VALUE_DELETE_VIP_DEFVALUE))
         self.checkBoxDeleteNotProduct.setChecked(
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD_DEFVALUE))
-        self.checkBoxOnlyProjectsWithAdd.setChecked(
-            load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD, myconstants.PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD_DEFVALUE))
         self.checkBoxDeleteWithoutFact.setChecked(
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT, myconstants.PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT_DEFVALUE))
         self.checkBoxCurrMonthAHalf.setChecked(
@@ -140,6 +143,63 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         
         self.checkBoxDelRawData.setVisible(self.checkBoxSaveWithOutFotmulas.isChecked())
 
+    def onclick_checkBoxOnlyProjectsWithAdd(self):
+        s_preff = self.get_preff()
+        p_selected = self.checkBoxOnlyProjectsWithAdd.isChecked()
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD, p_selected)
+        self.comboBoxPGroups.setVisible(p_selected)
+
+    def onclick_checkBoxSelectUsers(self):
+        s_preff = self.get_preff()
+        p_selected = self.checkBoxSelectUsers.isChecked()
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_SELECT_USERS, p_selected)
+        self.comboBoxSelectUsers.setVisible(p_selected)
+
+    def setup_checkBoxOnlyProjectsWithAdd(self):
+        s_preff = self.get_preff()
+        saved_value = load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD, myconstants.PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD_DEFVALUE)
+        self.checkBoxOnlyProjectsWithAdd.setChecked(saved_value)
+        self.comboBoxPGroups.setVisible(saved_value)
+        if saved_value:
+            self.setup_comboBoxPGroups()
+
+    def setup_checkBoxSelectUsers(self):
+        s_preff = self.get_preff()
+        saved_value = load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_SELECT_USERS, myconstants.PARAMETER_SAVED_VALUE_SELECT_USERS_DEFVALUE)
+        self.checkBoxSelectUsers.setChecked(saved_value)
+        self.comboBoxSelectUsers.setVisible(saved_value)
+        if saved_value:
+            self.setup_comboBoxSelectUsers()
+
+    def setup_comboBoxPGroups(self):
+        self.comboBoxPGroups.clear()
+        df = load_parameter_table(myconstants.PROJECTS_LIST_ADD_INFO)
+        groups_list = [
+            myconstants.TEXT_4_ALL_GROUPS,
+        ]
+        if type(df) == str:
+            return None
+        else:
+            all_columns = [clmn.upper() for clmn in df.columns]
+            if myconstants.GROUP_COLUMN_FOR_FILTER.upper() in all_columns:
+                df = df[[myconstants.GROUP_COLUMN_FOR_FILTER]].fillna("")
+                groups = sorted(df[myconstants.GROUP_COLUMN_FOR_FILTER].unique())
+                groups = [grn for grn in groups if grn != ""]
+
+                groups_list = groups_list + groups
+
+        self.comboBoxPGroups.addItems(groups_list)
+
+    def setup_comboBoxSelectUsers(self):
+        self.comboBoxSelectUsers.clear()
+        df = load_parameter_table(myconstants.COSTS_TABLE)
+        if type(df) == str:
+            return None
+        else:
+            all_grp_columns = [clmn[1:] for clmn in df.columns if clmn[0] == myconstants.GROUP_COLUMN_STERTER]
+
+        self.comboBoxSelectUsers.addItems(all_grp_columns)
+
     def setup_form(self, reports_list):
         self.reports_list = reports_list
         self.pushButtonOpenLastReport.setVisible(False)
@@ -153,7 +213,10 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         
         self.checkBoxDeleteVIP.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxDeleteNotProduct.clicked.connect(self.on_click_CheckBoxes)
-        self.checkBoxOnlyProjectsWithAdd.clicked.connect(self.on_click_CheckBoxes)
+
+        self.checkBoxOnlyProjectsWithAdd.clicked.connect(self.onclick_checkBoxOnlyProjectsWithAdd)
+        self.checkBoxSelectUsers.clicked.connect(self.onclick_checkBoxSelectUsers)
+
         self.checkBoxDeleteWithoutFact.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxCurrMonthAHalf.clicked.connect(self.on_click_CheckBoxes)
         self.checkBoxDelPDn.clicked.connect(self.on_click_CheckBoxes)
@@ -169,6 +232,11 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         self.radioButtonDD4.clicked.connect(self.on_click_radioButtonDD)
 
         self.setup_check_boxes()
+        self.setup_checkBoxOnlyProjectsWithAdd()
+        self.setup_checkBoxSelectUsers()
+        self.setup_comboBoxPGroups()
+        self.setup_comboBoxSelectUsers()
+
         self.setup_radio_buttons_dd()
 
         self.listView.clicked.connect(self.on_Click_Reports_List)
@@ -252,6 +320,7 @@ class MyWindow(QtWidgets.QMainWindow):
                                                  myconstants.PARAMETER_DEFAULT_VALUE_TOP_AND_BOTTOM_BOXES)
 
         self.ui.HorisontalSplitter.setSizes(top_and_bottom_boxes_widths)
+
         if data:
             self.restoreGeometry(data)
             self.ui.VerticalSplitter.setSizes(left_and_right_boxes_widths)

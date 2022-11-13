@@ -171,6 +171,7 @@ PROJECTS_SUB_TYPES_DESCR = "ProjectsSubTypesDescriptions.xlsx"
 PROJECTS_LIST_ADD_INFO = "ProjectsAddInfo.xlsx"
 PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST = {
     "Наименование проекта (только текст)": "Project4AddInfo",
+    "Группа": "ProjectUserGroup",
     "Выруч_Янв": "SumInCome01",
     "Выруч_Фев": "SumInCome02",
     "Выруч_Мар": "SumInCome03",
@@ -196,6 +197,9 @@ PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST = {
     "Подр_Ноя": "SumPodr11",
     "Подр_Дек": "SumPodr12",
 }
+GROUP_COLUMN_FOR_FILTER = "Группа"
+TEXT_4_ALL_GROUPS = "< Все группы >"
+GROUP_COLUMN_STERTER = "#"
 
 PARAMETERS_ALL_TABLES = {
     MONTH_WORKING_HOURS_TABLE: ("Таблица с количеством рабочих часов в месяцах", "FirstDate"),
@@ -214,7 +218,7 @@ PARAMETERS_ALL_TABLES = {
 }
 
 EMAIL_INFO_COLUMNS = ["Personal_email", "user_email", "boss_email"]
-SECRET_COSTS_LOCATION = "C:/Tmp"
+SECRET_COSTS_LOCATION = "C:/DES.LM.UserFiles"
 TEST_SECRET_FILES_LIST = [COSTS_TABLE, PROJECTS_LIST_ADD_INFO]
 
 FACT_IS_PLAN_MARKER = "(факт=плану)"
@@ -256,6 +260,7 @@ PARAMETER_SAVED_VALUE_DELETE_VIP = "Удалить VIP?"
 PARAMETER_SAVED_VALUE_DELETE_CURRMONTHHALF = "Текущий месяц рассчитывать от половины нормы часов?"
 PARAMETER_SAVED_VALUE_DELETE_NONPROD = "Удалять не производственные подразделения?"
 PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD = "Оставлять только проекты, по которым есть доп информация?"
+PARAMETER_SAVED_VALUE_SELECT_USERS = "Выбрать только людей из группы?"
 PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT = "Удалять строки не содержащие факта (факт=0)?"
 PARAMETER_SAVED_VALUE_DELETE_PERSDATA = "Удалять проекты с персональными данными?"
 PARAMETER_SAVED_VALUE_DELETE_VAC = "Удалять ли вакансии из отчёта?"
@@ -272,6 +277,7 @@ PARAMETER_SAVED_VALUE_DELETE_VIP_DEFVALUE = False
 PARAMETER_SAVED_VALUE_DELETE_CURRMONTHHALF_DEFVALUE = False
 PARAMETER_SAVED_VALUE_DELETE_NONPROD_DEFVALUE = False
 PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD_DEFVALUE = False
+PARAMETER_SAVED_VALUE_SELECT_USERS_DEFVALUE = False
 PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT_DEFVALUE = False
 PARAMETER_SAVED_VALUE_DELETE_PERSDATA_DEFVALUE = False
 PARAMETER_SAVED_VALUE_DELETE_VAC_DEFVALUE = True
