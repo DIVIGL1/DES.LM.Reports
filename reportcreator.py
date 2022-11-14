@@ -40,6 +40,11 @@ class reportCreator(object):
         return self.reports_list[num]
     
     def create_report(self):
+        # TODO: Выставить флаг для других процессов, запрещающий
+        #  разблокировку кнопок во время формирования отчёта.
+        #  При наличии этого флага, функция Drag&Drop не должна
+        #  менять выделенную строку в списке "сырых" файлов.
+
         if self.parent.report_parameters.report_file_name is None:
             myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
             self.parent.mainwindow.ui.set_status("Необходимо выбрать отчётную форму.")

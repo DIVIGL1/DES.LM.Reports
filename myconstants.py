@@ -117,6 +117,9 @@ RESULT_DATA_COLUMNS = [
     "SumPodr12",
 ]
 
+# TODO: Добавить столбец по имени 'manager_email',
+#  содержащий адрес менеджера проекта.
+
 MONTHS = {
     1: "Январь",
     2: "Февраль",
@@ -234,6 +237,7 @@ SECRET_COSTS_LOCATION = "C:/DES.LM.UserFiles"
 TEST_SECRET_FILES_LIST = [COSTS_TABLE, PROJECTS_LIST_ADD_INFO]
 
 FACT_IS_PLAN_MARKER = "(факт=плану)"
+FACT_FILLER = "(факт=1)"
 OTHER_PROJECT_SUB_TYPE = "_Прочее"
 
 REPORT_FILE_PREFFIX = "Отчет - "
@@ -310,4 +314,4 @@ EXCELWINDOWSTATE_MIN = -4140  # Минимизировано
 NUM_ROWS_FOR_HIDE = 300
 NUM_COLUMNS_FOR_HIDE = 150
 
-APP_VERSION = "v:3.04.091122.05"
+APP_VERSION = "v:4.03.151122.00"
