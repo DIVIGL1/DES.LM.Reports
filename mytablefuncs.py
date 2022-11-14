@@ -255,6 +255,8 @@ def prepare_data(
         p_virtual_FTE,
         ui_handle
 ):
+# TODO: Добавить обработку проекта с текстом myconstants.FACT_FILLER.
+#  План не важен, а факт считается как max(0, 1-sum(fact_fte)) с группировкой по человеку.
     data_df = load_raw_data(raw_file_name, p_virtual_FTE, ui_handle)
     if type(data_df) == str:
         ui_handle.set_status(data_df)
@@ -333,12 +335,13 @@ def prepare_data(
         tbl_clmns = projects_list_add_info.columns
         all_columns = [clmn.upper() for clmn in tbl_clmns]
         grp_clmn_name = tbl_clmns[all_columns.index(myconstants.GROUP_COLUMN_FOR_FILTER)]
-        projects_list_add_info[[grp_clmn_name]].fillna("", inplace=True)
+        projects_list_add_info[grp_clmn_name] = projects_list_add_info[grp_clmn_name].fillna("").astype(str)
 
         # Из таблицы с дополнительными данными о проектах удалим всё лишне:
         group_value = ui_handle.comboBoxPGroups.currentText()
         if group_value == myconstants.TEXT_4_ALL_GROUPS:
-            projects_list_add_info = projects_list_add_info[projects_list_add_info[grp_clmn_name] != ""]
+            pass
+            #projects_list_add_info = projects_list_add_info[projects_list_add_info[grp_clmn_name] != ""]
         else:
             projects_list_add_info = projects_list_add_info[projects_list_add_info[grp_clmn_name] == group_value]
 
@@ -402,10 +405,21 @@ def prepare_data(
 
     ui_handle.set_status(f"Добавлена доп информация по проектам.")
 
-    join_type = iif(ui_handle.checkBoxOnlyProjectsWithAdd.isChecked(), "inner", "left")
-    data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how=join_type)
-
-    ui_handle.set_status(f"Пересчитано с учетом присоединения дополнительной информации (всего строк данных: {data_df.shape[0]})")
+    if ui_handle.checkBoxOnlyProjectsWithAdd.isChecked():
+        data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how="inner")
+        if data_df.shape[0] == 0:
+            ui_handle.set_status(
+                f"\n\n\n" +
+                f"{myconstants.TEXT_LINES_SEPARATOR}\n" +
+                f"В результирующей таблице нет данных.\n" +
+                f"Скорее всего, это связано с фильтром по проектам.\n" +
+                f"Сформировать отчёт невозможно.\n"
+                f"{myconstants.TEXT_LINES_SEPARATOR}"
+            )
+            ui_handle.enable_buttons()
+            return None
+    else:
+        data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how="left")
 
     if p_curr_month_half:
         sCurrMonth = f"{dt.datetime.now().year}-{dt.datetime.now().month:0{2}}-01"
@@ -415,6 +429,18 @@ def prepare_data(
         data_df = data_df[data_df["FactFTE"] != 0]
         ui_handle.set_status("Удалены строки без данных о факте.")
         ui_handle.set_status(f"Пересчитано (всего строк обработанных данных: {data_df.shape[0]})")
+
+        if data_df.shape[0] == 0:
+            ui_handle.set_status(
+                f"\n\n\n" +
+                f"{myconstants.TEXT_LINES_SEPARATOR}\n" +
+                f"В результирующей таблице нет данных.\n" +
+                f"Скорее всего, это связано с отсутствие фактических данных.\n" +
+                f"Сформировать отчёт невозможно.\n"
+                f"{myconstants.TEXT_LINES_SEPARATOR}"
+            )
+            ui_handle.enable_buttons()
+            return None
 
     data_df = data_df.merge(divisions_names_df, left_on="DivisionRaw", right_on="FullDivisionName", how="left")
     ui_handle.set_status(f"Выполнено объединение с таблицей с подразделениями (всего строк обработанных данных: {data_df.shape[0]})")
@@ -429,17 +455,37 @@ def prepare_data(
     ui_handle.set_status(f"Данные объединены с таблицей с ФН (всего строк обработанных данных: {data_df.shape[0]})")
 
     data_df["JustUserName"] = data_df["User"].apply(lambda param: param.replace(myconstants.FIRED_NAME_TEXT, ""))
-    if ui_handle.checkBoxSelectUsers.isChecked():
+    if ui_handle.checkBoxSelectUsers.isChecked() and ui_handle.comboBoxSelectUsers.currentText() !="":
         # Отмечено, что нужно выбрать только определённые группы пользователей.
         # Наименование столбца содержащего признаки для фильтрации:
         group_field_name = myconstants.GROUP_COLUMNS_STARTER + ui_handle.comboBoxSelectUsers.currentText()
-        costs_df[group_field_name].fillna("", inplace=True)
+        costs_df[group_field_name] = costs_df[group_field_name].fillna("").astype(str).replace(r'\s+', '', regex=True)
+
         costs_df = costs_df[costs_df[group_field_name] != ""]
         print(costs_df)
         costs_df = costs_df[["CostUserName"] + myconstants.RAW_DATA_COLUMNS_ZERO_IF_NULL]
         data_df = data_df.merge(costs_df, left_on="JustUserName", right_on="CostUserName", how="inner")
-        ui_handle.set_status(f"Установлен фильтр по людям (всего строк обработанных данных: {data_df.shape[0]})")
+        if data_df.shape[0] == 0:
+            ui_handle.set_status(
+                f"\n\n\n" +
+                f"{myconstants.TEXT_LINES_SEPARATOR}\n" +
+                f"В результирующей таблице нет данных.\n" +
+                f"Скорее всего, это связано с фильтрами по людям.\n" +
+                f"Сформировать отчёт невозможно.\n"
+                f"{myconstants.TEXT_LINES_SEPARATOR}"
+            )
+            ui_handle.enable_buttons()
+            return None
+        else:
+            ui_handle.set_status(f"Установлен фильтр по людям (всего строк обработанных данных: {data_df.shape[0]})")
     else:
+        if ui_handle.checkBoxSelectUsers.isChecked():
+            ui_handle.set_status(
+                f"{myconstants.TEXT_LINES_SEPARATOR}\n" +
+                f"Не выбрана ни одна группа сотрудников.\n" +
+                f"{myconstants.TEXT_LINES_SEPARATOR}"
+            )
+
         data_df = data_df.merge(costs_df, left_on="JustUserName", right_on="CostUserName", how="left")
 
     projects_list_add_info.rename(columns = myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST, inplace = True)
