@@ -13,7 +13,7 @@ from PyQt5.QtCore import pyqtSignal, QObject
 import myconstants
 import myQt_form
 from mytablefuncs import get_parameter_value, open_and_test_raw_struct, load_parameter_table
-from myutils import load_param, save_param, get_files_list
+from myutils import load_param, save_param, get_files_list, iif
 
 
 class Communicate(QObject):
@@ -59,6 +59,13 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         self.parent.parent.reporter.create_report()
 
     def on_dblClick_Reports_List(self):
+        # TODO: Добавить проверку на нажатие Ctrl.
+        #  В этом случае надо открывать в Excel форму отчёта.
+        self.on_click_DoIt()
+
+    def on_dblClick_Raw_data(self):
+        # TODO: Добавить проверку на нажатие Ctrl.
+        #  В этом случае надо открывать в Excel файл с сырыми данными.
         self.on_click_DoIt()
 
     def on_click_OpenLastReport(self):
@@ -178,7 +185,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             myconstants.TEXT_4_ALL_GROUPS,
         ]
         if type(df) == str:
-            return None
+            pass
         else:
             all_columns = [clmn.upper() for clmn in df.columns]
             if myconstants.GROUP_COLUMN_FOR_FILTER in all_columns:
@@ -186,7 +193,9 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
                 all_grp_columns = [clmn.upper() for clmn in tbl_clmns]
                 selected_clmn = tbl_clmns[all_grp_columns.index(myconstants.GROUP_COLUMN_FOR_FILTER)]
 
-                df = df[[selected_clmn]].fillna("")
+                df = df[[selected_clmn]].fillna("").astype(str)
+                df[selected_clmn] = df[selected_clmn].apply(lambda s: iif(s.count(" ") == len(s), "", s))
+
                 groups = sorted(df[selected_clmn].unique())
                 groups = [grn for grn in groups if grn != ""]
 
@@ -246,7 +255,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         self.listView.clicked.connect(self.on_Click_Reports_List)
         
         self.listView.doubleClicked.connect(self.on_dblClick_Reports_List)
-        self.listViewRawData.doubleClicked.connect(self.on_dblClick_Reports_List)
+        self.listViewRawData.doubleClicked.connect(self.on_dblClick_Raw_data)
 
         self.pushButtonOpenLastReport.clicked.connect(self.on_click_OpenLastReport)
         self.status_text = ""
@@ -364,6 +373,13 @@ class MyWindow(QtWidgets.QMainWindow):
             event.ignore()
 
     def dropEvent(self, event):
+        # TODO: Перенести обработку копирования и переименования файлов в отдельный процесс:
+        #  - позволит выводить информацию на экран;
+        #  - не завешивать программу;
+        #  - формировать отчёт во время копирования файлов.
+        #  При этом надо учесть, что если формируется отчёт, то выделять
+        #  в списке "сырых" файлов новые имена не надо.
+
         # Установим флаг, который используется при проверке изменений на диске (FileSystemEventHandler)
         self.parent.drag_and_prop_in_process = True
 
@@ -430,7 +446,7 @@ class MyWindow(QtWidgets.QMainWindow):
                 # Определим новое имя файла исходя из его данных.
                 # Сначала определим дату файла:
                 file_dt = datetime.datetime.fromtimestamp(os.path.getmtime(one_file_path))
-                creation_str = f"{file_dt:%Y-%d-%m %H-%M}"
+                creation_str = f"{file_dt:%Y-%m-%d %H-%M}"
                 # Определим данные за какой период присутствуют:
                 month_column = list(myconstants.RAW_DATA_COLUMNS.keys())[0]
 
@@ -439,8 +455,11 @@ class MyWindow(QtWidgets.QMainWindow):
                 start_month = int(start_month)
                 end_month = int(ret_value[month_column].max())
 
-                file_period = f"{myconstants.MONTHS[start_month]} {myconstants.MONTHS[end_month]} {report_year}"
-                new_filename = f"{creation_str} ({file_period}).xlsx"
+                if start_month == end_month:
+                    data_in_file_period = f"{myconstants.MONTHS[end_month]} {report_year}"
+                else:
+                    data_in_file_period = f"{myconstants.MONTHS[start_month]}-{myconstants.MONTHS[end_month]} {report_year}"
+                new_filename = f"{creation_str}  ({data_in_file_period}).xlsx"
                 if new_filename != this_file_name:
                     self.ui.set_status(f"   Имя файла меняется на {new_filename}.")
 
@@ -474,15 +493,19 @@ class MyWindow(QtWidgets.QMainWindow):
                 continue
 
             if drug_and_drop_type == 4:
-                new_src_file_path = os.path.join(os.path.dirname(one_file_path), new_filename)
-                try:
-                    os.rename(one_file_path, new_src_file_path)
-                    self.ui.set_status("   Исходный файл так же переименован.")
-                except (OSError, shutil.Error):
-                    QtWidgets.QMessageBox.question(self, "Ошибка копирования.",
-                                                   "Не удалось скопировать файл с данными выгруженными из DES.LM.",
-                                                   QtWidgets.QMessageBox.Yes)
-                    self.ui.set_status("   Переименование исходного файла не удалось.")
+                if this_file_name == new_filename:
+                    # Не надо переименовывать файл сам в себя.
+                    self.ui.set_status(f"   Исходный файл переименовывать не надо, так как он уже имеет нужное имя: {new_filename}.")
+                else:
+                    new_src_file_path = os.path.join(os.path.dirname(one_file_path), new_filename)
+                    try:
+                        os.rename(one_file_path, new_src_file_path)
+                        self.ui.set_status("   Исходный файл так же переименован.")
+                    except (OSError, shutil.Error):
+                        QtWidgets.QMessageBox.question(self, "Ошибка копирования.",
+                                                       "Не удалось скопировать файл с данными выгруженными из DES.LM.",
+                                                       QtWidgets.QMessageBox.Yes)
+                        self.ui.set_status("   Переименование исходного файла не удалось.")
 
         if counter == 1:
             self.refresh_raw_files_list(select_filename)
