@@ -226,7 +226,7 @@
           <item>
            <widget class="QRadioButton" name="radioButtonDD2">
             <property name="text">
-             <string>проверять структуру данных</string>
+             <string>... и проверять структуру данных</string>
             </property>
            </widget>
           </item>
@@ -359,7 +359,7 @@
           <item>
            <widget class="QCheckBox" name="checkBoxSelectUsers">
             <property name="text">
-             <string>Выбрать только людей из группы:</string>
+             <string>Выбрать только людей из группы</string>
             </property>
            </widget>
           </item>
