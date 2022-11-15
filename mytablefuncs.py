@@ -255,8 +255,6 @@ def prepare_data(
         p_virtual_FTE,
         ui_handle
 ):
-# TODO: Добавить обработку проекта с текстом myconstants.FACT_FILLER.
-#  План не важен, а факт считается как max(0, 1-sum(fact_fte)) с группировкой по человеку.
     data_df = load_raw_data(raw_file_name, p_virtual_FTE, ui_handle)
     if type(data_df) == str:
         ui_handle.set_status(data_df)
@@ -398,6 +396,28 @@ def prepare_data(
     data_df["SumUserFactFTE"] = data_df.groupby(["User", "FDate"])["FactFTE"].transform("sum")
     data_df["SumUserFactFTEUR"] = data_df.groupby(["User", "FDate"])["FactFTEUnRounded"].transform("sum")
 
+    # Обработаем проекты "заполнители".
+    # 1. Отберём эти проекты:
+    idx = ((data_df.Project.str.find(myconstants.FACT_FILLER) > 0) & (data_df["PlanFTE"] != 0))
+    # И сделаем в них замену:
+    #  - для не округлённого FTE:
+    data_df.loc[idx, "FactFTEUnRounded"] = \
+        data_df[idx][["PlanFTE", "SumUserFactFTEUR"]].apply(lambda d: max(d.PlanFTE - d.SumUserFactFTEUR, 0), axis=1)
+    #  - для округлённого FTE:
+    data_df.loc[idx, "FactFTE"] = \
+        data_df[idx]["FactFTEUnRounded"].apply(lambda d: round(d, myconstants.ROUND_FTE_VALUE))
+    #  - для часов:
+    data_df.loc[idx, "FactHours"] = \
+        data_df[idx][["FactFTEUnRounded", "SumUserFHours", "SumUserFactFTEUR"]].apply(
+            lambda d: max(0, round((d.SumUserFHours / d.SumUserFactFTEUR) - d.SumUserFHours, 1)), axis=1
+    )
+
+    # Так как фактические FTE и часы могли поменяться из-за "заполнителей", то их необходимо пересчитать.
+    data_df["SumUserFactFTE"] = data_df.groupby(["User", "FDate"])["FactFTE"].transform("sum")
+    data_df["SumUserFactFTEUR"] = data_df.groupby(["User", "FDate"])["FactFTEUnRounded"].transform("sum")
+    data_df["SumUserFHours"] = data_df.groupby(["User", "FDate"])["FactHours"].transform("sum")
+
+    # Вычислим коэффициенты перевода:
     data_df["HourTo1FTE"] = \
         data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: x[1] / x[0], axis=1)
     data_df["HourTo1FTE_Math"] = \
@@ -463,7 +483,7 @@ def prepare_data(
 
         costs_df = costs_df[costs_df[group_field_name] != ""]
         print(costs_df)
-        costs_df = costs_df[["CostUserName"] + myconstants.RAW_DATA_COLUMNS_ZERO_IF_NULL]
+        costs_df = costs_df[["CostUserName"] + myconstants.COSTS_DATA_COLUMNS]
         data_df = data_df.merge(costs_df, left_on="JustUserName", right_on="CostUserName", how="inner")
         if data_df.shape[0] == 0:
             ui_handle.set_status(
@@ -492,10 +512,9 @@ def prepare_data(
     projects_list_add_info.fillna(0.00, inplace = True)
 
     data_df = data_df.merge(emails_df, left_on="JustUserName", right_on="FIO_4_email", how="left")
-    for one_column in myconstants.EMAIL_INFO_COLUMNS:
-        data_df[one_column] = data_df[one_column].fillna("")
+    data_df[myconstants.EMAIL_INFO_COLUMNS] = data_df[myconstants.EMAIL_INFO_COLUMNS].fillna("")
 
-    data_df[myconstants.RAW_DATA_COLUMNS_ZERO_IF_NULL].fillna(0.00, inplace=True)
+    data_df[myconstants.COLUMNS_TO_SET_ZERO_IF_NULL] = data_df[myconstants.COLUMNS_TO_SET_ZERO_IF_NULL].fillna(0.00)
 
     data_df["ProjectType"] = \
         data_df[["Project", "ProjectType"]].apply(
@@ -516,8 +535,7 @@ def prepare_data(
     data_df["IS_Product_type"] = data_df["IS_Product_type"].fillna("")
     
     # Возможны пропуски в некоторых колонках. Поставим там признак, чтобы бросался в глаза в отчёте:
-    for one_column in myconstants.COLUMNS_FILLNA:
-        data_df[one_column] = data_df[[one_column]].fillna(myconstants.FILLNA_STRING)
+    data_df[myconstants.COLUMNS_FILLNA] = data_df[myconstants.COLUMNS_FILLNA].fillna(myconstants.FILLNA_STRING)
 
     data_df = data_df.merge(is_dog_name_df, left_on="ShortProject", right_on="ID_DES.LM_project", how="left", suffixes=("", "_will_dropped"))
     data_df["ISDogName"].fillna(data_df["Project"], inplace=True)

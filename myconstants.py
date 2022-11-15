@@ -117,6 +117,43 @@ RESULT_DATA_COLUMNS = [
     "SumPodr12",
 ]
 
+COLUMNS_TO_SET_ZERO_IF_NULL = [
+    "UserHourCost",
+    "UserMonthCost",
+    "UHCost_KV1",
+    "UMCost_KV1",
+    "UHCost_KV2",
+    "UMCost_KV2",
+    "UHCost_KV3",
+    "UMCost_KV3",
+    "UHCost_KV4",
+    "UMCost_KV4",
+    "SumInCome01",
+    "SumInCome02",
+    "SumInCome03",
+    "SumInCome04",
+    "SumInCome05",
+    "SumInCome06",
+    "SumInCome07",
+    "SumInCome08",
+    "SumInCome09",
+    "SumInCome10",
+    "SumInCome11",
+    "SumInCome12",
+    "SumPodr01",
+    "SumPodr02",
+    "SumPodr03",
+    "SumPodr04",
+    "SumPodr05",
+    "SumPodr06",
+    "SumPodr07",
+    "SumPodr08",
+    "SumPodr09",
+    "SumPodr10",
+    "SumPodr11",
+    "SumPodr12",
+]
+
 # TODO: Добавить столбец по имени 'manager_email',
 #  содержащий адрес менеджера проекта.
 
@@ -137,7 +174,7 @@ MONTHS = {
 
 START_PARAMETERS_FILE = "Settings.xlsx"
 
-RAW_DATA_COLUMNS_ZERO_IF_NULL = [
+COSTS_DATA_COLUMNS = [
     "UserHourCost",
     "UserMonthCost",
     "UHCost_KV1",
@@ -149,6 +186,7 @@ RAW_DATA_COLUMNS_ZERO_IF_NULL = [
     "UHCost_KV4",
     "UMCost_KV4",
 ]
+
 RAW_DATA_DROP_COLUMNS = ["MVZ", "KoBo", "Unnamed15", "Unnamed16"]
 SHEETS_DONT_DELETE_FORMULAS = ["ИсходныеДанные", "УникальныеСписки", "Настройки"]
 DELETE_SHEETS_LIST_IF_NO_FORMULAS = ["ИсходныеДанные", "УникальныеСписки"]
