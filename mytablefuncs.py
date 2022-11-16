@@ -512,6 +512,8 @@ def prepare_data(
     projects_list_add_info.fillna(0.00, inplace = True)
 
     data_df = data_df.merge(emails_df, left_on="JustUserName", right_on="FIO_4_email", how="left")
+    emails_df = emails_df[["FIO_4_email", "user_email"]].rename(columns={"FIO_4_email": "mngr_FIO", "user_email": "manager_email"})
+    data_df = data_df.merge(emails_df, left_on="ProjectManager", right_on="mngr_FIO", how="left")
     data_df[myconstants.EMAIL_INFO_COLUMNS] = data_df[myconstants.EMAIL_INFO_COLUMNS].fillna("")
 
     data_df[myconstants.COLUMNS_TO_SET_ZERO_IF_NULL] = data_df[myconstants.COLUMNS_TO_SET_ZERO_IF_NULL].fillna(0.00)

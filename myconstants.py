@@ -115,6 +115,7 @@ RESULT_DATA_COLUMNS = [
     "SumPodr10",
     "SumPodr11",
     "SumPodr12",
+    "manager_email",
 ]
 
 COLUMNS_TO_SET_ZERO_IF_NULL = [
@@ -270,7 +271,7 @@ PARAMETERS_ALL_TABLES = {
     PROJECTS_LIST_ADD_INFO: ("Таблица наименований ИС из контракта", "Наименование проекта (только текст)"),
 }
 
-EMAIL_INFO_COLUMNS = ["Personal_email", "user_email", "boss_email"]
+EMAIL_INFO_COLUMNS = ["manager_email", "Personal_email", "user_email", "boss_email"]
 SECRET_COSTS_LOCATION = "C:/DES.LM.UserFiles"
 TEST_SECRET_FILES_LIST = [COSTS_TABLE, PROJECTS_LIST_ADD_INFO]
 
