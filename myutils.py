@@ -64,6 +64,19 @@ def rel_path(path):
 def get_home_dir():
     return os.path.abspath(os.curdir)
 
+def get_download_dir():
+    if os.name == 'nt':
+        import winreg
+        sub_key = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders'
+        downloads_guid = '{374DE290-123F-4565-9164-39C4925E467B}'
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, sub_key) as key:
+            location = winreg.QueryValueEx(key, downloads_guid)[0]
+        return location
+    else:
+        return os.path.join(os.path.expanduser('~'), 'downloads')
+
+def open_dowmload_dir():
+    os.system(f"explorer.exe {get_download_dir()}")
 
 if __name__ == "__main__":
     print(get_files_list("RawData", "", ".xlsx"))
