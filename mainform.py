@@ -13,7 +13,7 @@ from PyQt5.QtCore import pyqtSignal, QObject
 import myconstants
 import myQt_form
 from mytablefuncs import get_parameter_value, open_and_test_raw_struct, load_parameter_table
-from myutils import load_param, save_param, get_files_list, iif
+from myutils import load_param, save_param, get_files_list, iif, open_dowmload_dir
 
 
 class Communicate(QObject):
@@ -268,6 +268,19 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         self.radioButtonDD3.clicked.connect(self.on_click_radioButtonDD)
         self.radioButtonDD4.clicked.connect(self.on_click_radioButtonDD)
 
+        # Формируем обработку пунктов меню:
+        self.CreateReport.triggered.connect(lambda: self.menu_action("CreateReport"))
+        self.OpenLastReport.triggered.connect(lambda: self.menu_action("OpenLastReport"))
+
+        self.OpenDownLoads.triggered.connect(lambda: self.menu_action("OpenDownLoads"))
+        self.GetLastFileFromDownLoads.triggered.connect(lambda: self.menu_action("GetLastFileFromDownLoads"))
+
+        self.EditReportForm.triggered.connect(lambda: self.menu_action("EditReportForm"))
+        self.EditRawFile.triggered.connect(lambda: self.menu_action("EditRawFile"))
+
+        self.Exit.triggered.connect(lambda: self.menu_action("Exit"))
+        #----------------------------------
+
         self.setup_check_boxes()
         self.setup_checkBoxOnlyProjectsWithAdd()
         self.setup_checkBoxSelectUsers()
@@ -289,7 +302,28 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
 
         self.listViewRawData.setDragEnabled(True)
 
-    
+    def menu_action(self, action_type):
+        if action_type == "CreateReport":
+            pass
+        if action_type == "OpenLastReport":
+            pass
+
+        if action_type == "OpenDownLoads":
+            open_dowmload_dir()
+            return
+        if action_type == "GetLastFileFromDownLoads":
+            pass
+
+        if action_type == "EditReportForm":
+            pass
+        if action_type == "EditRawFile":
+            pass
+
+        if action_type == "Exit":
+            self.parent.close()
+
+        print(action_type)
+
     def update_status(self):
         self.plainTextEdit.setPlainText(self.status_text)
     
@@ -338,6 +372,7 @@ class MyWindow(QtWidgets.QMainWindow):
     start_flag = True
     ready_to_save_position = False
     ctrl_is_pressed = False
+    alt_is_pressed = False
 
     def __init__(self, parent):
         self.parent = parent
