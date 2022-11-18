@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>816</width>
-    <height>650</height>
+    <height>656</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -615,6 +615,77 @@
     </item>
    </layout>
   </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>816</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="CreateReport"/>
+    <addaction name="OpenLastReport"/>
+    <addaction name="separator"/>
+    <addaction name="OpenDownLoads"/>
+    <addaction name="GetLastFileFromDownLoads"/>
+    <addaction name="separator"/>
+    <addaction name="EditReportForm"/>
+    <addaction name="EditRawFile"/>
+    <addaction name="separator"/>
+    <addaction name="Exit"/>
+   </widget>
+   <addaction name="menu"/>
+  </widget>
+  <action name="CreateReport">
+   <property name="text">
+    <string>Сформировать новый отчёт</string>
+   </property>
+  </action>
+  <action name="action_4">
+   <property name="text">
+    <string>Открыть форму отчёта</string>
+   </property>
+  </action>
+  <action name="EditReportForm">
+   <property name="text">
+    <string>Открыть выбранную форму отчёта</string>
+   </property>
+  </action>
+  <action name="EditRawFile">
+   <property name="text">
+    <string>Открыть выбранный файл с данными</string>
+   </property>
+  </action>
+  <action name="OpenLastReport">
+   <property name="text">
+    <string>Открыть последний сформированный отчёт</string>
+   </property>
+  </action>
+  <action name="Exit">
+   <property name="text">
+    <string>Выход</string>
+   </property>
+  </action>
+  <action name="OpenDownLoads">
+   <property name="text">
+    <string>Открыть папку 'Загрузки'</string>
+   </property>
+  </action>
+  <action name="action_5">
+   <property name="text">
+    <string>Открыть форму отчёта</string>
+   </property>
+  </action>
+  <action name="GetLastFileFromDownLoads">
+   <property name="text">
+    <string>Получить последний загруженный файл из папки 'Загрузки'</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>listView</tabstop>
