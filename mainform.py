@@ -59,20 +59,44 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         self.parent.parent.reporter.create_report()
 
     def on_dblClick_Reports_List(self):
-        # TODO: Добавить проверку на нажатие Ctrl.
-        #  В этом случае надо открывать в Excel форму отчёта.
-        self.on_click_DoIt()
+        if self.parent.alt_is_pressed:
+            self.open_report_form()
+        else:
+            self.on_click_DoIt()
 
     def on_dblClick_Raw_data(self):
-        # TODO: Добавить проверку на нажатие Ctrl.
-        #  В этом случае надо открывать в Excel файл с сырыми данными.
-        self.on_click_DoIt()
+        if self.parent.alt_is_pressed:
+            self.open_raw_file()
+        else:
+            self.on_click_DoIt()
 
     def on_click_OpenLastReport(self):
+        # Открываем последний сгенерированный отчёт.
         last_report_filename = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT)
         if last_report_filename:
             subprocess.Popen(last_report_filename, shell=True)
-    
+
+    def open_report_form(self):
+        # Открываем шаблон отчётной формы
+        # только при нажатом Ctrl.
+        report_file_name = \
+            os.path.join(
+                os.path.join(os.getcwd(), get_parameter_value(myconstants.REPORTS_SECTION_NAME)),
+                myconstants.REPORT_FILE_PREFFIX + self.listView.currentIndex().data() + myconstants.EXCEL_FILES_ENDS
+            )
+
+        subprocess.Popen(report_file_name, shell=True)
+
+    def open_raw_file(self):
+        # Открываем файл с 'сырыми' данными, выгруженными из DES.LM
+        # только при нажатом Ctrl.
+        raw_file_name = \
+            os.path.join(
+                os.path.join(os.getcwd(), get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)),
+                self.listViewRawData.currentIndex().data() + myconstants.EXCEL_FILES_ENDS
+            )
+        subprocess.Popen(raw_file_name, shell=True)
+
     def on_click_CheckBoxes(self):
         if self.listView.currentIndex().data() is None:
             return
@@ -540,10 +564,14 @@ class MyWindow(QtWidgets.QMainWindow):
     def keyReleaseEvent(self, event):
         if event.key() == QtCore.Qt.Key_Control:
             self.ctrl_is_pressed = False
+        if event.key() == QtCore.Qt.Key_Alt:
+            self.alt_is_pressed = False
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Control:
             self.ctrl_is_pressed = True
+        if event.key() == QtCore.Qt.Key_Alt:
+            self.alt_is_pressed = True
 
         if event.key() == QtCore.Qt.Key_F12:
             self.f12_counter += 1
