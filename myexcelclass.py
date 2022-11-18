@@ -101,18 +101,19 @@ class MyExcel:
                 # используемые для проставления признаков скрываемых/удаляемых строк/столбцов.
                 self.oexcel.Calculate()
                 self.hide_and_delete_rows_and_columns()
-                self.save_report()
-                
-                self.report_parameters.parent.mainwindow.ui.set_status("Отчёт сохранён.")
-                myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, report_prepared_name)
 
-                # Скроем вспомогательные листы
+                # Скроем вспомогательные листы:
                 if myconstants.UNIQE_LISTS_SHEET_NAME in self.get_sheets_list():
                     self.work_book.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME].Visible = False
                 
                 if myconstants.SETTINGS_SHEET_NAME in self.get_sheets_list():
                     self.work_book.Sheets[myconstants.SETTINGS_SHEET_NAME].Visible = False
-                # ------------------------------
+
+                self.save_report()
+
+                self.report_parameters.parent.mainwindow.ui.set_status("Отчёт сохранён.")
+                myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, report_prepared_name)
+
                 if self.report_parameters.p_open_in_excel:
                     self.oexcel.Visible = True
                     self.currwindow.WindowState = myconstants.EXCELWINDOWSTATE_MAX
