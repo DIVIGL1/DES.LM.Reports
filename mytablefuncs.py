@@ -540,7 +540,7 @@ def prepare_data(
     data_df[myconstants.COLUMNS_FILLNA] = data_df[myconstants.COLUMNS_FILLNA].fillna(myconstants.FILLNA_STRING)
 
     data_df = data_df.merge(is_dog_name_df, left_on="ShortProject", right_on="ID_DES.LM_project", how="left", suffixes=("", "_will_dropped"))
-    data_df["ISDogName"].fillna(data_df["Project"], inplace=True)
+    data_df["ISDogName"].fillna("", inplace=True)
     
     for one_type in myconstants.NO_CONTRACT_TYPES:
         data_df.loc[data_df["ProjectType"] == one_type, "Contract"] = myconstants.NO_CONTRACT_TEXT
