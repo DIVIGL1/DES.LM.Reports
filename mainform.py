@@ -43,38 +43,34 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         return True
 
     def on_click_DoIt(self):
-        raw_file_name = self.listViewRawData.currentIndex().data()
-        report_file_name = self.listView.currentIndex().data()
+        if self.pushButtonDoIt.isEnabled() and self.pushButtonDoIt.isVisible():
+            raw_file_name = self.listViewRawData.currentIndex().data()
+            report_file_name = self.listView.currentIndex().data()
 
-        if not self.parent.parent.report_parameters.is_all_parameters_exist():
-            return
+            if not self.parent.parent.report_parameters.is_all_parameters_exist():
+                return
 
-        self.pushButtonDoIt.setEnabled(False)
-        self.pushButtonOpenLastReport.setEnabled(False)
-        self.resize_text_and_button()
-        self.parent.parent.report_parameters.update(raw_file_name, report_file_name)
-        save_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT, self.reports_list.index(report_file_name) + 1)
-        save_param(myconstants.PARAMETER_SAVED_SELECTED_RAW_FILE, raw_file_name)
+            self.pushButtonDoIt.setEnabled(False)
+            self.pushButtonOpenLastReport.setEnabled(False)
+            self.resize_text_and_button()
+            self.parent.parent.report_parameters.update(raw_file_name, report_file_name)
+            save_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT, self.reports_list.index(report_file_name) + 1)
+            save_param(myconstants.PARAMETER_SAVED_SELECTED_RAW_FILE, raw_file_name)
 
-        self.parent.parent.reporter.create_report()
+            self.parent.parent.reporter.create_report()
 
     def on_dblClick_Reports_List(self):
-        if self.parent.alt_is_pressed:
-            self.open_report_form()
-        else:
-            self.on_click_DoIt()
+        self.on_click_DoIt()
 
     def on_dblClick_Raw_data(self):
-        if self.parent.alt_is_pressed:
-            self.open_raw_file()
-        else:
-            self.on_click_DoIt()
+        self.on_click_DoIt()
 
     def on_click_OpenLastReport(self):
-        # Открываем последний сгенерированный отчёт.
-        last_report_filename = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT)
-        if last_report_filename:
-            subprocess.Popen(last_report_filename, shell=True)
+        if self.pushButtonOpenLastReport.isEnabled() and self.pushButtonOpenLastReport.isVisible():
+            # Открываем последний сгенерированный отчёт.
+            last_report_filename = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT)
+            if last_report_filename:
+                subprocess.Popen(last_report_filename, shell=True)
 
     def open_report_form(self):
         # Открываем шаблон отчётной формы
@@ -304,9 +300,11 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
 
     def menu_action(self, action_type):
         if action_type == "CreateReport":
-            pass
+            self.on_click_DoIt()
+            return
         if action_type == "OpenLastReport":
-            pass
+            self.on_click_OpenLastReport()
+            return
 
         if action_type == "OpenDownLoads":
             open_dowmload_dir()
@@ -315,9 +313,11 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             pass
 
         if action_type == "EditReportForm":
-            pass
+            self.open_report_form()
+            return
         if action_type == "EditRawFile":
-            pass
+            self.open_raw_file()
+            return
 
         if action_type == "Exit":
             self.parent.close()
