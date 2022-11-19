@@ -631,7 +631,7 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu">
+   <widget class="QMenu" name="RportMenu">
     <property name="title">
      <string>Отчёты</string>
     </property>
@@ -643,7 +643,7 @@
     <addaction name="separator"/>
     <addaction name="Exit"/>
    </widget>
-   <widget class="QMenu" name="menu_2">
+   <widget class="QMenu" name="DataMenu">
     <property name="title">
      <string>Данные</string>
     </property>
@@ -652,9 +652,9 @@
     <addaction name="separator"/>
     <addaction name="MoveRawFile2Archive"/>
    </widget>
-   <widget class="QMenu" name="menu_3">
+   <widget class="QMenu" name="EditsettingsFiles">
     <property name="title">
-     <string>Редакирование</string>
+     <string>Редактирование</string>
     </property>
     <addaction name="EditReportForm"/>
     <addaction name="EditRawFile"/>
@@ -678,9 +678,9 @@
     <addaction name="separator"/>
     <addaction name="Settings"/>
    </widget>
-   <addaction name="menu"/>
-   <addaction name="menu_2"/>
-   <addaction name="menu_3"/>
+   <addaction name="RportMenu"/>
+   <addaction name="DataMenu"/>
+   <addaction name="EditsettingsFiles"/>
   </widget>
   <action name="CreateReport">
    <property name="text">

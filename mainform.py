@@ -328,10 +328,13 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             self.on_click_OpenLastReport()
             return
         if action_type == "OpenSavedReportsFolder":
+            # TODO: Реализовать функцию OpenSavedReportsFolder
             return
         if action_type == "MoveRawFile2Archive":
+            # TODO: Реализовать функцию MoveRawFile2Archive
             return
         if action_type == "WaitFileAndCreateReport":
+            # TODO: Реализовать функцию WaitFileAndCreateReport
             return
 
         if action_type == "OpenDownLoads":
@@ -365,6 +368,18 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             self.parent.close()
 
         print(action_type)
+
+    def lock_unlock_menu_items(self):
+        # CreateReport
+        # OpenLastReport
+        # OpenSavedReportsFolder
+        # MoveRawFile2Archive
+        # WaitFileAndCreateReport
+        # OpenDownLoads
+        # GetLastFileFromDownLoads
+        # EditReportForm
+        # EditRawFile
+        pass
 
     def update_status(self):
         self.plainTextEdit.setPlainText(self.status_text)
