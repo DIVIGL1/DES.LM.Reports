@@ -237,6 +237,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         self.comboBoxSelectUsers.addItems(all_grp_columns)
 
     def setup_form(self, reports_list):
+        self.Exit.setShortcut("Alt+F4")
         self.reports_list = reports_list
         self.pushButtonOpenLastReport.setVisible(False)
 
@@ -370,16 +371,19 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         print(action_type)
 
     def lock_unlock_menu_items(self):
-        # CreateReport
-        # OpenLastReport
-        # OpenSavedReportsFolder
-        # MoveRawFile2Archive
-        # WaitFileAndCreateReport
-        # OpenDownLoads
-        # GetLastFileFromDownLoads
-        # EditReportForm
-        # EditRawFile
-        pass
+        processing = not self.parent.parent.reporter.report_creation_process
+        self.CreateReport.setEnabled(processing)
+        self.OpenLastReport.setEnabled(processing)
+        # OpenSavedReportsFolder.setEnabled(processing)
+        self.MoveRawFile2Archive.setEnabled(processing)
+        self.WaitFileAndCreateReport.setEnabled(processing)
+        # OpenDownLoads.setEnabled(processing)
+        self.GetLastFileFromDownLoads.setEnabled(processing)
+        self.EditReportForm.setEnabled(processing)
+        self.EditRawFile.setEnabled(processing)
+
+        for one_action in self.EditSettingsFiles.actions():
+            one_action.setEnabled(processing)
 
     def update_status(self):
         self.plainTextEdit.setPlainText(self.status_text)

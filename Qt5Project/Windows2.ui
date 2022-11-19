@@ -652,7 +652,7 @@
     <addaction name="separator"/>
     <addaction name="MoveRawFile2Archive"/>
    </widget>
-   <widget class="QMenu" name="EditsettingsFiles">
+   <widget class="QMenu" name="EditSettingsFiles">
     <property name="title">
      <string>Редактирование</string>
     </property>
@@ -680,7 +680,7 @@
    </widget>
    <addaction name="RportMenu"/>
    <addaction name="DataMenu"/>
-   <addaction name="EditsettingsFiles"/>
+   <addaction name="EditSettingsFiles"/>
   </widget>
   <action name="CreateReport">
    <property name="text">
