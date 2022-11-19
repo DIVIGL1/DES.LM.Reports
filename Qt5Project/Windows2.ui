@@ -683,7 +683,7 @@
   </action>
   <action name="GetLastFileFromDownLoads">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Получить последний загруженный файл из папки 'Загрузки'</string>

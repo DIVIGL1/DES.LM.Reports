@@ -13,7 +13,7 @@ from PyQt5.QtCore import pyqtSignal, QObject
 import myconstants
 import myQt_form
 from mytablefuncs import get_parameter_value, open_and_test_raw_struct, load_parameter_table
-from myutils import load_param, save_param, get_files_list, iif, open_dowmload_dir
+from myutils import load_param, save_param, get_files_list, iif, open_dowmload_dir, get_later_raw_file
 
 
 class Communicate(QObject):
@@ -310,7 +310,11 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             open_dowmload_dir()
             return
         if action_type == "GetLastFileFromDownLoads":
-            pass
+            raw_file = get_later_raw_file()
+            if raw_file is None:
+                return
+
+            self.parent.copy_file_as_drop_process([raw_file])
 
         if action_type == "EditReportForm":
             self.open_report_form()
@@ -439,17 +443,7 @@ class MyWindow(QtWidgets.QMainWindow):
         #  При этом надо учесть, что если формируется отчёт, то выделять
         #  в списке "сырых" файлов новые имена не надо.
 
-        # Установим флаг, который используется при проверке изменений на диске (FileSystemEventHandler)
-        self.parent.drag_and_prop_in_process = True
-
-        drug_and_drop_type = (
-            self.ui.radioButtonDD1.isChecked() * 1 +
-            self.ui.radioButtonDD2.isChecked() * 2 +
-            self.ui.radioButtonDD3.isChecked() * 3 +
-            self.ui.radioButtonDD4.isChecked() * 4
-        )
-
-        # Из тех файлов выберем те, которые обрабатывать не будем:
+        # Из полученных файлов выберем те, которые обрабатывать не будем:
         not_xls_files = [u.toLocalFile() for u in event.mimeData().urls() if u.toLocalFile()[-5:].lower() != ".xlsx"]
         # Из тех файлов, которые "прилетели" выберем только *.xlsx:
         xls_files = [u.toLocalFile() for u in event.mimeData().urls() if u.toLocalFile()[-5:].lower() == ".xlsx"]
@@ -474,6 +468,19 @@ class MyWindow(QtWidgets.QMainWindow):
 
         if not not_xls_files and xls_files:
             self.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+
+        self.copy_file_as_drop_process(xls_files)
+
+    def copy_file_as_drop_process(self, xls_files):
+        # Установим флаг, который используется при проверке изменений на диске (FileSystemEventHandler)
+        self.parent.drag_and_prop_in_process = True
+
+        drug_and_drop_type = (
+            self.ui.radioButtonDD1.isChecked() * 1 +
+            self.ui.radioButtonDD2.isChecked() * 2 +
+            self.ui.radioButtonDD3.isChecked() * 3 +
+            self.ui.radioButtonDD4.isChecked() * 4
+        )
 
         raw_section_path = get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)
         counter = 0

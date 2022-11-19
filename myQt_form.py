@@ -329,7 +329,7 @@ class Ui_MainWindow(object):
         self.action_5 = QtWidgets.QAction(MainWindow)
         self.action_5.setObjectName("action_5")
         self.GetLastFileFromDownLoads = QtWidgets.QAction(MainWindow)
-        self.GetLastFileFromDownLoads.setEnabled(False)
+        self.GetLastFileFromDownLoads.setEnabled(True)
         self.GetLastFileFromDownLoads.setObjectName("GetLastFileFromDownLoads")
         self.menu.addAction(self.CreateReport)
         self.menu.addAction(self.OpenLastReport)
