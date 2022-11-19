@@ -14,7 +14,7 @@ from watchdog.events import FileSystemEventHandler
 from PyQt5 import QtGui
 
 
-class MyHandler(FileSystemEventHandler):
+class handlerRawFolder(FileSystemEventHandler):
     def __init__(self, parent):
         self.parent = parent
     
@@ -41,6 +41,29 @@ class MyHandler(FileSystemEventHandler):
         self.parent.mainwindow.refresh_raw_files_list(new_filename)
 
 
+class handlerUserFolder(FileSystemEventHandler):
+    def __init__(self, parent):
+        self.parent = parent
+
+    def on_created(self, event):
+        if event.is_directory:
+            return
+        self.call_action()
+
+    def on_deleted(self, event):
+        if event.is_directory:
+            return
+        self.call_action()
+
+    def on_moved(self, event):
+        if event.is_directory:
+            return
+        self.call_action()
+
+    def call_action(self):
+        self.parent.mainwindow.ui.update_user_files_menus()
+
+
 class MyApplication:
     drag_and_prop_in_process = False
     def __init__(self):
@@ -52,11 +75,11 @@ class MyApplication:
 
         self.mainwindow.show()
         if self.report_parameters.is_all_parameters_exist():
-            self.event_handler = MyHandler(self)
-            self.observer = Observer()
+            self.event_handler_raw_folder = handlerRawFolder(self)
+            self.observer_raw_folder = Observer()
             control_path = mytablefuncs.get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)
-            self.observer.schedule(self.event_handler, path=control_path, recursive=False)
-            self.observer.start()
+            self.observer_raw_folder.schedule(self.event_handler_raw_folder, path=control_path, recursive=False)
+            self.observer_raw_folder.start()
 
         # Проверяем наличие пользовательского каталога.
         # Если нет, то стараемся создать.
@@ -81,6 +104,13 @@ class MyApplication:
                         self.mainwindow.ui.set_status(
                             f"Не удалось создать файл пользовательских настроек: {one_file}")
                         self.mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+
+            self.event_handler_use_folder = handlerUserFolder(self)
+            self.observer_user_folder = Observer()
+            control_path = myconstants.USER_FILES_LOCATION
+            self.observer_user_folder.schedule(self.event_handler_use_folder, path=control_path, recursive=False)
+            self.observer_user_folder.start()
+
         else:
             self.mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
             self.mainwindow.ui.set_status("Не удалось создать пользовательскую папку для хранения пользовательских настроек.")
