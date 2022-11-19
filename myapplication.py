@@ -1,5 +1,6 @@
 import sys
 import os
+import shutil
 
 import myconstants
 import mainform
@@ -56,7 +57,35 @@ class MyApplication:
             control_path = mytablefuncs.get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)
             self.observer.schedule(self.event_handler, path=control_path, recursive=False)
             self.observer.start()
-        
+
+        # Проверяем наличие пользовательского каталога.
+        # Если нет, то стараемся создать.
+        if not os.path.exists(myconstants.USER_FILES_LOCATION):
+            os.mkdir(myconstants.USER_FILES_LOCATION)
+
+        # Проверим, удалось ли создать папку:
+        if os.path.exists(myconstants.USER_FILES_LOCATION):
+            # Проверим, существуют ли нужные файлы:
+            section = mytablefuncs.get_parameter_value(myconstants.PARAMETERS_SECTION_NAME)
+
+            for one_file in myconstants.USER_FILES_LIST:
+                system_file_path = os.path.join(os.path.join(os.getcwd(), section, one_file))
+                user_file_path = os.path.join(os.path.join(myconstants.USER_FILES_LOCATION, one_file))
+                excluded_file = myconstants.USER_FILES_EXCLUDE_PREFFIX + one_file
+                user_excluded_file_path = os.path.join(os.path.join(myconstants.USER_FILES_LOCATION, excluded_file))
+                if not (os.path.isfile(user_file_path) or os.path.isfile(user_excluded_file_path)):
+                    try:
+                        shutil.copyfile(system_file_path, user_file_path)
+                    except:
+                        self.mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+                        self.mainwindow.ui.set_status(
+                            f"Не удалось создать файл пользовательских настроек: {one_file}")
+                        self.mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+        else:
+            self.mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+            self.mainwindow.ui.set_status("Не удалось создать пользовательскую папку для хранения пользовательских настроек.")
+            self.mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+
         sys.exit(self.mainwindow.app.exec_())
     
 
