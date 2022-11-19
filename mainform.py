@@ -81,7 +81,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
                 myconstants.REPORT_FILE_PREFFIX + self.listView.currentIndex().data() + myconstants.EXCEL_FILES_ENDS
             )
 
-        subprocess.Popen(report_file_name, shell=True)
+        self.open_file_in_application(report_file_name)
 
     def open_raw_file(self):
         # Открываем файл с 'сырыми' данными, выгруженными из DES.LM
@@ -91,7 +91,10 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
                 os.path.join(os.getcwd(), get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)),
                 self.listViewRawData.currentIndex().data() + myconstants.EXCEL_FILES_ENDS
             )
-        subprocess.Popen(raw_file_name, shell=True)
+        self.open_file_in_application(raw_file_name)
+
+    def open_file_in_application(self, file_name):
+        subprocess.Popen(file_name, shell=True)
 
     def on_click_CheckBoxes(self):
         if self.listView.currentIndex().data() is None:
@@ -267,13 +270,32 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         # Формируем обработку пунктов меню:
         self.CreateReport.triggered.connect(lambda: self.menu_action("CreateReport"))
         self.OpenLastReport.triggered.connect(lambda: self.menu_action("OpenLastReport"))
+        self.OpenSavedReportsFolder.triggered.connect(lambda: self.menu_action("OpenSavedReportsFolder"))
 
         self.OpenDownLoads.triggered.connect(lambda: self.menu_action("OpenDownLoads"))
         self.GetLastFileFromDownLoads.triggered.connect(lambda: self.menu_action("GetLastFileFromDownLoads"))
+        self.MoveRawFile2Archive.triggered.connect(lambda: self.menu_action("MoveRawFile2Archive"))
 
         self.EditReportForm.triggered.connect(lambda: self.menu_action("EditReportForm"))
         self.EditRawFile.triggered.connect(lambda: self.menu_action("EditRawFile"))
-
+        #----------------------------------
+        section = myconstants.REPORTS_PREPARED_SECTION_NAME
+        self.WHours.triggered.connect(lambda: self.menu_action("OpenExcel", section, "WHours"))
+        self.UCosts.triggered.connect(lambda: self.menu_action("OpenExcel", section, "UCosts"))
+        self.ShortDivisionNames.triggered.connect(lambda: self.menu_action("OpenExcel", section, "ShortDivisionNames"))
+        self.ShortFNNames.triggered.connect(lambda: self.menu_action("OpenExcel", section, "ShortFNNames"))
+        self.FNSusbst.triggered.connect(lambda: self.menu_action("OpenExcel", section, "FNSusbst"))
+        self.ProjectsSubTypes.triggered.connect(lambda: self.menu_action("OpenExcel", section, "ProjectsSubTypes"))
+        self.ProjectsTypesDescriptions.triggered.connect(lambda: self.menu_action("OpenExcel", section, "ProjectsTypesDescriptions"))
+        self.ProjectsSubTypesDescriptions.triggered.connect(lambda: self.menu_action("OpenExcel", section, "ProjectsSubTypesDescriptions"))
+        self.BProg.triggered.connect(lambda: self.menu_action("OpenExcel", section, "BProg"))
+        self.ProjectsAddInfo.triggered.connect(lambda: self.menu_action("OpenExcel", section, "ProjectsAddInfo"))
+        self.EMails.triggered.connect(lambda: self.menu_action("OpenExcel", section, "EMails"))
+        self.CrossingIS.triggered.connect(lambda: self.menu_action("OpenExcel", section, "CrossingIS"))
+        self.VIP.triggered.connect(lambda: self.menu_action("OpenExcel", section, "VIP"))
+        #----------------------------------
+        self.Settings.triggered.connect(lambda: self.menu_action("OpenExcel", "", "Settings"))
+        #----------------------------------
         self.Exit.triggered.connect(lambda: self.menu_action("Exit"))
         #----------------------------------
 
@@ -298,12 +320,18 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
 
         self.listViewRawData.setDragEnabled(True)
 
-    def menu_action(self, action_type):
+    def menu_action(self, action_type, p1, p2):
         if action_type == "CreateReport":
             self.on_click_DoIt()
             return
         if action_type == "OpenLastReport":
             self.on_click_OpenLastReport()
+            return
+        if action_type == "OpenSavedReportsFolder":
+            pass
+            return
+        if action_type == "MoveRawFile2Archive":
+            pass
             return
 
         if action_type == "OpenDownLoads":
@@ -322,6 +350,15 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         if action_type == "EditRawFile":
             self.open_raw_file()
             return
+
+        if action_type == "OpenExcel":
+            if p1 == "":
+                xls_file_path = p2
+            else:
+                xls_file_path = get_parameter_value(p1) + "/" + p2 + ""
+
+            self.open_file_in_application(xls_file_path)
+
 
         if action_type == "Exit":
             self.parent.close()

@@ -83,7 +83,7 @@
                </font>
               </property>
               <property name="text">
-               <string>Список доступных отчетов:</string>
+               <string>Список доступных шаблонов отчетов:</string>
               </property>
               <property name="textFormat">
                <enum>Qt::AutoText</enum>
@@ -626,24 +626,56 @@
    </property>
    <widget class="QMenu" name="menu">
     <property name="title">
-     <string>Файл</string>
+     <string>Отчёты</string>
     </property>
     <addaction name="CreateReport"/>
     <addaction name="OpenLastReport"/>
-    <addaction name="separator"/>
-    <addaction name="OpenDownLoads"/>
-    <addaction name="GetLastFileFromDownLoads"/>
+    <addaction name="OpenSavedReportsFolder"/>
     <addaction name="separator"/>
     <addaction name="EditReportForm"/>
-    <addaction name="EditRawFile"/>
     <addaction name="separator"/>
     <addaction name="Exit"/>
    </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>Данные</string>
+    </property>
+    <addaction name="OpenDownLoads"/>
+    <addaction name="GetLastFileFromDownLoads"/>
+    <addaction name="EditRawFile"/>
+    <addaction name="separator"/>
+    <addaction name="MoveRawFile2Archive"/>
+   </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>Дополнительная информация</string>
+    </property>
+    <addaction name="WHours"/>
+    <addaction name="UCosts"/>
+    <addaction name="separator"/>
+    <addaction name="ShortDivisionNames"/>
+    <addaction name="ShortFNNames"/>
+    <addaction name="FNSusbst"/>
+    <addaction name="separator"/>
+    <addaction name="ProjectsSubTypes"/>
+    <addaction name="ProjectsTypesDescriptions"/>
+    <addaction name="ProjectsSubTypesDescriptions"/>
+    <addaction name="BProg"/>
+    <addaction name="ProjectsAddInfo"/>
+    <addaction name="separator"/>
+    <addaction name="EMails"/>
+    <addaction name="CrossingIS"/>
+    <addaction name="VIP"/>
+    <addaction name="separator"/>
+    <addaction name="Settings"/>
+   </widget>
    <addaction name="menu"/>
+   <addaction name="menu_2"/>
+   <addaction name="menu_3"/>
   </widget>
   <action name="CreateReport">
    <property name="text">
-    <string>Сформировать новый отчёт</string>
+    <string>Сформировать новый отчёт на основе выделенного шаблона</string>
    </property>
   </action>
   <action name="action_4">
@@ -653,12 +685,12 @@
   </action>
   <action name="EditReportForm">
    <property name="text">
-    <string>Открыть выбранную форму отчёта</string>
+    <string>Открыть выделенный шаблон отчёта для редактирования</string>
    </property>
   </action>
   <action name="EditRawFile">
    <property name="text">
-    <string>Открыть выбранный файл с данными</string>
+    <string>Открыть выделенный файл с данными для редактирования</string>
    </property>
   </action>
   <action name="OpenLastReport">
@@ -673,7 +705,7 @@
   </action>
   <action name="OpenDownLoads">
    <property name="text">
-    <string>Открыть папку 'Загрузки'</string>
+    <string>Открыть пользовательскую папку 'Загрузки'</string>
    </property>
   </action>
   <action name="action_5">
@@ -686,7 +718,135 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Получить последний загруженный файл из папки 'Загрузки'</string>
+    <string>Получить последний xlsx-файл из папки 'Загрузки'</string>
+   </property>
+  </action>
+  <action name="OpenSavedReportsFolder">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Открыть папку с сохранёнными отчётами</string>
+   </property>
+  </action>
+  <action name="MoveRawFile2Archive">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Переместить выделенный файл с данными в архив</string>
+   </property>
+  </action>
+  <action name="WHours">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Таблица с количеством рабочих часов в месяцах</string>
+   </property>
+  </action>
+  <action name="ShortDivisionNames">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Таблица с наименованиями подразделений</string>
+   </property>
+  </action>
+  <action name="ShortFNNames">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Таблица с наименованиями функциональных направлений</string>
+   </property>
+  </action>
+  <action name="FNSusbst">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Таблица подстановок названий функциональных направлений для отдельных проектов</string>
+   </property>
+  </action>
+  <action name="ProjectsSubTypes">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Таблица с наименованиями подтипов проектов</string>
+   </property>
+  </action>
+  <action name="ProjectsTypesDescriptions">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Таблица с расшифровкой типов (букв) проектов</string>
+   </property>
+  </action>
+  <action name="ProjectsSubTypesDescriptions">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Таблица с расшифровок подтипов проектов</string>
+   </property>
+  </action>
+  <action name="UCosts">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Таблица часовых ставок</string>
+   </property>
+  </action>
+  <action name="EMails">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Таблица адресов электронной почты пользователей</string>
+   </property>
+  </action>
+  <action name="VIP">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Таблица списка VIP</string>
+   </property>
+  </action>
+  <action name="BProg">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Таблица списка портфелей проектов</string>
+   </property>
+  </action>
+  <action name="CrossingIS">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Таблица наименований ИС из контракта</string>
+   </property>
+  </action>
+  <action name="ProjectsAddInfo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Таблица с дополнительной информацией о контрактах</string>
+   </property>
+  </action>
+  <action name="Settings">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Файл с настройками</string>
    </property>
   </action>
  </widget>
