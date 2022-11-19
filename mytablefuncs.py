@@ -48,15 +48,17 @@ def test_secret_files_list():
 
 
 def load_parameter_table(tablename):
-    # Загружаем соответствующую таблицу с параметрами
-    if (tablename == myconstants.COSTS_TABLE) and os.path.isfile(myconstants.SECRET_COSTS_LOCATION + "/" + myconstants.COSTS_TABLE):
-        full_file_path = myconstants.SECRET_COSTS_LOCATION + "/" + myconstants.COSTS_TABLE
+    # Загружаем соответствующую таблицу с параметрами.
+    user_file_path = "<>!&*"
+    if tablename in myconstants.USER_FILES_LIST:
+        # Проверим, можем ли загрузить таблицу из пользовательских настроек:
+        user_file_path = os.path.join(os.path.join(myconstants.USER_FILES_LOCATION, tablename))
+
+    if os.path.isfile(user_file_path):
+        full_file_path = user_file_path
     else:
-        if (tablename == myconstants.PROJECTS_LIST_ADD_INFO) and os.path.isfile(
-                myconstants.SECRET_COSTS_LOCATION + "/" + myconstants.PROJECTS_LIST_ADD_INFO):
-            full_file_path = myconstants.SECRET_COSTS_LOCATION + "/" + myconstants.PROJECTS_LIST_ADD_INFO
-        else:
-            full_file_path = get_parameter_value(myconstants.PARAMETERS_SECTION_NAME) + "/" + tablename
+        section = get_parameter_value(myconstants.PARAMETERS_SECTION_NAME)
+        full_file_path = os.path.join(os.path.join(section, tablename))
 
     parameter_df = pd.read_excel(full_file_path, engine='openpyxl')
     parameter_df.dropna(how='all', inplace=True)
