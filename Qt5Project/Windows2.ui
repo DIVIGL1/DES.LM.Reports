@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>816</width>
-    <height>656</height>
+    <height>674</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -57,7 +57,7 @@
     <property name="bottomMargin">
      <number>5</number>
     </property>
-    <item row="0" column="0">
+    <item row="1" column="0">
      <widget class="QSplitter" name="VerticalSplitter">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
@@ -518,7 +518,7 @@
              </size>
             </property>
             <property name="text">
-             <string>Сформировать</string>
+             <string>Сформировать (F3)</string>
             </property>
             <property name="autoDefault">
              <bool>false</bool>
@@ -596,7 +596,7 @@
            </size>
           </property>
           <property name="text">
-           <string>Открыть последний сформированный отчет в Excel</string>
+           <string>Открыть последний сформированный отчет в Excel (F4)</string>
           </property>
           <property name="checkable">
            <bool>false</bool>
@@ -611,6 +611,13 @@
         </item>
        </layout>
       </widget>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="Line" name="line_4">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
      </widget>
     </item>
    </layout>
@@ -632,7 +639,7 @@
     <addaction name="OpenLastReport"/>
     <addaction name="OpenSavedReportsFolder"/>
     <addaction name="separator"/>
-    <addaction name="EditReportForm"/>
+    <addaction name="WaitFileAndCreateReport"/>
     <addaction name="separator"/>
     <addaction name="Exit"/>
    </widget>
@@ -642,14 +649,16 @@
     </property>
     <addaction name="OpenDownLoads"/>
     <addaction name="GetLastFileFromDownLoads"/>
-    <addaction name="EditRawFile"/>
     <addaction name="separator"/>
     <addaction name="MoveRawFile2Archive"/>
    </widget>
    <widget class="QMenu" name="menu_3">
     <property name="title">
-     <string>Дополнительная информация</string>
+     <string>Редакирование</string>
     </property>
+    <addaction name="EditReportForm"/>
+    <addaction name="EditRawFile"/>
+    <addaction name="separator"/>
     <addaction name="WHours"/>
     <addaction name="UCosts"/>
     <addaction name="separator"/>
@@ -677,6 +686,9 @@
    <property name="text">
     <string>Сформировать новый отчёт на основе выделенного шаблона</string>
    </property>
+   <property name="shortcut">
+    <string>F3</string>
+   </property>
   </action>
   <action name="action_4">
    <property name="text">
@@ -685,17 +697,26 @@
   </action>
   <action name="EditReportForm">
    <property name="text">
-    <string>Открыть выделенный шаблон отчёта для редактирования</string>
+    <string>Шаблон отчёта</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F2</string>
    </property>
   </action>
   <action name="EditRawFile">
    <property name="text">
-    <string>Открыть выделенный файл с данными для редактирования</string>
+    <string>Файл с данными</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+F2</string>
    </property>
   </action>
   <action name="OpenLastReport">
    <property name="text">
     <string>Открыть последний сформированный отчёт</string>
+   </property>
+   <property name="shortcut">
+    <string>F4</string>
    </property>
   </action>
   <action name="Exit">
@@ -738,115 +759,84 @@
    </property>
   </action>
   <action name="WHours">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
-    <string>Таблица с количеством рабочих часов в месяцах</string>
+    <string>Рабочие часы в месяцах</string>
    </property>
   </action>
   <action name="ShortDivisionNames">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
-    <string>Таблица с наименованиями подразделений</string>
+    <string>Наименования подразделений</string>
    </property>
   </action>
   <action name="ShortFNNames">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
-    <string>Таблица с наименованиями функциональных направлений</string>
+    <string>Наименования функциональных направлений</string>
    </property>
   </action>
   <action name="FNSusbst">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
-    <string>Таблица подстановок названий функциональных направлений для отдельных проектов</string>
+    <string>Подстановки названий функциональных направлений для отдельных проектов</string>
    </property>
   </action>
   <action name="ProjectsSubTypes">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
-    <string>Таблица с наименованиями подтипов проектов</string>
+    <string>Подтипы проектов</string>
    </property>
   </action>
   <action name="ProjectsTypesDescriptions">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
-    <string>Таблица с расшифровкой типов (букв) проектов</string>
+    <string>Расшифровки типов (букв) проектов</string>
    </property>
   </action>
   <action name="ProjectsSubTypesDescriptions">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
-    <string>Таблица с расшифровок подтипов проектов</string>
+    <string>Расшифровки подтипов проектов</string>
    </property>
   </action>
   <action name="UCosts">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
-    <string>Таблица часовых ставок</string>
+    <string>Часовые ставки</string>
    </property>
   </action>
   <action name="EMails">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
-    <string>Таблица адресов электронной почты пользователей</string>
+    <string>Адреса электронной почты пользователей</string>
    </property>
   </action>
   <action name="VIP">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
-    <string>Таблица списка VIP</string>
+    <string>Список VIP - исключаемые из отчетов</string>
    </property>
   </action>
   <action name="BProg">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
-    <string>Таблица списка портфелей проектов</string>
+    <string>Портфели проектов</string>
    </property>
   </action>
   <action name="CrossingIS">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
-    <string>Таблица наименований ИС из контракта</string>
+    <string>Наименования ИС из контракта</string>
    </property>
   </action>
   <action name="ProjectsAddInfo">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
-    <string>Таблица с дополнительной информацией о контрактах</string>
+    <string>Дополнительная информация о контрактах</string>
    </property>
   </action>
   <action name="Settings">
+   <property name="text">
+    <string>Файл с общими настройками программы</string>
+   </property>
+  </action>
+  <action name="WaitFileAndCreateReport">
    <property name="enabled">
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Файл с настройками</string>
+    <string>Дождаться новый файл в папке 'Загрузки', обработать и сформировать отчёт</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+F3</string>
    </property>
   </action>
  </widget>

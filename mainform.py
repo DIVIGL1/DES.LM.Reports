@@ -70,7 +70,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             # Открываем последний сгенерированный отчёт.
             last_report_filename = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT)
             if last_report_filename:
-                subprocess.Popen(last_report_filename, shell=True)
+                self.open_file_in_application(last_report_filename)
 
     def open_report_form(self):
         # Открываем шаблон отчётной формы
@@ -279,7 +279,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         self.EditReportForm.triggered.connect(lambda: self.menu_action("EditReportForm"))
         self.EditRawFile.triggered.connect(lambda: self.menu_action("EditRawFile"))
         #----------------------------------
-        section = myconstants.REPORTS_PREPARED_SECTION_NAME
+        section = myconstants.PARAMETERS_SECTION_NAME
         self.WHours.triggered.connect(lambda: self.menu_action("OpenExcel", section, "WHours"))
         self.UCosts.triggered.connect(lambda: self.menu_action("OpenExcel", section, "UCosts"))
         self.ShortDivisionNames.triggered.connect(lambda: self.menu_action("OpenExcel", section, "ShortDivisionNames"))
@@ -320,7 +320,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
 
         self.listViewRawData.setDragEnabled(True)
 
-    def menu_action(self, action_type, p1, p2):
+    def menu_action(self, action_type, p1="", p2=""):
         if action_type == "CreateReport":
             self.on_click_DoIt()
             return
@@ -328,10 +328,10 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             self.on_click_OpenLastReport()
             return
         if action_type == "OpenSavedReportsFolder":
-            pass
             return
         if action_type == "MoveRawFile2Archive":
-            pass
+            return
+        if action_type == "WaitFileAndCreateReport":
             return
 
         if action_type == "OpenDownLoads":
@@ -353,12 +353,13 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
 
         if action_type == "OpenExcel":
             if p1 == "":
-                xls_file_path = p2
+                section = ""
             else:
-                xls_file_path = get_parameter_value(p1) + "/" + p2 + ""
+                section = get_parameter_value(p1)
 
+            xls_file_path = os.path.join(os.path.join(os.getcwd(), section,p2 + myconstants.EXCEL_FILES_ENDS))
             self.open_file_in_application(xls_file_path)
-
+            return
 
         if action_type == "Exit":
             self.parent.close()
