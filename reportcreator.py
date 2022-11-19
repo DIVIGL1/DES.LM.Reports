@@ -22,6 +22,7 @@ def thread(my_func):
 
 
 class reportCreator(object):
+    report_creation_process = True
     def __init__(self, parent, *args):
         super(reportCreator, self).__init__(*args)
         self.parent = parent
@@ -55,7 +56,7 @@ class reportCreator(object):
             self.parent.mainwindow.ui.set_status("Необходимо выбрать файл, выгруженный из DES.LM для формирования отчёта.")
             self.parent.mainwindow.ui.enable_buttons()
             return False
-        
+
         self.start_timer()
         self.parent.mainwindow.ui.clear_status()
 
@@ -74,6 +75,11 @@ class reportCreator(object):
 
 @thread
 def send_df_2_xls(report_parameters):
+    report_parameters.parent.reporter.report_creation_process = True
+    ui_handle = report_parameters.parent.mainwindow.ui
+    ui_handle.lock_unlock_menu_items()
+
+    # ----------------------------------------------------
     # Определим ключевые параметры в переменные,
     # чтобы не указывать полную ссылку каждый раз
     raw_file_name = report_parameters.raw_file_name
@@ -90,9 +96,8 @@ def send_df_2_xls(report_parameters):
     p_virtual_FTE = report_parameters.p_virtual_FTE
     p_save_without_formulas = report_parameters.p_save_without_formulas
     p_delete_rawdata_sheet = report_parameters.p_delete_rawdata_sheet
-
-    ui_handle = report_parameters.parent.mainwindow.ui
     # ----------------------------------------------------
+
     num_poz = 1
     ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
     ui_handle.set_status(f"{num_poz}. Рабочий каталог: {myutils.get_home_dir()}")
@@ -173,84 +178,89 @@ def send_df_2_xls(report_parameters):
         p_virtual_FTE,
         ui_handle
     )
-    if report_df is None:
-        return False
-
-    ui_handle.set_status(f"Таблица для загрузки полностью подготовлена (всего строк данных: {report_df.shape[0]})")
-
-    oexcel = MyExcel(report_parameters)
     ret_value = None
-    if oexcel.not_ready:
-        # Что-то пошло не так.
+    if report_df is None:
         ret_value = False
     else:
-        ui_handle.set_status("Начинаем перенос строк в Excel:")
-        data_sheet = oexcel.work_book.Sheets[myconstants.RAW_DATA_SHEET_NAME]
-        ulist_sheet = oexcel.work_book.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME]
+        ui_handle.set_status(f"Таблица для загрузки полностью подготовлена (всего строк данных: {report_df.shape[0]})")
 
-        data_array = report_df.to_numpy()
-        data_sheet.Range(data_sheet.Cells(2, 1), data_sheet.Cells(len(data_array) + 1, len(data_array[0]))).Value = data_array
+        oexcel = MyExcel(report_parameters)
+        if oexcel.not_ready:
+            # Что-то пошло не так.
+            ret_value = False
+        else:
+            ui_handle.set_status("Начинаем перенос строк в Excel:")
+            data_sheet = oexcel.work_book.Sheets[myconstants.RAW_DATA_SHEET_NAME]
+            ulist_sheet = oexcel.work_book.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME]
 
-        ui_handle.set_status("Строки в Excel скопированы.")
+            data_array = report_df.to_numpy()
+            data_sheet.Range(data_sheet.Cells(2, 1), data_sheet.Cells(len(data_array) + 1, len(data_array[0]))).Value = data_array
 
-        ui_handle.set_status("Формируем списки с уникальными значениями.")
+            ui_handle.set_status("Строки в Excel скопированы.")
+            ui_handle.set_status("Формируем списки с уникальными значениями.")
 
-        # Заполним списки уникальными значениями
-        column = 1
-        values_dict = dict()
-        while True:
-            uniq_col_name = ulist_sheet.Cells(1, column).value
-            if (type(uniq_col_name) != str) and (uniq_col_name is not None):
-                ui_handle.set_status("")
-                ui_handle.set_status("")
-                ui_handle.set_status("[Ошибка в структуре отчета]")
-                ui_handle.set_status("")
-                ui_handle.set_status("В файле для выбранной формы на листе для уникальных списков в строке 1:1 " +
-                                        "в качестве наименований списков должны быть символьные значения. Формирование отчёта остановлено.")
+            # Заполним списки уникальными значениями
+            column = 1
+            values_dict = dict()
+            while True:
+                uniq_col_name = ulist_sheet.Cells(1, column).value
+                if (type(uniq_col_name) != str) and (uniq_col_name is not None):
+                    ui_handle.set_status("")
+                    ui_handle.set_status("")
+                    ui_handle.set_status("[Ошибка в структуре отчета]")
+                    ui_handle.set_status("")
+                    ui_handle.set_status("В файле для выбранной формы на листе для уникальных списков в строке 1:1 ")
+                    ui_handle.set_status("в качестве наименований списков должны быть символьные значения.")
+                    ui_handle.set_status("Формирование отчёта остановлено.")
+                    myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
 
-                ret_value = False
-                break
+                    ret_value = False
+                    break
 
-            if uniq_col_name is not None and uniq_col_name.replace(" ", "") != "":
-                values_dict[uniq_col_name] = column
-                column += 1
-            else:
-                break
-
-        if ret_value is None:
-            full_column_list = report_df.columns.tolist()
-            columns_4_unique_list = [column for column in values_dict.keys() if column in full_column_list]
-            if len(columns_4_unique_list) == 0:
-                ui_handle.set_status("")
-                ui_handle.set_status("")
-                ui_handle.set_status("[Ошибка в структуре отчета]")
-                ui_handle.set_status("")
-                ui_handle.set_status("В файле для выбранной формы на листе для уникальных списков не указан " +
-                                        "уникальный список из возможного перечня. Формирование отчёта остановлено.")
-                myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
-
-                ret_value = False
-            else:
-                ui_handle.set_status(f"Всего списков c уникальными данными: {len(columns_4_unique_list)} шт.")
-                ui_handle.set_status("")
-                unique_elements_list = None
-                for index, one_column in enumerate(columns_4_unique_list):
-                    unique_elements_list = sorted(report_df[one_column].unique())
-                    ui_handle.change_last_status_line(f"{index + 1} из {len(columns_4_unique_list)} ({one_column}): {len(unique_elements_list)}")
-
-                    data_array = [[one_uelement] for one_uelement in unique_elements_list]
-                    ulist_sheet.Range(
-                        ulist_sheet.Cells(2, values_dict[one_column]), ulist_sheet.Cells(len(data_array) + 1, values_dict[one_column])
-                    ).Value = data_array
-
-                if len(columns_4_unique_list) == 1:
-                    ui_handle.change_last_status_line(f"Значений в списке {len(unique_elements_list)} шт.")
+                if uniq_col_name is not None and uniq_col_name.replace(" ", "") != "":
+                    values_dict[uniq_col_name] = column
+                    column += 1
                 else:
-                    ui_handle.change_last_status_line("Собраны и сохранены списки с уникальными значениями.")
+                    break
 
-                oexcel.report_prepared = True
+            if ret_value is None:
+                full_column_list = report_df.columns.tolist()
+                columns_4_unique_list = [column for column in values_dict.keys() if column in full_column_list]
+                if len(columns_4_unique_list) == 0:
+                    ui_handle.set_status("")
+                    ui_handle.set_status("")
+                    ui_handle.set_status("[Ошибка в структуре отчета]")
+                    ui_handle.set_status("")
+                    ui_handle.set_status("В файле для выбранной формы на листе для уникальных списков")
+                    ui_handle.set_status("не указан требуемый уникальный список из возможного перечня.")
+                    ui_handle.set_status("Формирование отчёта остановлено.")
+                    myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
 
-    del oexcel
+                    ret_value = False
+                else:
+                    ui_handle.set_status(f"Всего списков c уникальными данными: {len(columns_4_unique_list)} шт.")
+                    ui_handle.set_status("")
+                    unique_elements_list = None
+                    for index, one_column in enumerate(columns_4_unique_list):
+                        unique_elements_list = sorted(report_df[one_column].unique())
+                        ui_handle.change_last_status_line(f"{index + 1} из {len(columns_4_unique_list)} ({one_column}): {len(unique_elements_list)}")
+
+                        data_array = [[one_uelement] for one_uelement in unique_elements_list]
+                        ulist_sheet.Range(
+                            ulist_sheet.Cells(2, values_dict[one_column]), ulist_sheet.Cells(len(data_array) + 1, values_dict[one_column])
+                        ).Value = data_array
+
+                    if len(columns_4_unique_list) == 1:
+                        ui_handle.change_last_status_line(f"Значений в списке {len(unique_elements_list)} шт.")
+                    else:
+                        ui_handle.change_last_status_line("Собраны и сохранены списки с уникальными значениями.")
+
+                    oexcel.report_prepared = True
+
+        del oexcel
+
+    report_parameters.parent.reporter.report_creation_process = False
+    ui_handle.lock_unlock_menu_items()
 
     return ret_value
 
