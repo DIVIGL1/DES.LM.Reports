@@ -656,11 +656,38 @@
     <property name="title">
      <string>Редактирование</string>
     </property>
+    <widget class="QMenu" name="UCostsSelector">
+     <property name="title">
+      <string>Часовые ставки</string>
+     </property>
+     <addaction name="SystemUCosts"/>
+     <addaction name="UserUCosts"/>
+     <addaction name="separator"/>
+     <addaction name="UCostsSwitcher"/>
+    </widget>
+    <widget class="QMenu" name="ProjectsAddInfoSelector">
+     <property name="title">
+      <string>Дополнительная информация о контрактах</string>
+     </property>
+     <addaction name="SystemProjectsAddInfo"/>
+     <addaction name="UserProjectsAddInfo"/>
+     <addaction name="separator"/>
+     <addaction name="ProjectsAddInfoSwitcher"/>
+    </widget>
+    <widget class="QMenu" name="EMailsSelector">
+     <property name="title">
+      <string>Адреса электронной почты</string>
+     </property>
+     <addaction name="SystemEMails"/>
+     <addaction name="UserEMails"/>
+     <addaction name="separator"/>
+     <addaction name="EMailsSwitcher"/>
+    </widget>
     <addaction name="EditReportForm"/>
     <addaction name="EditRawFile"/>
     <addaction name="separator"/>
     <addaction name="WHours"/>
-    <addaction name="UCosts"/>
+    <addaction name="UCostsSelector"/>
     <addaction name="separator"/>
     <addaction name="ShortDivisionNames"/>
     <addaction name="ShortFNNames"/>
@@ -670,9 +697,9 @@
     <addaction name="ProjectsTypesDescriptions"/>
     <addaction name="ProjectsSubTypesDescriptions"/>
     <addaction name="BProg"/>
-    <addaction name="ProjectsAddInfo"/>
+    <addaction name="ProjectsAddInfoSelector"/>
     <addaction name="separator"/>
-    <addaction name="EMails"/>
+    <addaction name="EMailsSelector"/>
     <addaction name="CrossingIS"/>
     <addaction name="VIP"/>
     <addaction name="separator"/>
@@ -793,16 +820,6 @@
     <string>Расшифровки подтипов проектов</string>
    </property>
   </action>
-  <action name="UCosts">
-   <property name="text">
-    <string>Часовые ставки</string>
-   </property>
-  </action>
-  <action name="EMails">
-   <property name="text">
-    <string>Адреса электронной почты пользователей</string>
-   </property>
-  </action>
   <action name="VIP">
    <property name="text">
     <string>Список VIP - исключаемые из отчетов</string>
@@ -816,11 +833,6 @@
   <action name="CrossingIS">
    <property name="text">
     <string>Наименования ИС из контракта</string>
-   </property>
-  </action>
-  <action name="ProjectsAddInfo">
-   <property name="text">
-    <string>Дополнительная информация о контрактах</string>
    </property>
   </action>
   <action name="Settings">
@@ -837,6 +849,56 @@
    </property>
    <property name="shortcut">
     <string>Alt+F3</string>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string>Часовые ставки</string>
+   </property>
+  </action>
+  <action name="UserUCosts">
+   <property name="text">
+    <string>Пользовательские</string>
+   </property>
+  </action>
+  <action name="SystemUCosts">
+   <property name="text">
+    <string>Общие настройки</string>
+   </property>
+  </action>
+  <action name="UCostsSwitcher">
+   <property name="text">
+    <string>Отключить пользовательские настройки</string>
+   </property>
+  </action>
+  <action name="UserProjectsAddInfo">
+   <property name="text">
+    <string>Пользовательские</string>
+   </property>
+  </action>
+  <action name="ProjectsAddInfoSwitcher">
+   <property name="text">
+    <string>Отключить пользовательские настройки</string>
+   </property>
+  </action>
+  <action name="SystemProjectsAddInfo">
+   <property name="text">
+    <string>Общие настройки</string>
+   </property>
+  </action>
+  <action name="UserEMails">
+   <property name="text">
+    <string>Пользовательский</string>
+   </property>
+  </action>
+  <action name="SystemEMails">
+   <property name="text">
+    <string>Общий список</string>
+   </property>
+  </action>
+  <action name="EMailsSwitcher">
+   <property name="text">
+    <string>Отключить пользовательский список</string>
    </property>
   </action>
  </widget>
