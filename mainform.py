@@ -282,7 +282,6 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         #----------------------------------
         section = myconstants.PARAMETERS_SECTION_NAME
         self.WHours.triggered.connect(lambda: self.menu_action("OpenExcel", section, "WHours"))
-        self.UCosts.triggered.connect(lambda: self.menu_action("OpenExcel", section, "UCosts"))
         self.ShortDivisionNames.triggered.connect(lambda: self.menu_action("OpenExcel", section, "ShortDivisionNames"))
         self.ShortFNNames.triggered.connect(lambda: self.menu_action("OpenExcel", section, "ShortFNNames"))
         self.FNSusbst.triggered.connect(lambda: self.menu_action("OpenExcel", section, "FNSusbst"))
@@ -290,10 +289,20 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         self.ProjectsTypesDescriptions.triggered.connect(lambda: self.menu_action("OpenExcel", section, "ProjectsTypesDescriptions"))
         self.ProjectsSubTypesDescriptions.triggered.connect(lambda: self.menu_action("OpenExcel", section, "ProjectsSubTypesDescriptions"))
         self.BProg.triggered.connect(lambda: self.menu_action("OpenExcel", section, "BProg"))
-        self.ProjectsAddInfo.triggered.connect(lambda: self.menu_action("OpenExcel", section, "ProjectsAddInfo"))
-        self.EMails.triggered.connect(lambda: self.menu_action("OpenExcel", section, "EMails"))
         self.CrossingIS.triggered.connect(lambda: self.menu_action("OpenExcel", section, "CrossingIS"))
         self.VIP.triggered.connect(lambda: self.menu_action("OpenExcel", section, "VIP"))
+        #----------------------------------
+        self.SystemUCosts.triggered.connect(lambda: self.menu_action("OpenExcel", section, "UCosts"))
+        self.SystemProjectsAddInfo.triggered.connect(lambda: self.menu_action("OpenExcel", section, "ProjectsAddInfo"))
+        self.SystemEMails.triggered.connect(lambda: self.menu_action("OpenExcel", section, "EMails"))
+
+        self.UserUCosts.triggered.connect(lambda: self.menu_action("OpenExcel", "UserParameters", "UCosts"))
+        self.UserProjectsAddInfo.triggered.connect(lambda: self.menu_action("OpenExcel", "UserParameters", "ProjectsAddInfo"))
+        self.UserEMails.triggered.connect(lambda: self.menu_action("OpenExcel", "UserParameters", "EMails"))
+
+        self.UCostsSwitcher.triggered.connect(lambda: self.menu_action("ExcludeUserFile", "UserParameters", "UCosts"))
+        self.ProjectsAddInfoSwitcher.triggered.connect(lambda: self.menu_action("ExcludeUserFile", "UserParameters", "ProjectsAddInfo"))
+        self.EMailsSwitcher.triggered.connect(lambda: self.menu_action("ExcludeUserFile", "UserParameters", "EMails"))
         #----------------------------------
         self.Settings.triggered.connect(lambda: self.menu_action("OpenExcel", "", "Settings"))
         #----------------------------------
@@ -321,6 +330,37 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
 
         self.listViewRawData.setDragEnabled(True)
 
+    def update_user_files_menus(self):
+        for one_file in myconstants.USER_FILES_LIST:
+            user_file_path = os.path.join(os.path.join(myconstants.USER_FILES_LOCATION, one_file))
+            excluded_file = myconstants.USER_FILES_EXCLUDE_PREFFIX + one_file
+            user_excluded_file_path = os.path.join(os.path.join(myconstants.USER_FILES_LOCATION, excluded_file))
+
+            user_file_exist = os.path.isfile(user_file_path)
+            user_file_locked = os.path.isfile(user_excluded_file_path)
+            one_of_2_files_exists = (user_file_exist or user_file_locked)
+            if one_file == myconstants.COSTS_TABLE:
+                self.UserUCosts.setEnabled(one_of_2_files_exists)
+                self.UCostsSwitcher.setEnabled(one_of_2_files_exists)
+                if not user_file_exist:
+                    self.UCostsSwitcher.setText("Включить пользовательские настройки")
+                else:
+                    self.UCostsSwitcher.setText("Отключить пользовательские настройки")
+            if one_file == myconstants.PROJECTS_LIST_ADD_INFO:
+                self.UserProjectsAddInfo.setEnabled(one_of_2_files_exists)
+                self.ProjectsAddInfoSwitcher.setEnabled(one_of_2_files_exists)
+                if not user_file_exist:
+                    self.ProjectsAddInfoSwitcher.setText("Включить пользовательские настройки")
+                else:
+                    self.ProjectsAddInfoSwitcher.setText("Отключить пользовательские настройки")
+            if one_file == myconstants.EMAILS_TABLE:
+                self.UserEMails.setEnabled(one_of_2_files_exists)
+                self.EMailsSwitcher.setEnabled(one_of_2_files_exists)
+                if not user_file_exist:
+                    self.EMailsSwitcher.setText("Включить пользовательские настройки")
+                else:
+                    self.EMailsSwitcher.setText("Отключить пользовательские настройки")
+
     def menu_action(self, action_type, p1="", p2=""):
         if action_type == "CreateReport":
             self.on_click_DoIt()
@@ -336,6 +376,10 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             return
         if action_type == "WaitFileAndCreateReport":
             # TODO: Реализовать функцию WaitFileAndCreateReport
+            return
+
+        if action_type == "UCostsSelector":
+            print("UCostsSelector")
             return
 
         if action_type == "OpenDownLoads":
@@ -355,13 +399,59 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             self.open_raw_file()
             return
 
+        if action_type == "ExcludeUserFile":
+            user_file_path = os.path.join(os.path.join(myconstants.USER_FILES_LOCATION, p2 + myconstants.EXCEL_FILES_ENDS))
+            excluded_file = myconstants.USER_FILES_EXCLUDE_PREFFIX + p2 + myconstants.EXCEL_FILES_ENDS
+            user_excluded_file_path = os.path.join(os.path.join(myconstants.USER_FILES_LOCATION, excluded_file))
+
+            user_file_exist = os.path.isfile(user_file_path)
+            user_file_locked = os.path.isfile(user_excluded_file_path)
+
+            if user_file_exist:
+                # У нас существует основной файл и его надо переименовать в "заблокированный"
+                # Наличие в это же время "заблокированного" файла нас не интересует.
+                try:
+                    os.rename(user_file_path, user_excluded_file_path)
+                except:
+                    self.set_status(myconstants.TEXT_LINES_SEPARATOR)
+                    self.set_status("Не удалось отключить пользовательский файл.")
+                    self.set_status(myconstants.TEXT_LINES_SEPARATOR)
+            elif user_file_locked:
+                # У нас НЕ существует основного файла, но существует "заблокированный".
+                # Переименуем его.
+                try:
+                    os.rename(user_excluded_file_path, user_file_path)
+                except:
+                    self.set_status(myconstants.TEXT_LINES_SEPARATOR)
+                    self.set_status("Не удалось подключить пользовательский файл.")
+                    self.set_status(myconstants.TEXT_LINES_SEPARATOR)
+
+            return
+
         if action_type == "OpenExcel":
             if p1 == "":
                 section = ""
+            elif p1 == "UserParameters":
+                # Проверим существование пользовательских файлов:
+                user_file_path = os.path.join(os.path.join(myconstants.USER_FILES_LOCATION, p2 + myconstants.EXCEL_FILES_ENDS))
+                excluded_file = myconstants.USER_FILES_EXCLUDE_PREFFIX + p2 + myconstants.EXCEL_FILES_ENDS
+                user_excluded_file_path = os.path.join(os.path.join(myconstants.USER_FILES_LOCATION, excluded_file))
+
+                user_file_exist = os.path.isfile(user_file_path)
+                user_file_locked = os.path.isfile(user_excluded_file_path)
+                one_of_2_files_exists = (user_file_exist or user_file_locked)
+                if not one_of_2_files_exists:
+                    # Если оба файла не доступны, то и редактировать нечего.
+                    return
+                if not user_file_exist:
+                    # Уточняем имя файла в параметре p1:
+                    p2 = myconstants.USER_FILES_EXCLUDE_PREFFIX + p2
+
+                section = myconstants.USER_FILES_LOCATION
             else:
                 section = get_parameter_value(p1)
 
-            xls_file_path = os.path.join(os.path.join(os.getcwd(), section,p2 + myconstants.EXCEL_FILES_ENDS))
+            xls_file_path = os.path.join(os.path.join(os.getcwd(), section, p2 + myconstants.EXCEL_FILES_ENDS))
             self.open_file_in_application(xls_file_path)
             return
 
@@ -441,6 +531,7 @@ class MyWindow(QtWidgets.QMainWindow):
         QtWidgets.QMainWindow.__init__(self, None)
         self.ui = qtMainWindow()
         self.ui.setupUi(self)
+        self.ui.update_user_files_menus()
         self.ui.parent = self
         self.ui.save_app_link(self.app)
         self.setWindowTitle(f"DES.LM.Reporter ({myconstants.APP_VERSION})")
