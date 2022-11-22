@@ -161,14 +161,8 @@
                 <height>100</height>
                </size>
               </property>
-              <property name="acceptDrops">
-               <bool>true</bool>
-              </property>
               <property name="editTriggers">
                <set>QAbstractItemView::NoEditTriggers</set>
-              </property>
-              <property name="dragEnabled">
-               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -658,7 +652,7 @@
     </property>
     <widget class="QMenu" name="UCostsSelector">
      <property name="title">
-      <string>Часовые ставки</string>
+      <string>Сотрудники и их часовые ставки</string>
      </property>
      <addaction name="SystemUCosts"/>
      <addaction name="UserUCosts"/>
