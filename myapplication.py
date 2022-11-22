@@ -116,6 +116,7 @@ class MyApplication:
             self.mainwindow.ui.set_status("Не удалось создать пользовательскую папку для хранения пользовательских настроек.")
             self.mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
 
+        self.mainwindow.ui.lock_unlock_interface_items()
         sys.exit(self.mainwindow.app.exec_())
     
 
@@ -144,12 +145,10 @@ class MyReportParameters:
         if report_file_name is None:
             self.report_prepared_name = ""
             self.parent.mainwindow.ui.set_status("Необходимо выбрать отчётную форму.")
-            self.parent.mainwindow.ui.enable_buttons()
             return False
         if raw_file_name is None:
             self.report_prepared_name = ""
             self.parent.mainwindow.ui.set_status("Необходимо выбрать файл, выгруженный из DES.LM для формирования отчёта.")
-            self.parent.mainwindow.ui.enable_buttons()
             return False
 
         # Сохраним параметры для данного отчёта - требуются во время исполнение.

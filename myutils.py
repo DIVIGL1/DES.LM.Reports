@@ -1,6 +1,22 @@
 import datetime
 import os
 import pickle
+import shutil
+import threading
+
+from PyQt5 import QtWidgets
+
+import myconstants
+
+
+def thread(my_func):
+    """
+    Запускает функцию в отдельным процессом.
+    """
+    def wrapper(*args, **kwargs):
+        my_thread = threading.Thread(target=my_func, args=args, kwargs=kwargs)
+        my_thread.start()
+    return wrapper
 
 
 def iif(if_condition, true_ret_value, false_ret_value):
@@ -92,8 +108,125 @@ def get_later_raw_file():
         return None
 
 
-def open_dowmload_dir():
+def open_download_dir():
     os.system(f"explorer.exe {get_download_dir()}")
+
+@thread
+def copy_file_as_drop_process(mainwindow, xls_files):
+    from mytablefuncs import open_and_test_raw_struct, get_parameter_value
+    # Установим флаг, который используется при проверке изменений на диске (FileSystemEventHandler),
+    # а так же на основании него определяется какие элементы доступны в интерфейсе.
+    mainwindow.parent.drag_and_prop_in_process = True
+    mainwindow.ui.lock_unlock_interface_items()
+
+    drug_and_drop_type = (
+            mainwindow.ui.radioButtonDD1.isChecked() * 1 +
+            mainwindow.ui.radioButtonDD2.isChecked() * 2 +
+            mainwindow.ui.radioButtonDD3.isChecked() * 3 +
+            mainwindow.ui.radioButtonDD4.isChecked() * 4
+    )
+
+    raw_section_path = get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)
+    counter = 0
+
+    mainwindow.ui.set_status("Обрабатываем Excel файл" + ("ы:" if len(xls_files) > 1 else ":"))
+    for file_num, one_file_path in enumerate(xls_files):
+        if file_num > 0:
+            mainwindow.ui.set_status("")
+
+        if len(xls_files) == 1:
+            mainwindow.ui.set_status(f"   {one_file_path}")
+        else:
+            mainwindow.ui.set_status(f"   {file_num + 1}. {one_file_path}")
+        this_file_name = os.path.basename(one_file_path)
+
+        if drug_and_drop_type >= 2:
+            # Проверим структуру файла:
+            ret_value = open_and_test_raw_struct(one_file_path, short_text=True)
+            if type(ret_value) == str:
+                QtWidgets.QMessageBox.question(mainwindow, f"Файл: {this_file_name}",
+                                               ret_value,
+                                               QtWidgets.QMessageBox.Yes)
+
+                mainwindow.ui.set_status("   Структура файла не соответствует требованиям.")
+                mainwindow.ui.set_status("   Копирование не отклонено.")
+                continue
+
+        if drug_and_drop_type >= 3:
+            # Определим новое имя файла исходя из его данных.
+            # Сначала определим дату файла:
+            file_dt = datetime.datetime.fromtimestamp(os.path.getmtime(one_file_path))
+            creation_str = f"{file_dt:%Y-%m-%d %H-%M}"
+            # Определим данные за какой период присутствуют:
+            month_column = list(myconstants.RAW_DATA_COLUMNS.keys())[0]
+
+            start_month = ret_value[month_column].min()
+            report_year = int(start_month * 10000 - int(start_month) * 10000)
+            start_month = int(start_month)
+            end_month = int(ret_value[month_column].max())
+
+            if start_month == end_month:
+                data_in_file_period = f"{myconstants.MONTHS[end_month]} {report_year}"
+            else:
+                data_in_file_period = f"{myconstants.MONTHS[start_month]}-{myconstants.MONTHS[end_month]} {report_year}"
+            new_filename = f"{creation_str}  ({data_in_file_period}).xlsx"
+            if new_filename != this_file_name:
+                mainwindow.ui.set_status(f"   Имя файла меняется на {new_filename}.")
+
+        else:
+            new_filename = this_file_name
+
+        raw_file_path = raw_section_path + "/" + new_filename
+        if os.path.isfile(raw_file_path):
+            result = QtWidgets.QMessageBox.question(mainwindow, "Заменить файл?",
+                                                    "В папке, где находятся данные, выгруженные из DES.LM" +
+                                                    f"Файл с таким названием уже есть {new_filename}\n\n" +
+                                                    "Вы действительно хотите переписать его новым файлом?",
+                                                    QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+                                                    QtWidgets.QMessageBox.No)
+
+            if result == QtWidgets.QMessageBox.No:
+                mainwindow.ui.set_status("   Пользователь отказался от копирования.")
+                continue
+
+        try:
+            shutil.copy(one_file_path, raw_file_path)
+            select_filename = os.path.splitext(os.path.basename(raw_file_path))[0]
+            counter += 1
+            mainwindow.ui.set_status("   Файл скопирован.")
+        except (OSError, shutil.Error):
+            QtWidgets.QMessageBox.question(mainwindow, "Ошибка копирования.",
+                                           "Не удалось скопировать файл с данными выгруженными из DES.LM.",
+                                           QtWidgets.QMessageBox.Yes)
+
+            mainwindow.ui.set_status("   Копирование не удалось - возникли ошибки.")
+            continue
+
+        if drug_and_drop_type == 4:
+            if this_file_name == new_filename:
+                # Не надо переименовывать файл сам в себя.
+                mainwindow.ui.set_status(
+                    f"   Исходный файл переименовывать не надо, так как он уже имеет нужное имя: {new_filename}.")
+            else:
+                new_src_file_path = os.path.join(os.path.dirname(one_file_path), new_filename)
+                try:
+                    os.rename(one_file_path, new_src_file_path)
+                    mainwindow.ui.set_status("   Исходный файл так же переименован.")
+                except (OSError, shutil.Error):
+                    QtWidgets.QMessageBox.question(mainwindow, "Ошибка копирования.",
+                                                   "Не удалось скопировать файл с данными выгруженными из DES.LM.",
+                                                   QtWidgets.QMessageBox.Yes)
+                    mainwindow.ui.set_status("   Переименование исходного файла не удалось.")
+
+    if counter == 1:
+        mainwindow.refresh_raw_files_list(select_filename)
+    else:
+        mainwindow.refresh_raw_files_list()
+
+    mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+
+    mainwindow.parent.drag_and_prop_in_process = False
+    mainwindow.ui.lock_unlock_interface_items()
 
 
 if __name__ == "__main__":

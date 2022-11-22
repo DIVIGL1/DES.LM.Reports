@@ -1,5 +1,4 @@
 import shutil
-import threading
 import time
 import warnings
 
@@ -11,18 +10,8 @@ import myutils
 from myexcelclass import MyExcel
 
 
-def thread(my_func):
-    """
-    Запускает функцию в отдельном потоке
-    """
-    def wrapper(*args, **kwargs):
-        my_thread = threading.Thread(target=my_func, args=args, kwargs=kwargs)
-        my_thread.start()
-    return wrapper
-
-
 class reportCreator(object):
-    report_creation_process = True
+    report_creation_process = False
     def __init__(self, parent, *args):
         super(reportCreator, self).__init__(*args)
         self.parent = parent
@@ -41,20 +30,13 @@ class reportCreator(object):
         return self.reports_list[num]
     
     def create_report(self):
-        # TODO: Выставить флаг для других процессов, запрещающий
-        #  разблокировку кнопок во время формирования отчёта.
-        #  При наличии этого флага, функция Drag&Drop не должна
-        #  менять выделенную строку в списке "сырых" файлов.
-
         if self.parent.report_parameters.report_file_name is None:
             myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
             self.parent.mainwindow.ui.set_status("Необходимо выбрать отчётную форму.")
-            self.parent.mainwindow.ui.enable_buttons()
             return False
         if self.parent.report_parameters.raw_file_name is None:
             myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
             self.parent.mainwindow.ui.set_status("Необходимо выбрать файл, выгруженный из DES.LM для формирования отчёта.")
-            self.parent.mainwindow.ui.enable_buttons()
             return False
 
         self.start_timer()
@@ -73,11 +55,11 @@ class reportCreator(object):
         self.parent.mainwindow.ui.set_status("Время выполнения: {0:0>2}:{1:0>2}".format(duration_in_seconds // 60, duration_in_seconds % 60))
 
 
-@thread
+@myutils.thread
 def send_df_2_xls(report_parameters):
     report_parameters.parent.reporter.report_creation_process = True
     ui_handle = report_parameters.parent.mainwindow.ui
-    ui_handle.lock_unlock_menu_items()
+    ui_handle.lock_unlock_interface_items()
 
     # ----------------------------------------------------
     # Определим ключевые параметры в переменные,
@@ -161,7 +143,6 @@ def send_df_2_xls(report_parameters):
         ui_handle.set_status(f"{myutils.rel_path(report_prepared_name)}")
         ui_handle.set_status("Формирование отчёта невозможно.")
         myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
-        ui_handle.enable_buttons()
         return False
 
     pythoncom.CoInitializeEx(0)
@@ -260,7 +241,7 @@ def send_df_2_xls(report_parameters):
         del oexcel
 
     report_parameters.parent.reporter.report_creation_process = False
-    ui_handle.lock_unlock_menu_items()
+    ui_handle.lock_unlock_interface_items()
 
     return ret_value
 

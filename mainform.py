@@ -1,19 +1,17 @@
 # pyuic5 -x Qt5Project/Windows2.ui -o myQt_form.py
 # pyuic5 -x Qt5Project/_tmp_QLV.ui -o _tmp_QLV_form.py
 
-import datetime
 import os
 import sys
 import subprocess
-import shutil
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSignal, QObject
 
 import myconstants
 import myQt_form
-from mytablefuncs import get_parameter_value, open_and_test_raw_struct, load_parameter_table
-from myutils import load_param, save_param, get_files_list, iif, open_dowmload_dir, get_later_raw_file
+from mytablefuncs import get_parameter_value, load_parameter_table
+from myutils import load_param, save_param, get_files_list, iif, open_download_dir, get_later_raw_file, copy_file_as_drop_process
 
 
 class Communicate(QObject):
@@ -50,8 +48,6 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             if not self.parent.parent.report_parameters.is_all_parameters_exist():
                 return
 
-            self.pushButtonDoIt.setEnabled(False)
-            self.pushButtonOpenLastReport.setEnabled(False)
             self.resize_text_and_button()
             self.parent.parent.report_parameters.update(raw_file_name, report_file_name)
             save_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT, self.reports_list.index(report_file_name) + 1)
@@ -73,8 +69,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
                 self.open_file_in_application(last_report_filename)
 
     def open_report_form(self):
-        # Открываем шаблон отчётной формы
-        # только при нажатом Ctrl.
+        # Открываем шаблон отчётной формы:
         report_file_name = \
             os.path.join(
                 os.path.join(os.getcwd(), get_parameter_value(myconstants.REPORTS_SECTION_NAME)),
@@ -84,8 +79,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         self.open_file_in_application(report_file_name)
 
     def open_raw_file(self):
-        # Открываем файл с 'сырыми' данными, выгруженными из DES.LM
-        # только при нажатом Ctrl.
+        # Открываем файл с 'сырыми' данными, выгруженными из DES.LM:
         raw_file_name = \
             os.path.join(
                 os.path.join(os.getcwd(), get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)),
@@ -239,7 +233,6 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
     def setup_form(self, reports_list):
         self.Exit.setShortcut("Alt+F4")
         self.reports_list = reports_list
-        self.pushButtonOpenLastReport.setVisible(False)
 
         self.setup_reports_list(reports_list)
         last_raw_file = load_param(myconstants.PARAMETER_SAVED_SELECTED_RAW_FILE, "")
@@ -328,8 +321,6 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         self.comminucate = Communicate()
         self.comminucate.updateStatusText.connect(self.update_status)
 
-        self.listViewRawData.setDragEnabled(True)
-
     def update_user_files_menus(self):
         for one_file in myconstants.USER_FILES_LIST:
             user_file_path = os.path.join(os.path.join(myconstants.USER_FILES_LOCATION, one_file))
@@ -383,14 +374,14 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             return
 
         if action_type == "OpenDownLoads":
-            open_dowmload_dir()
+            open_download_dir()
             return
         if action_type == "GetLastFileFromDownLoads":
             raw_file = get_later_raw_file()
             if raw_file is None:
                 return
 
-            self.parent.copy_file_as_drop_process([raw_file])
+            copy_file_as_drop_process([raw_file])
 
         if action_type == "EditReportForm":
             self.open_report_form()
@@ -460,20 +451,92 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
 
         print(action_type)
 
-    def lock_unlock_menu_items(self):
-        processing = not self.parent.parent.reporter.report_creation_process
-        self.CreateReport.setEnabled(processing)
-        self.OpenLastReport.setEnabled(processing)
-        # OpenSavedReportsFolder.setEnabled(processing)
-        self.MoveRawFile2Archive.setEnabled(processing)
-        self.WaitFileAndCreateReport.setEnabled(processing)
-        # OpenDownLoads.setEnabled(processing)
-        self.GetLastFileFromDownLoads.setEnabled(processing)
-        self.EditReportForm.setEnabled(processing)
-        self.EditRawFile.setEnabled(processing)
+    def lock_unlock_interface_items(self):
+        processing_report = self.parent.parent.reporter.report_creation_process
+        processing_drag_and_drop = self.parent.parent.drag_and_prop_in_process
 
-        for one_action in self.EditSettingsFiles.actions():
-            one_action.setEnabled(processing)
+        if load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, ""):
+            self.pushButtonOpenLastReport.setVisible(True)
+            self.pushButtonOpenLastReport.setEnabled(True)
+        else:
+            self.pushButtonOpenLastReport.setVisible(False)
+            self.pushButtonOpenLastReport.setEnabled(False)
+
+        if not processing_report and processing_drag_and_drop:
+            self.parent.setAcceptDrops(False)
+            # ----------------------------------------------------------
+            # Drag&Drop!
+            # ----------------------------------------------------------
+            # Ситуация когда не надо запускать отчёты и выполнять
+            # другие функции с выводом на экран. Но можно открывать папки,
+            # редактировать файлы, перемещать файлы в архив.
+            # В этом случае запрещено:
+            self.pushButtonDoIt.setEnabled(False)
+
+            self.CreateReport.setEnabled(False)
+            self.Exit.setEnabled(False)
+            #self.WaitFileAndCreateReport.setEnabled(False)
+            self.GetLastFileFromDownLoads.setEnabled(False)
+            #self.MoveRawFile2Archive.setEnabled(False)
+
+            # В этом случае разрешено:
+            self.OpenLastReport.setEnabled(True)
+            #self.OpenSavedReportsFolder.setEnabled(False)
+            self.OpenDownLoads.setEnabled(True)
+            self.EditReportForm.setEnabled(True)
+            self.EditRawFile.setEnabled(True)
+            for one_action in self.EditSettingsFiles.actions():
+                one_action.setEnabled(True)
+
+        elif processing_report and not processing_drag_and_drop:
+            self.parent.setAcceptDrops(False)
+            # ----------------------------------------------------------
+            # Формируется отчёт!
+            # ----------------------------------------------------------
+            # Ситуация когда не надо выполнять Drag&Drop,
+            # не надо формировать другие отчёты,
+            # Не надо ничего редактировать через Excel
+            # и не надо перемещать файлы в архив.
+            # Но можно открывать папки.
+            # В этом случае запрещено:
+            self.pushButtonDoIt.setEnabled(False)
+            self.pushButtonOpenLastReport.setEnabled(False)
+
+            self.CreateReport.setEnabled(False)
+            self.OpenLastReport.setEnabled(False)
+            #self.WaitFileAndCreateReport.setEnabled(False)
+            self.GetLastFileFromDownLoads.setEnabled(False)
+            #self.MoveRawFile2Archive.setEnabled(False)
+            self.EditReportForm.setEnabled(False)
+            self.EditRawFile.setEnabled(False)
+            for one_action in self.EditSettingsFiles.actions():
+                one_action.setEnabled(False)
+
+            # В этом случае разрешено:
+            self.Exit.setEnabled(True)
+            self.OpenDownLoads.setEnabled(True)
+            #self.OpenSavedReportsFolder.setEnabled(True)
+
+        elif not processing_report and not processing_drag_and_drop:
+            self.parent.setAcceptDrops(True)
+            # ----------------------------------------------------------
+            # НЕ формируется отчёт и НЕ выполняется Drag&Drop...
+            # ----------------------------------------------------------
+            # В этом случае разрешено всё:
+            self.pushButtonDoIt.setEnabled(True)
+
+            self.CreateReport.setEnabled(True)
+            self.OpenLastReport.setEnabled(True)
+            self.Exit.setEnabled(True)
+            self.OpenDownLoads.setEnabled(True)
+            #self.OpenSavedReportsFolder.setEnabled(True)
+            #self.WaitFileAndCreateReport.setEnabled(True)
+            self.GetLastFileFromDownLoads.setEnabled(True)
+            #self.MoveRawFile2Archive.setEnabled(True)
+            self.EditReportForm.setEnabled(True)
+            self.EditRawFile.setEnabled(True)
+            for one_action in self.EditSettingsFiles.actions():
+                one_action.setEnabled(True)
 
     def update_status(self):
         self.plainTextEdit.setPlainText(self.status_text)
@@ -494,18 +557,6 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         self.previous_status_text = ""
         self.comminucate.updateStatusText.emit()
         
-    def enable_buttons(self):
-        if self.exit_in_process:
-            # Форма закрыта во время формирования отчёта - кнопок уже нет.
-            return
-        
-        self.pushButtonDoIt.setEnabled(True)
-        self.pushButtonOpenLastReport.setEnabled(True)
-        
-        self.comminucate.updateStatusText.emit()
-        
-        self.resize_text_and_button()
-    
     def resize_text_and_button(self):
         last_report_filename = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT)
         if last_report_filename == "":
@@ -584,12 +635,11 @@ class MyWindow(QtWidgets.QMainWindow):
             event.ignore()
 
     def dropEvent(self, event):
-        # TODO: Перенести обработку копирования и переименования файлов в отдельный процесс:
-        #  - позволит выводить информацию на экран;
-        #  - не завешивать программу;
-        #  - формировать отчёт во время копирования файлов.
-        #  При этом надо учесть, что если формируется отчёт, то выделять
-        #  в списке "сырых" файлов новые имена не надо.
+        processing_report = self.parent.reporter.report_creation_process
+        processing_drag_and_drop = self.parent.drag_and_prop_in_process
+        if processing_report or processing_drag_and_drop:
+            # Ничего не делаем в это время.
+            return
 
         # Из полученных файлов выберем те, которые обрабатывать не будем:
         not_xls_files = [u.toLocalFile() for u in event.mimeData().urls() if u.toLocalFile()[-5:].lower() != ".xlsx"]
@@ -612,122 +662,12 @@ class MyWindow(QtWidgets.QMainWindow):
             self.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
 
         if not xls_files:
-            return
-
-        if not not_xls_files and xls_files:
-            self.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
-
-        self.copy_file_as_drop_process(xls_files)
-
-    def copy_file_as_drop_process(self, xls_files):
-        # Установим флаг, который используется при проверке изменений на диске (FileSystemEventHandler)
-        self.parent.drag_and_prop_in_process = True
-
-        drug_and_drop_type = (
-            self.ui.radioButtonDD1.isChecked() * 1 +
-            self.ui.radioButtonDD2.isChecked() * 2 +
-            self.ui.radioButtonDD3.isChecked() * 3 +
-            self.ui.radioButtonDD4.isChecked() * 4
-        )
-
-        raw_section_path = get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)
-        counter = 0
-
-        self.ui.set_status("Обрабатываем Excel файл" + ("ы:" if len(xls_files) > 1 else ":"))
-        for file_num, one_file_path in enumerate(xls_files):
-            if file_num > 0:
-                self.ui.set_status("")
-
-            if len(xls_files) == 1:
-                self.ui.set_status(f"   {one_file_path}")
-            else:
-                self.ui.set_status(f"   {file_num + 1}. {one_file_path}")
-            this_file_name = os.path.basename(one_file_path)
-
-            if drug_and_drop_type >= 2:
-                # Проверим структуру файла:
-                ret_value = open_and_test_raw_struct(one_file_path, short_text=True)
-                if type(ret_value) == str:
-                    QtWidgets.QMessageBox.question(self, f"Файл: {this_file_name}",
-                                                   ret_value,
-                                                   QtWidgets.QMessageBox.Yes)
-
-                    self.ui.set_status("   Структура файла не соответствует требованиям.")
-                    self.ui.set_status("   Копирование не отклонено.")
-                    continue
-
-            if drug_and_drop_type >= 3:
-                # Определим новое имя файла исходя из его данных.
-                # Сначала определим дату файла:
-                file_dt = datetime.datetime.fromtimestamp(os.path.getmtime(one_file_path))
-                creation_str = f"{file_dt:%Y-%m-%d %H-%M}"
-                # Определим данные за какой период присутствуют:
-                month_column = list(myconstants.RAW_DATA_COLUMNS.keys())[0]
-
-                start_month = ret_value[month_column].min()
-                report_year = int(start_month * 10000 - int(start_month) * 10000)
-                start_month = int(start_month)
-                end_month = int(ret_value[month_column].max())
-
-                if start_month == end_month:
-                    data_in_file_period = f"{myconstants.MONTHS[end_month]} {report_year}"
-                else:
-                    data_in_file_period = f"{myconstants.MONTHS[start_month]}-{myconstants.MONTHS[end_month]} {report_year}"
-                new_filename = f"{creation_str}  ({data_in_file_period}).xlsx"
-                if new_filename != this_file_name:
-                    self.ui.set_status(f"   Имя файла меняется на {new_filename}.")
-
-            else:
-                new_filename = this_file_name
-
-            raw_file_path = raw_section_path + "/" + new_filename
-            if os.path.isfile(raw_file_path):
-                result = QtWidgets.QMessageBox.question(self, "Заменить файл?",
-                                                        "В папке, где находятся данные, выгруженные из DES.LM" +
-                                                        f"Файл с таким названием уже есть {new_filename}\n\n" +
-                                                        "Вы действительно хотите переписать его новым файлом?",
-                                                        QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-                                                        QtWidgets.QMessageBox.No)
-
-                if result == QtWidgets.QMessageBox.No:
-                    self.ui.set_status("   Пользователь отказался от копирования.")
-                    continue
-
-            try:
-                shutil.copy(one_file_path, raw_file_path)
-                select_filename = os.path.splitext(os.path.basename(raw_file_path))[0]
-                counter += 1
-                self.ui.set_status("   Файл скопирован.")
-            except (OSError, shutil.Error):
-                QtWidgets.QMessageBox.question(self, "Ошибка копирования.",
-                                               "Не удалось скопировать файл с данными выгруженными из DES.LM.",
-                                               QtWidgets.QMessageBox.Yes)
-
-                self.ui.set_status("   Копирование не удалось - возникли ошибки.")
-                continue
-
-            if drug_and_drop_type == 4:
-                if this_file_name == new_filename:
-                    # Не надо переименовывать файл сам в себя.
-                    self.ui.set_status(f"   Исходный файл переименовывать не надо, так как он уже имеет нужное имя: {new_filename}.")
-                else:
-                    new_src_file_path = os.path.join(os.path.dirname(one_file_path), new_filename)
-                    try:
-                        os.rename(one_file_path, new_src_file_path)
-                        self.ui.set_status("   Исходный файл так же переименован.")
-                    except (OSError, shutil.Error):
-                        QtWidgets.QMessageBox.question(self, "Ошибка копирования.",
-                                                       "Не удалось скопировать файл с данными выгруженными из DES.LM.",
-                                                       QtWidgets.QMessageBox.Yes)
-                        self.ui.set_status("   Переименование исходного файла не удалось.")
-
-        if counter == 1:
-            self.refresh_raw_files_list(select_filename)
+            pass
         else:
-            self.refresh_raw_files_list()
+            if not not_xls_files:
+                self.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
 
-        self.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
-        self.parent.drag_and_prop_in_process = False
+            copy_file_as_drop_process(self, xls_files)
 
     def showEvent(self, event):
         super(MyWindow, self).showEvent(event)
@@ -791,7 +731,6 @@ class MyWindow(QtWidgets.QMainWindow):
             QtWidgets.QMainWindow.closeEvent(self, e)
         else:
             e.ignore()
-
 
 if __name__ == "__main__":
     pass
