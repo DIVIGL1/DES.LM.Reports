@@ -271,6 +271,8 @@ PARAMETERS_ALL_TABLES = {
 EMAIL_INFO_COLUMNS = ["manager_email", "Personal_email", "user_email", "boss_email"]
 SECRET_COSTS_LOCATION = "C:/DES.LM.UserFiles"
 USER_FILES_LOCATION = "C:/DES.LM.UserFiles"
+# TODO: Реализовать хранение информации о расположении пользовательского
+#  каталога в файле с настройками.
 TEST_SECRET_FILES_LIST = [COSTS_TABLE, PROJECTS_LIST_ADD_INFO]
 USER_FILES_LIST = [COSTS_TABLE, PROJECTS_LIST_ADD_INFO, EMAILS_TABLE]
 USER_FILES_EXCLUDE_PREFFIX = "excluded__"

@@ -14,7 +14,8 @@ from mytablefuncs import get_parameter_value, load_parameter_table
 from myutils import (
     load_param, save_param, get_files_list, iif,
     open_download_dir, get_later_raw_file,
-    copy_file_as_drop_process, is_admin
+    copy_file_as_drop_process, is_admin,
+    open_dir_in_explore, get_home_dir
 )
 
 
@@ -396,7 +397,8 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             self.on_click_open_last_report()
             return
         if action_type == "OpenSavedReportsFolder":
-            # TODO: Реализовать функцию OpenSavedReportsFolder
+            section_path = os.path.join(get_home_dir(), get_parameter_value(myconstants.REPORTS_PREPARED_SECTION_NAME))
+            open_dir_in_explore(section_path)
             return
         if action_type == "MoveRawFile2Archive":
             # TODO: Реализовать функцию MoveRawFile2Archive
@@ -519,7 +521,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
 
             # В этом случае разрешено:
             self.OpenLastReport.setEnabled(True)
-            #self.OpenSavedReportsFolder.setEnabled(False)
+            self.OpenSavedReportsFolder.setEnabled(False)
             self.OpenDownLoads.setEnabled(True)
 
             for one_pad in self.edit_pads_dict["Parameters4admin"]:
@@ -557,7 +559,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             # В этом случае разрешено:
             self.Exit.setEnabled(True)
             self.OpenDownLoads.setEnabled(True)
-            #self.OpenSavedReportsFolder.setEnabled(False)
+            self.OpenSavedReportsFolder.setEnabled(False)
 
         elif not processing_report and not processing_drag_and_drop:
             self.parent.setAcceptDrops(True)
@@ -571,7 +573,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             self.OpenLastReport.setEnabled(True)
             self.Exit.setEnabled(True)
             self.OpenDownLoads.setEnabled(True)
-            #self.OpenSavedReportsFolder.setEnabled(True)
+            self.OpenSavedReportsFolder.setEnabled(True)
             #self.WaitFileAndCreateReport.setEnabled(True)
             self.GetLastFileFromDownLoads.setEnabled(True)
             #self.MoveRawFile2Archive.setEnabled(True)
