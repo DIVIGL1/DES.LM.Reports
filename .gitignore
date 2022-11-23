@@ -1,16 +1,15 @@
-.env_DES.LM/*
-.vscode/*
-.idea/*
-.ipynb_checkpoints/*
+.env_DES.LM
+.vscode
+.idea
+.ipynb_checkpoints
 _tmp_*.*
 ~_tmp_*.*
 _local_*.*
 __pycache__
-__pycache__/*.*
-ReportsPrepared/*
-RawData/*.*
-build/*.*
-dist/*.*
+ReportsPrepared
+RawData
+build
+dist
 mef.bat
 requirements.bat
 *.spec
@@ -20,18 +19,6 @@ requirements.bat
 *.zip
 *.ttf
 Отчет - Подр-Сотрудник Кат.План.Лимиты.xlsx
-
-# C++ objects and libs
-*.slo
-*.lo
-*.o
-*.a
-*.la
-*.lai
-*.so
-*.so.*
-*.dll
-*.dylib
 
 # Qt-es
 object_script.*.Release
