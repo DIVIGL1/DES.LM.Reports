@@ -11,7 +11,11 @@ from PyQt5.QtCore import pyqtSignal, QObject
 import myconstants
 import myQt_form
 from mytablefuncs import get_parameter_value, load_parameter_table
-from myutils import load_param, save_param, get_files_list, iif, open_download_dir, get_later_raw_file, copy_file_as_drop_process
+from myutils import (
+    load_param, save_param, get_files_list, iif,
+    open_download_dir, get_later_raw_file,
+    copy_file_as_drop_process, is_admin
+)
 
 
 class Communicate(QObject):
@@ -40,7 +44,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
 
         return True
 
-    def on_click_DoIt(self):
+    def on_click_doIt(self):
         if self.pushButtonDoIt.isEnabled() and self.pushButtonDoIt.isVisible():
             raw_file_name = self.listViewRawData.currentIndex().data()
             report_file_name = self.listView.currentIndex().data()
@@ -55,13 +59,13 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
 
             self.parent.parent.reporter.create_report()
 
-    def on_dblClick_Reports_List(self):
-        self.on_click_DoIt()
+    def on_dblclick_reports_List(self):
+        self.on_click_doIt()
 
-    def on_dblClick_Raw_data(self):
-        self.on_click_DoIt()
+    def on_dblclick_raw_data(self):
+        self.on_click_doIt()
 
-    def on_click_OpenLastReport(self):
+    def on_click_open_last_report(self):
         if self.pushButtonOpenLastReport.isEnabled() and self.pushButtonOpenLastReport.isVisible():
             # Открываем последний сгенерированный отчёт.
             last_report_filename = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT)
@@ -90,7 +94,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
     def open_file_in_application(self, file_name):
         subprocess.Popen(file_name, shell=True)
 
-    def on_click_CheckBoxes(self):
+    def on_click_checkboxes(self):
         if self.listView.currentIndex().data() is None:
             return
         
@@ -129,10 +133,10 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         self.radioButtonDD3.setChecked(value == 3)
         self.radioButtonDD4.setChecked(value == 4)
 
-    def on_Click_Reports_List(self):
+    def on_click_reports_list(self):
         self.setup_check_boxes()
-        self.setup_checkBoxOnlyProjectsWithAdd()
-        self.setup_checkBoxSelectUsers()
+        self.setup_checkbox_only_projects_with_add()
+        self.setup_checkbox_select_users()
 
     def get_preff(self):
         if self.listView.currentIndex().data() is None:
@@ -167,27 +171,27 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         
         self.checkBoxDelRawData.setVisible(self.checkBoxSaveWithOutFotmulas.isChecked())
 
-    def onclick_checkBoxOnlyProjectsWithAdd(self):
+    def onclick_checkbox_only_projects_with_add(self):
         s_preff = self.get_preff()
         p_selected = self.checkBoxOnlyProjectsWithAdd.isChecked()
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD, p_selected)
         self.comboBoxPGroups.setVisible(p_selected)
 
-    def onclick_checkBoxSelectUsers(self):
+    def onclick_checkbox_select_users(self):
         s_preff = self.get_preff()
         p_selected = self.checkBoxSelectUsers.isChecked()
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_SELECT_USERS, p_selected)
         self.comboBoxSelectUsers.setVisible(p_selected)
 
-    def setup_checkBoxOnlyProjectsWithAdd(self):
+    def setup_checkbox_only_projects_with_add(self):
         s_preff = self.get_preff()
         saved_value = load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD, myconstants.PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD_DEFVALUE)
         self.checkBoxOnlyProjectsWithAdd.setChecked(saved_value)
         self.comboBoxPGroups.setVisible(saved_value)
         if saved_value:
-            self.setup_comboBoxPGroups()
+            self.setup_combobox_pgroups()
 
-    def setup_checkBoxSelectUsers(self):
+    def setup_checkbox_select_users(self):
         s_preff = self.get_preff()
         saved_value = load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_SELECT_USERS, myconstants.PARAMETER_SAVED_VALUE_SELECT_USERS_DEFVALUE)
         self.checkBoxSelectUsers.setChecked(saved_value)
@@ -195,7 +199,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         if saved_value:
             self.setup_comboBoxSelectUsers()
 
-    def setup_comboBoxPGroups(self):
+    def setup_combobox_pgroups(self):
         self.comboBoxPGroups.clear()
         df = load_parameter_table(myconstants.PROJECTS_LIST_ADD_INFO)
         groups_list = [
@@ -239,22 +243,22 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
 
         self.parent.refresh_raw_files_list(last_raw_file)
 
-        self.pushButtonDoIt.clicked.connect(self.on_click_DoIt)
+        self.pushButtonDoIt.clicked.connect(self.on_click_doIt)
         
-        self.checkBoxDeleteVIP.clicked.connect(self.on_click_CheckBoxes)
-        self.checkBoxDeleteNotProduct.clicked.connect(self.on_click_CheckBoxes)
+        self.checkBoxDeleteVIP.clicked.connect(self.on_click_checkboxes)
+        self.checkBoxDeleteNotProduct.clicked.connect(self.on_click_checkboxes)
 
-        self.checkBoxOnlyProjectsWithAdd.clicked.connect(self.onclick_checkBoxOnlyProjectsWithAdd)
-        self.checkBoxSelectUsers.clicked.connect(self.onclick_checkBoxSelectUsers)
+        self.checkBoxOnlyProjectsWithAdd.clicked.connect(self.onclick_checkbox_only_projects_with_add)
+        self.checkBoxSelectUsers.clicked.connect(self.onclick_checkbox_select_users)
 
-        self.checkBoxDeleteWithoutFact.clicked.connect(self.on_click_CheckBoxes)
-        self.checkBoxCurrMonthAHalf.clicked.connect(self.on_click_CheckBoxes)
-        self.checkBoxDelPDn.clicked.connect(self.on_click_CheckBoxes)
-        self.checkBoxDeleteVac.clicked.connect(self.on_click_CheckBoxes)
-        self.checkBoxAddVFTE.clicked.connect(self.on_click_CheckBoxes)
-        self.checkBoxOpenExcel.clicked.connect(self.on_click_CheckBoxes)
-        self.checkBoxSaveWithOutFotmulas.clicked.connect(self.on_click_CheckBoxes)
-        self.checkBoxDelRawData.clicked.connect(self.on_click_CheckBoxes)
+        self.checkBoxDeleteWithoutFact.clicked.connect(self.on_click_checkboxes)
+        self.checkBoxCurrMonthAHalf.clicked.connect(self.on_click_checkboxes)
+        self.checkBoxDelPDn.clicked.connect(self.on_click_checkboxes)
+        self.checkBoxDeleteVac.clicked.connect(self.on_click_checkboxes)
+        self.checkBoxAddVFTE.clicked.connect(self.on_click_checkboxes)
+        self.checkBoxOpenExcel.clicked.connect(self.on_click_checkboxes)
+        self.checkBoxSaveWithOutFotmulas.clicked.connect(self.on_click_checkboxes)
+        self.checkBoxDelRawData.clicked.connect(self.on_click_checkboxes)
 
         self.radioButtonDD1.clicked.connect(self.on_click_radioButtonDD)
         self.radioButtonDD2.clicked.connect(self.on_click_radioButtonDD)
@@ -302,20 +306,52 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         self.Exit.triggered.connect(lambda: self.menu_action("Exit"))
         #----------------------------------
 
+        self.edit_pads_dict = {
+            "Parameters4admin": [
+                self.EditReportForm,
+                self.WHours,
+                self.ShortDivisionNames,
+                self.ShortFNNames,
+                self.FNSusbst,
+                self.ProjectsSubTypes,
+                self.ProjectsTypesDescriptions,
+                self.ProjectsSubTypesDescriptions,
+                self.BProg,
+                self.VIP,
+                self.CrossingIS,
+                self.SystemUCosts,
+                self.SystemProjectsAddInfo,
+                self.SystemEMails,
+                self.Settings,
+            ],
+            "Parameters4user": [
+                self.EditRawFile,
+                self.UCostsSelector,
+                self.UserUCosts,
+                self.UCostsSwitcher,
+                self.ProjectsAddInfoSelector,
+                self.UserProjectsAddInfo,
+                self.ProjectsAddInfoSwitcher,
+                self.EMailsSelector,
+                self.UserEMails,
+                self.EMailsSwitcher,
+            ]
+        }
+
         self.setup_check_boxes()
-        self.setup_checkBoxOnlyProjectsWithAdd()
-        self.setup_checkBoxSelectUsers()
-        self.setup_comboBoxPGroups()
+        self.setup_checkbox_only_projects_with_add()
+        self.setup_checkbox_select_users()
+        self.setup_combobox_pgroups()
         self.setup_comboBoxSelectUsers()
 
         self.setup_radio_buttons_dd()
 
-        self.listView.clicked.connect(self.on_Click_Reports_List)
+        self.listView.clicked.connect(self.on_click_reports_list)
         
-        self.listView.doubleClicked.connect(self.on_dblClick_Reports_List)
-        self.listViewRawData.doubleClicked.connect(self.on_dblClick_Raw_data)
+        self.listView.doubleClicked.connect(self.on_dblclick_reports_List)
+        self.listViewRawData.doubleClicked.connect(self.on_dblclick_raw_data)
 
-        self.pushButtonOpenLastReport.clicked.connect(self.on_click_OpenLastReport)
+        self.pushButtonOpenLastReport.clicked.connect(self.on_click_open_last_report)
         self.status_text = ""
         self.previous_status_text = ""
         self.comminucate = Communicate()
@@ -354,10 +390,10 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
 
     def menu_action(self, action_type, p1="", p2=""):
         if action_type == "CreateReport":
-            self.on_click_DoIt()
+            self.on_click_doIt()
             return
         if action_type == "OpenLastReport":
-            self.on_click_OpenLastReport()
+            self.on_click_open_last_report()
             return
         if action_type == "OpenSavedReportsFolder":
             # TODO: Реализовать функцию OpenSavedReportsFolder
@@ -455,6 +491,8 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         processing_report = self.parent.parent.reporter.report_creation_process
         processing_drag_and_drop = self.parent.parent.drag_and_prop_in_process
 
+        is_user_admin = is_admin()
+
         if load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, ""):
             self.pushButtonOpenLastReport.setVisible(True)
             self.pushButtonOpenLastReport.setEnabled(True)
@@ -483,10 +521,12 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             self.OpenLastReport.setEnabled(True)
             #self.OpenSavedReportsFolder.setEnabled(False)
             self.OpenDownLoads.setEnabled(True)
-            self.EditReportForm.setEnabled(True)
-            self.EditRawFile.setEnabled(True)
-            for one_action in self.EditSettingsFiles.actions():
-                one_action.setEnabled(True)
+
+            for one_pad in self.edit_pads_dict["Parameters4admin"]:
+                one_pad.setEnabled(is_user_admin)
+
+            for one_pad in self.edit_pads_dict["Parameters4user"]:
+                one_pad.setEnabled(True)
 
         elif processing_report and not processing_drag_and_drop:
             self.parent.setAcceptDrops(False)
@@ -507,15 +547,17 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             #self.WaitFileAndCreateReport.setEnabled(False)
             self.GetLastFileFromDownLoads.setEnabled(False)
             #self.MoveRawFile2Archive.setEnabled(False)
-            self.EditReportForm.setEnabled(False)
-            self.EditRawFile.setEnabled(False)
-            for one_action in self.EditSettingsFiles.actions():
-                one_action.setEnabled(False)
+
+            for one_pad in self.edit_pads_dict["Parameters4admin"]:
+                one_pad.setEnabled(False)
+
+            for one_pad in self.edit_pads_dict["Parameters4user"]:
+                one_pad.setEnabled(False)
 
             # В этом случае разрешено:
             self.Exit.setEnabled(True)
             self.OpenDownLoads.setEnabled(True)
-            #self.OpenSavedReportsFolder.setEnabled(True)
+            #self.OpenSavedReportsFolder.setEnabled(False)
 
         elif not processing_report and not processing_drag_and_drop:
             self.parent.setAcceptDrops(True)
@@ -533,10 +575,12 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             #self.WaitFileAndCreateReport.setEnabled(True)
             self.GetLastFileFromDownLoads.setEnabled(True)
             #self.MoveRawFile2Archive.setEnabled(True)
-            self.EditReportForm.setEnabled(True)
-            self.EditRawFile.setEnabled(True)
-            for one_action in self.EditSettingsFiles.actions():
-                one_action.setEnabled(True)
+
+            for one_pad in self.edit_pads_dict["Parameters4admin"]:
+                one_pad.setEnabled(is_user_admin)
+
+            for one_pad in self.edit_pads_dict["Parameters4user"]:
+                one_pad.setEnabled(True)
 
     def update_status(self):
         self.plainTextEdit.setPlainText(self.status_text)
@@ -731,6 +775,7 @@ class MyWindow(QtWidgets.QMainWindow):
             QtWidgets.QMainWindow.closeEvent(self, e)
         else:
             e.ignore()
+
 
 if __name__ == "__main__":
     pass

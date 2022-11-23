@@ -3,6 +3,8 @@ import os
 import pickle
 import shutil
 import threading
+import platform
+import hashlib
 
 from PyQt5 import QtWidgets
 
@@ -227,6 +229,14 @@ def copy_file_as_drop_process(mainwindow, xls_files):
 
     mainwindow.parent.drag_and_prop_in_process = False
     mainwindow.ui.lock_unlock_interface_items()
+
+
+def is_admin():
+    hash_string = "#" + platform.node() + "#" + os.environ.get('USERNAME') + "#"
+    hash_string = hashlib.blake2s(hash_string.encode(encoding = "utf-8"), digest_size=5).hexdigest()
+    hash_file = os.path.join(myconstants.USER_FILES_LOCATION, hash_string)
+
+    return(os.path.isfile(hash_file))
 
 
 if __name__ == "__main__":
