@@ -111,7 +111,12 @@ def get_later_raw_file():
 
 
 def open_download_dir():
-    os.system(f"explorer.exe {get_download_dir()}")
+    open_dir_in_explore(get_download_dir())
+
+
+def open_dir_in_explore(dir_path):
+    os.system(f"explorer.exe {dir_path}")
+
 
 @thread
 def copy_file_as_drop_process(mainwindow, xls_files):
