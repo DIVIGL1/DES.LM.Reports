@@ -87,9 +87,9 @@ class MyApplication:
 
         # Проверим, удалось ли создать папку:
         if os.path.exists(user_files_path):
-            # Проверим, существуют ли нужные файлы:
+            # Проверим, существуют ли нужные файлы и если их нет,
+            # то скопируем из папки с общими файлами настройки.
             section = mytablefuncs.get_parameter_value(myconstants.PARAMETERS_SECTION_NAME)
-
             for one_file in myconstants.USER_FILES_LIST:
                 system_file_path = os.path.join(os.path.join(os.getcwd(), section, one_file))
                 user_file_path = os.path.join(os.path.join(user_files_path, one_file))
@@ -197,13 +197,7 @@ class MyReportParameters:
         
         # Для начала проверим наличие всех необходимых папок,
         # в которых должны храниться данные программы:
-        folders_list = [
-            (myconstants.PARAMETERS_SECTION_NAME, "Параметры"),
-            (myconstants.RAW_DATA_SECTION_NAME, "Исходные (сырые) данные"),
-            (myconstants.REPORTS_SECTION_NAME, "Отчёты"),
-            (myconstants.REPORTS_PREPARED_SECTION_NAME, "Сформированные отчёты"),
-        ]
-        for one_folder_info in folders_list:
+        for one_folder_info in myconstants.REQUIRED_SYSTEM_SECTIONS:
             if not os.path.isdir(os.path.join(os.getcwd(), mytablefuncs.get_parameter_value(one_folder_info[0]))):
                 spath = one_folder_info[0].replace('\\', '/')
                 self.slasterror = f"(!) Отсутствует необходимая директория: {one_folder_info[1]}.\nИмя директории: {spath}\n\nВыполнение программы невозможно."
