@@ -4,6 +4,9 @@ import os
 
 import myconstants
 import myutils
+from myutils import(
+    iif
+)
 
 
 def get_parameter_value(param_name, default_value=None):
@@ -415,8 +418,18 @@ def prepare_data(
     data_df["SumUserFHours"] = data_df.groupby(["User", "FDate"])["FactHours"].transform("sum")
 
     # Вычислим коэффициенты перевода:
+    # Первый коэффициент: Часы приводятся к 1FTE в любом случае.
+    # Пример: в месяце рабочих 176 часов.
+    # 1) Если человек отработал на двух проектах по 100 часов, то этот коэффициент приведёт эти часы к 176.
+    # 2) Если человек отработал на двух проектах по 80 часов, то этот коэффициент приведёт эти часы так же к 176.
     data_df["HourTo1FTE"] = \
-        data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: x[1] / x[0], axis=1)
+        data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: iif(x[1]==0, x[1], x[1] / x[0]), axis=1)
+
+    # Второй коэффициент: Если суммарно часы превышают 1FTE, то они приводятся к 1FTE, а если нет,
+    # то суммарное количество часов сохраняется. То есть, не приводится к 1FTE, а сохраняется меньше.
+    # Пример: в месяце рабочих 176 часов.
+    # 1) Если человек отработал на двух проектах по 100 часов, то этот коэффициент приведёт эти часы к 176.
+    # 2) Если человек отработал на двух проектах по 80 часов, то этот коэффициент их не изменит и сохранит часы суммарно равные 160.
     data_df["HourTo1FTE_Math"] = \
         data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: x[1] / max(x[0], 1), axis=1)
 
