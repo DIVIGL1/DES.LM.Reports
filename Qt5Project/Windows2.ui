@@ -749,6 +749,9 @@
    <property name="text">
     <string>Открыть пользовательскую папку 'Загрузки'</string>
    </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
   </action>
   <action name="action_5">
    <property name="text">
@@ -761,6 +764,9 @@
    </property>
    <property name="text">
     <string>Получить последний xlsx-файл из папки 'Загрузки'</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+F5</string>
    </property>
   </action>
   <action name="OpenSavedReportsFolder">
@@ -777,6 +783,9 @@
    </property>
    <property name="text">
     <string>Переместить выделенный файл с данными в архив</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+A</string>
    </property>
   </action>
   <action name="WHours">
@@ -842,7 +851,7 @@
     <string>Дождаться новый файл в папке 'Загрузки', обработать и сформировать отчёт</string>
    </property>
    <property name="shortcut">
-    <string>Alt+F3</string>
+    <string>Ctrl+Shift+F3</string>
    </property>
   </action>
   <action name="action">
@@ -862,7 +871,7 @@
   </action>
   <action name="UCostsSwitcher">
    <property name="text">
-    <string>Отключить пользовательские настройки</string>
+    <string>Отключить пользовательские данные</string>
    </property>
   </action>
   <action name="UserProjectsAddInfo">
@@ -872,7 +881,7 @@
   </action>
   <action name="ProjectsAddInfoSwitcher">
    <property name="text">
-    <string>Отключить пользовательские настройки</string>
+    <string>Отключить пользовательские данные</string>
    </property>
   </action>
   <action name="SystemProjectsAddInfo">

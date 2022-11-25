@@ -15,7 +15,7 @@ from myutils import (
     open_download_dir, get_later_raw_file,
     copy_file_as_drop_process, is_admin,
     open_dir_in_explore, get_home_dir,
-    open_file_in_application
+    open_file_in_application, test_create_dir
 )
 
 
@@ -406,7 +406,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             open_dir_in_explore(section_path)
             return
         if action_type == "MoveRawFile2Archive":
-            # TODO: Реализовать функцию MoveRawFile2Archive
+            self.move_selected_raw_file_2_archive()
             return
         if action_type == "WaitFileAndCreateReport":
             # TODO: Реализовать функцию WaitFileAndCreateReport
@@ -425,6 +425,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 return
 
             copy_file_as_drop_process(self.parent, [raw_file])
+            return
 
         if action_type == "EditReportForm":
             self.open_report_form()
@@ -496,6 +497,30 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
         print(action_type)
 
+    def move_selected_raw_file_2_archive(self):
+        raw_file_name = self.listViewRawData.currentIndex().data()
+        self.set_status(myconstants.TEXT_LINES_SEPARATOR)
+        self.move_one_raw_file_2_archive(raw_file_name)
+        self.set_status(myconstants.TEXT_LINES_SEPARATOR)
+
+    def move_one_raw_file_2_archive(self, raw_file_name):
+        # Определим пути
+        section_path = get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)
+        archive_dir = get_parameter_value(myconstants.ARCHIVE_SECTION_NAME)
+        archive_path = os.path.join(section_path, archive_dir)
+        if not test_create_dir(archive_path):
+            return
+
+        raw_file_name = raw_file_name + myconstants.EXCEL_FILES_ENDS
+        src_archive_file_path = os.path.join(section_path, raw_file_name)
+        dst_archive_file_path = os.path.join(archive_path, raw_file_name)
+
+        try:
+            os.replace(src_archive_file_path, dst_archive_file_path)
+            self.set_status(f"   Файл {raw_file_name} перемещён в архив.")
+        except:
+            self.set_status(f"   Перемещение файла {raw_file_name} в архив не удалось - возникли ошибки.")
+
     def lock_unlock_interface_items(self):
         processing_report = self.parent.parent.reporter.report_creation_process
         processing_drag_and_drop = self.parent.parent.drag_and_prop_in_process
@@ -524,7 +549,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             self.Exit.setEnabled(False)
             #self.WaitFileAndCreateReport.setEnabled(False)
             self.GetLastFileFromDownLoads.setEnabled(False)
-            #self.MoveRawFile2Archive.setEnabled(False)
+            self.MoveRawFile2Archive.setEnabled(False)
 
             # В этом случае разрешено:
             self.OpenLastReport.setEnabled(True)
@@ -555,7 +580,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             self.OpenLastReport.setEnabled(False)
             #self.WaitFileAndCreateReport.setEnabled(False)
             self.GetLastFileFromDownLoads.setEnabled(False)
-            #self.MoveRawFile2Archive.setEnabled(False)
+            self.MoveRawFile2Archive.setEnabled(False)
 
             for one_pad in self.edit_pads_dict["Parameters4admin"]:
                 one_pad.setEnabled(False)
@@ -583,7 +608,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             self.OpenSavedReportsFolder.setEnabled(True)
             #self.WaitFileAndCreateReport.setEnabled(True)
             self.GetLastFileFromDownLoads.setEnabled(True)
-            #self.MoveRawFile2Archive.setEnabled(True)
+            self.MoveRawFile2Archive.setEnabled(True)
 
             for one_pad in self.edit_pads_dict["Parameters4admin"]:
                 one_pad.setEnabled(is_user_admin)
@@ -658,9 +683,11 @@ class MyWindow(QtWidgets.QMainWindow):
 
     def refresh_raw_files_list(self, select_row_with_text=""):
         # Получим название текущего элемента:
+        select_row_num = 0
         if select_row_with_text == "":
             # Есл название не указано, то берём сейчас выделенную строку:
             select_row_with_text = self.ui.listViewRawData.currentIndex().data()
+            select_row_num = self.ui.listViewRawData.currentIndex().row() + 1
 
         # Получим список файлов из папки с "сырыми" данными:
         rawdata_list = get_files_list(get_parameter_value(myconstants.RAW_DATA_SECTION_NAME))
@@ -669,11 +696,15 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.listViewRawData.setModel(self.ui.model)
 
         item2select = None
+        counter = 0
         # Добавим в список все файлы, найденные в папке:
         for curr_file_name in rawdata_list:
+            counter += 1
             item = QtGui.QStandardItem(curr_file_name)
             self.ui.model.appendRow(item)
             if curr_file_name == select_row_with_text:
+                item2select = item
+            if (counter == select_row_num) and (item2select is None):
                 item2select = item
         else:
             if item2select is None:

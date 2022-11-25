@@ -119,6 +119,18 @@ def open_dir_in_explore(dir_path):
     os.system(f"explorer.exe {dir_path}")
 
 
+def test_create_dir(dir_path):
+    ''' Проверка на существование и создание директории. '''
+    if not os.path.isdir(dir_path):
+        # Если её не существуем, то попробуем создать
+        os.mkdir(dir_path)
+        # Повторно проверим наличие директории
+        if not os.path.isdir(dir_path):
+            return False
+
+    return True
+
+
 @thread
 def copy_file_as_drop_process(mainwindow, xls_files):
     from mytablefuncs import open_and_test_raw_struct, get_parameter_value
@@ -152,10 +164,6 @@ def copy_file_as_drop_process(mainwindow, xls_files):
             # Проверим структуру файла:
             ret_value = open_and_test_raw_struct(one_file_path, short_text=True)
             if type(ret_value) == str:
-                QtWidgets.QMessageBox.question(mainwindow, f"Файл: {this_file_name}",
-                                               ret_value,
-                                               QtWidgets.QMessageBox.Yes)
-
                 mainwindow.ui.set_status("   Структура файла не соответствует требованиям.")
                 mainwindow.ui.set_status("   Копирование не отклонено.")
                 continue
@@ -185,28 +193,12 @@ def copy_file_as_drop_process(mainwindow, xls_files):
             new_filename = this_file_name
 
         raw_file_path = raw_section_path + "/" + new_filename
-        if os.path.isfile(raw_file_path):
-            result = QtWidgets.QMessageBox.question(mainwindow, "Заменить файл?",
-                                                    "В папке, где находятся данные, выгруженные из DES.LM" +
-                                                    f"Файл с таким названием уже есть {new_filename}\n\n" +
-                                                    "Вы действительно хотите переписать его новым файлом?",
-                                                    QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-                                                    QtWidgets.QMessageBox.No)
-
-            if result == QtWidgets.QMessageBox.No:
-                mainwindow.ui.set_status("   Пользователь отказался от копирования.")
-                continue
-
         try:
             shutil.copy(one_file_path, raw_file_path)
             select_filename = os.path.splitext(os.path.basename(raw_file_path))[0]
             counter += 1
             mainwindow.ui.set_status("   Файл скопирован.")
         except (OSError, shutil.Error):
-            QtWidgets.QMessageBox.question(mainwindow, "Ошибка копирования.",
-                                           "Не удалось скопировать файл с данными выгруженными из DES.LM.",
-                                           QtWidgets.QMessageBox.Yes)
-
             mainwindow.ui.set_status("   Копирование не удалось - возникли ошибки.")
             continue
 
@@ -221,9 +213,6 @@ def copy_file_as_drop_process(mainwindow, xls_files):
                     os.rename(one_file_path, new_src_file_path)
                     mainwindow.ui.set_status("   Исходный файл так же переименован.")
                 except (OSError, shutil.Error):
-                    QtWidgets.QMessageBox.question(mainwindow, "Ошибка копирования.",
-                                                   "Не удалось скопировать файл с данными выгруженными из DES.LM.",
-                                                   QtWidgets.QMessageBox.Yes)
                     mainwindow.ui.set_status("   Переименование исходного файла не удалось.")
 
     if counter == 1:
