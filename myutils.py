@@ -237,9 +237,11 @@ def copy_file_as_drop_process(mainwindow, xls_files):
 
 
 def is_admin():
+    from mytablefuncs import get_parameter_value
+    user_files_path = get_parameter_value(myconstants.USER_PARAMETERS_SECTION_NAME)
     hash_string = "#" + platform.node() + "#" + os.environ.get('USERNAME') + "#"
     hash_string = hashlib.blake2s(hash_string.encode(encoding = "utf-8"), digest_size=5).hexdigest()
-    hash_file = os.path.join(myconstants.USER_FILES_LOCATION, hash_string)
+    hash_file = os.path.join(user_files_path, hash_string)
 
     return(os.path.isfile(hash_file))
 

@@ -6,16 +6,26 @@ import myconstants
 import myutils
 
 
-def get_parameter_value(paramname, defvalue=""):
-    # Читаем настройки
+def get_parameter_value(param_name, default_value=None):
+    # Подготовим значение для возврата на случай если потребуется значение по умолчанию:
+    ret_value = myconstants.SECTIONS_DEFAULT_VALUES.get(
+                            param_name,
+                            myconstants.SECTIONS_DEFAULT_VALUES[myconstants.ALL_OTHER_PARAMETERS_SECTION_NAME]
+    )
+    # Читаем настройки:
     if not os.path.isfile(myconstants.START_PARAMETERS_FILE):
-        ret_value = defvalue
+        if default_value is None:
+            # Возвращаемое значение вычислено в начале процедуры.
+            pass
+        else:
+            ret_value = default_value
     else:
         settings_df = pd.read_excel(myconstants.START_PARAMETERS_FILE, engine='openpyxl')
         settings_df.dropna(how='all', inplace=True)
-        tmp_df = settings_df[settings_df["ParameterName"] == paramname]["ParameterValue"]
+        tmp_df = settings_df[settings_df["ParameterName"] == param_name]["ParameterValue"]
         if tmp_df.shape[0] == 0:
-            ret_value = defvalue
+            # Возвращаемое значение вычислено в начале процедуры.
+            pass
         else:
             ret_value = tmp_df.to_list()[0]
         
@@ -51,7 +61,8 @@ def load_parameter_table(tablename):
     user_file_path = "<>!&*"
     if tablename in myconstants.USER_FILES_LIST:
         # Проверим, можем ли загрузить таблицу из пользовательских настроек:
-        user_file_path = os.path.join(os.path.join(myconstants.USER_FILES_LOCATION, tablename))
+        user_files_dir = get_parameter_value(myconstants.USER_PARAMETERS_SECTION_NAME)
+        user_file_path = os.path.join(os.path.join(user_files_dir, tablename))
 
     if os.path.isfile(user_file_path):
         full_file_path = user_file_path

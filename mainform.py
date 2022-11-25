@@ -359,10 +359,11 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         self.comminucate.updateStatusText.connect(self.update_status)
 
     def update_user_files_menus(self):
+        user_files_path = get_parameter_value(myconstants.USER_PARAMETERS_SECTION_NAME)
         for one_file in myconstants.USER_FILES_LIST:
-            user_file_path = os.path.join(os.path.join(myconstants.USER_FILES_LOCATION, one_file))
+            user_file_path = os.path.join(os.path.join(user_files_path, one_file))
             excluded_file = myconstants.USER_FILES_EXCLUDE_PREFFIX + one_file
-            user_excluded_file_path = os.path.join(os.path.join(myconstants.USER_FILES_LOCATION, excluded_file))
+            user_excluded_file_path = os.path.join(os.path.join(user_files_path, excluded_file))
 
             user_file_exist = os.path.isfile(user_file_path)
             user_file_locked = os.path.isfile(user_excluded_file_path)
@@ -429,9 +430,10 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
             return
 
         if action_type == "ExcludeUserFile":
-            user_file_path = os.path.join(os.path.join(myconstants.USER_FILES_LOCATION, p2 + myconstants.EXCEL_FILES_ENDS))
+            user_files_dir = get_parameter_value(myconstants.USER_PARAMETERS_SECTION_NAME)
+            user_file_path = os.path.join(os.path.join(user_files_dir, p2 + myconstants.EXCEL_FILES_ENDS))
             excluded_file = myconstants.USER_FILES_EXCLUDE_PREFFIX + p2 + myconstants.EXCEL_FILES_ENDS
-            user_excluded_file_path = os.path.join(os.path.join(myconstants.USER_FILES_LOCATION, excluded_file))
+            user_excluded_file_path = os.path.join(os.path.join(user_files_dir, excluded_file))
 
             user_file_exist = os.path.isfile(user_file_path)
             user_file_locked = os.path.isfile(user_excluded_file_path)
@@ -462,9 +464,10 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
                 section = ""
             elif p1 == "UserParameters":
                 # Проверим существование пользовательских файлов:
-                user_file_path = os.path.join(os.path.join(myconstants.USER_FILES_LOCATION, p2 + myconstants.EXCEL_FILES_ENDS))
+                user_files_dir = get_parameter_value(myconstants.USER_PARAMETERS_SECTION_NAME)
+                user_file_path = os.path.join(os.path.join(user_files_dir, p2 + myconstants.EXCEL_FILES_ENDS))
                 excluded_file = myconstants.USER_FILES_EXCLUDE_PREFFIX + p2 + myconstants.EXCEL_FILES_ENDS
-                user_excluded_file_path = os.path.join(os.path.join(myconstants.USER_FILES_LOCATION, excluded_file))
+                user_excluded_file_path = os.path.join(os.path.join(user_files_dir, excluded_file))
 
                 user_file_exist = os.path.isfile(user_file_path)
                 user_file_locked = os.path.isfile(user_excluded_file_path)
@@ -476,7 +479,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
                     # Уточняем имя файла в параметре p1:
                     p2 = myconstants.USER_FILES_EXCLUDE_PREFFIX + p2
 
-                section = myconstants.USER_FILES_LOCATION
+                section = get_parameter_value(myconstants.USER_PARAMETERS_SECTION_NAME)
             else:
                 section = get_parameter_value(p1)
 

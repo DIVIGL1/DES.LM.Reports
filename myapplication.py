@@ -11,8 +11,6 @@ import myutils
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-from PyQt5 import QtGui
-
 
 class handlerRawFolder(FileSystemEventHandler):
     def __init__(self, parent):
@@ -83,19 +81,20 @@ class MyApplication:
 
         # Проверяем наличие пользовательского каталога.
         # Если нет, то стараемся создать.
-        if not os.path.exists(myconstants.USER_FILES_LOCATION):
-            os.mkdir(myconstants.USER_FILES_LOCATION)
+        user_files_path = mytablefuncs.get_parameter_value(myconstants.USER_PARAMETERS_SECTION_NAME)
+        if not os.path.exists(user_files_path):
+            os.mkdir(user_files_path)
 
         # Проверим, удалось ли создать папку:
-        if os.path.exists(myconstants.USER_FILES_LOCATION):
+        if os.path.exists(user_files_path):
             # Проверим, существуют ли нужные файлы:
             section = mytablefuncs.get_parameter_value(myconstants.PARAMETERS_SECTION_NAME)
 
             for one_file in myconstants.USER_FILES_LIST:
                 system_file_path = os.path.join(os.path.join(os.getcwd(), section, one_file))
-                user_file_path = os.path.join(os.path.join(myconstants.USER_FILES_LOCATION, one_file))
+                user_file_path = os.path.join(os.path.join(user_files_path, one_file))
                 excluded_file = myconstants.USER_FILES_EXCLUDE_PREFFIX + one_file
-                user_excluded_file_path = os.path.join(os.path.join(myconstants.USER_FILES_LOCATION, excluded_file))
+                user_excluded_file_path = os.path.join(os.path.join(user_files_path, excluded_file))
                 if not (os.path.isfile(user_file_path) or os.path.isfile(user_excluded_file_path)):
                     try:
                         shutil.copyfile(system_file_path, user_file_path)
@@ -107,8 +106,7 @@ class MyApplication:
 
             self.event_handler_use_folder = handlerUserFolder(self)
             self.observer_user_folder = Observer()
-            control_path = myconstants.USER_FILES_LOCATION
-            self.observer_user_folder.schedule(self.event_handler_use_folder, path=control_path, recursive=False)
+            self.observer_user_folder.schedule(self.event_handler_use_folder, path=user_files_path, recursive=False)
             self.observer_user_folder.start()
 
         else:
