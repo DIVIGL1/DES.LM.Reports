@@ -5,7 +5,7 @@ import warnings
 import pythoncom
 
 import myconstants
-from mytablefuncs import get_parameter_value, prepare_data, test_secret_files_list
+from mytablefuncs import get_parameter_value, prepare_data, check_for_commercial_data_in_user_files
 import myutils
 from myexcelclass import MyExcel
 
@@ -123,7 +123,7 @@ def send_df_2_xls(report_parameters):
             
     # В случае наличия в специальной парке файлов с секретными данными и если
     # в них есть какие-то не нулевые значения, то нужно удалять лист с данными:
-    test_result = test_secret_files_list()
+    test_result = check_for_commercial_data_in_user_files()
     if test_result:
         ui_handle.set_status(test_result)
         p_save_without_formulas = True

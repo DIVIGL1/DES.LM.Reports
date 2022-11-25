@@ -37,10 +37,11 @@ def get_parameter_value(param_name, default_value=None):
     return ret_value
 
 
-def test_secret_files_list():
+def check_for_commercial_data_in_user_files():
     ret_value = ""
-    for one_table in myconstants.TEST_SECRET_FILES_LIST:
-        full_file_path = myconstants.SECRET_COSTS_LOCATION + "/" + one_table
+    for one_table in myconstants.USER_FILES_4_COMMERCIAL_DATA_TEST:
+        user_files_dir = get_parameter_value(myconstants.USER_PARAMETERS_SECTION_NAME)
+        full_file_path = user_files_dir + "/" + one_table
         if os.path.isfile(full_file_path):
             test_df = pd.read_excel(full_file_path, engine='openpyxl')
             test_df.dropna(how='all', inplace=True)
