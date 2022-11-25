@@ -3,7 +3,6 @@
 
 import os
 import sys
-import subprocess
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSignal, QObject
@@ -15,7 +14,8 @@ from myutils import (
     load_param, save_param, get_files_list, iif,
     open_download_dir, get_later_raw_file,
     copy_file_as_drop_process, is_admin,
-    open_dir_in_explore, get_home_dir
+    open_dir_in_explore, get_home_dir,
+    open_file_in_application
 )
 
 
@@ -72,7 +72,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             # Открываем последний сгенерированный отчёт.
             last_report_filename = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT)
             if last_report_filename:
-                self.open_file_in_application(last_report_filename)
+                open_file_in_application(last_report_filename)
 
     def open_report_form(self):
         # Открываем шаблон отчётной формы:
@@ -82,7 +82,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 myconstants.REPORT_FILE_PREFFIX + self.listView.currentIndex().data() + myconstants.EXCEL_FILES_ENDS
             )
 
-        self.open_file_in_application(report_file_name)
+        open_file_in_application(report_file_name)
 
     def open_raw_file(self):
         # Открываем файл с 'сырыми' данными, выгруженными из DES.LM:
@@ -91,10 +91,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 os.path.join(os.getcwd(), get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)),
                 self.listViewRawData.currentIndex().data() + myconstants.EXCEL_FILES_ENDS
             )
-        self.open_file_in_application(raw_file_name)
-
-    def open_file_in_application(self, file_name):
-        subprocess.Popen(file_name, shell=True)
+        open_file_in_application(raw_file_name)
 
     def on_click_checkboxes(self):
         if self.listView.currentIndex().data() is None:
@@ -491,7 +488,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 section = get_parameter_value(p1)
 
             xls_file_path = os.path.join(os.path.join(os.getcwd(), section, p2 + myconstants.EXCEL_FILES_ENDS))
-            self.open_file_in_application(xls_file_path)
+            open_file_in_application(xls_file_path)
             return
 
         if action_type == "Exit":

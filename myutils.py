@@ -5,6 +5,7 @@ import shutil
 import threading
 import platform
 import hashlib
+import subprocess
 
 from PyQt5 import QtWidgets
 
@@ -245,6 +246,8 @@ def is_admin():
 
     return(os.path.isfile(hash_file))
 
+def open_file_in_application(file_name):
+    subprocess.Popen(file_name, shell=True)
 
 if __name__ == "__main__":
     print(get_files_list("RawData", "", ".xlsx"))
