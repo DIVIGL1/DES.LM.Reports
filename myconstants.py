@@ -27,7 +27,7 @@ RESULT_DATA_COLUMNS = [
     "Project",
     "ProjectType",
     "ProjectSubType",
-    "ProjectManager", 
+    "ProjectManager",
     "PlanFTE",
     "FactFTE",
     "FN_Proj",
@@ -363,4 +363,4 @@ EXCELWINDOWSTATE_MIN = -4140  # Минимизировано
 NUM_ROWS_FOR_HIDE = 300
 NUM_COLUMNS_FOR_HIDE = 150
 
-APP_VERSION = "v:5.06.201122.00"
+APP_VERSION = "v:5.061.211122.02"

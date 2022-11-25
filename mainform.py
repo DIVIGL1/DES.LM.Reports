@@ -424,7 +424,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             if raw_file is None:
                 return
 
-            copy_file_as_drop_process([raw_file])
+            copy_file_as_drop_process(self.parent, [raw_file])
 
         if action_type == "EditReportForm":
             self.open_report_form()
