@@ -23,10 +23,11 @@ class Communicate(QObject):
     updateStatusText = pyqtSignal()
 
 
-class qtMainWindow(myQt_form.Ui_MainWindow):
+class QtMainWindow(myQt_form.Ui_MainWindow):
     closeApp = pyqtSignal()
     exit_in_process = None
     parent = None
+    model = None
 
     def setup_reports_list(self, reports_list=None):
         if reports_list is None:
@@ -45,7 +46,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
 
         return True
 
-    def on_click_doIt(self):
+    def on_click_do_it(self):
         if self.pushButtonDoIt.isEnabled() and self.pushButtonDoIt.isVisible():
             raw_file_name = self.listViewRawData.currentIndex().data()
             report_file_name = self.listView.currentIndex().data()
@@ -60,11 +61,11 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
 
             self.parent.parent.reporter.create_report()
 
-    def on_dblclick_reports_List(self):
-        self.on_click_doIt()
+    def on_dblclick_reports_list(self):
+        self.on_click_do_it()
 
     def on_dblclick_raw_data(self):
-        self.on_click_doIt()
+        self.on_click_do_it()
 
     def on_click_open_last_report(self):
         if self.pushButtonOpenLastReport.isEnabled() and self.pushButtonOpenLastReport.isVisible():
@@ -172,18 +173,6 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         
         self.checkBoxDelRawData.setVisible(self.checkBoxSaveWithOutFotmulas.isChecked())
 
-    def onclick_checkbox_only_projects_with_add(self):
-        s_preff = self.get_preff()
-        p_selected = self.checkBoxOnlyProjectsWithAdd.isChecked()
-        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD, p_selected)
-        self.comboBoxPGroups.setVisible(p_selected)
-
-    def onclick_checkbox_select_users(self):
-        s_preff = self.get_preff()
-        p_selected = self.checkBoxSelectUsers.isChecked()
-        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_SELECT_USERS, p_selected)
-        self.comboBoxSelectUsers.setVisible(p_selected)
-
     def setup_checkbox_only_projects_with_add(self):
         s_preff = self.get_preff()
         saved_value = load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD, myconstants.PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD_DEFVALUE)
@@ -192,12 +181,30 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
         if saved_value:
             self.setup_combobox_pgroups()
 
+    def onclick_checkbox_only_projects_with_add(self):
+        # Обработка клика по чекбоксу включения/выключения дополнительных параметров проектов
+        s_preff = self.get_preff()
+        p_selected = self.checkBoxOnlyProjectsWithAdd.isChecked()
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ONLY_P_WITH_ADD, p_selected)
+        if p_selected:
+            self.setup_combobox_pgroups()
+        self.comboBoxPGroups.setVisible(p_selected)
+
     def setup_checkbox_select_users(self):
         s_preff = self.get_preff()
         saved_value = load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_SELECT_USERS, myconstants.PARAMETER_SAVED_VALUE_SELECT_USERS_DEFVALUE)
         self.checkBoxSelectUsers.setChecked(saved_value)
         self.comboBoxSelectUsers.setVisible(saved_value)
         if saved_value:
+            self.setup_comboBoxSelectUsers()
+
+    def onclick_checkbox_select_users(self):
+        # Обработка клика по чекбоксу включения/выключения выбора групп пользователей
+        s_preff = self.get_preff()
+        p_selected = self.checkBoxSelectUsers.isChecked()
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_SELECT_USERS, p_selected)
+        self.comboBoxSelectUsers.setVisible(p_selected)
+        if p_selected:
             self.setup_comboBoxSelectUsers()
 
     def setup_combobox_pgroups(self):
@@ -244,7 +251,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
 
         self.parent.refresh_raw_files_list(last_raw_file)
 
-        self.pushButtonDoIt.clicked.connect(self.on_click_doIt)
+        self.pushButtonDoIt.clicked.connect(self.on_click_do_it)
         
         self.checkBoxDeleteVIP.clicked.connect(self.on_click_checkboxes)
         self.checkBoxDeleteNotProduct.clicked.connect(self.on_click_checkboxes)
@@ -349,7 +356,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
 
         self.listView.clicked.connect(self.on_click_reports_list)
         
-        self.listView.doubleClicked.connect(self.on_dblclick_reports_List)
+        self.listView.doubleClicked.connect(self.on_dblclick_reports_list)
         self.listViewRawData.doubleClicked.connect(self.on_dblclick_raw_data)
 
         self.pushButtonOpenLastReport.clicked.connect(self.on_click_open_last_report)
@@ -392,7 +399,7 @@ class qtMainWindow(myQt_form.Ui_MainWindow):
 
     def menu_action(self, action_type, p1="", p2=""):
         if action_type == "CreateReport":
-            self.on_click_doIt()
+            self.on_click_do_it()
             return
         if action_type == "OpenLastReport":
             self.on_click_open_last_report()
@@ -629,7 +636,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.parent = parent
         self.app = QtWidgets.QApplication(sys.argv)
         QtWidgets.QMainWindow.__init__(self, None)
-        self.ui = qtMainWindow()
+        self.ui = QtMainWindow()
         self.ui.setupUi(self)
         self.ui.update_user_files_menus()
         self.ui.parent = self
