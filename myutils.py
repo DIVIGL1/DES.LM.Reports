@@ -93,11 +93,12 @@ def get_download_dir():
 def get_later_raw_file():
     path = get_download_dir()
     # Получим список имен всего содержимого папки
-    # и превратим их в абсолютные пути
-    dir_list = [os.path.join(path, x) for x in os.listdir(path)]
+    # и превратим их в абсолютные пути. Но обработаем
+    # только те, которые являются файлами Excel.
+    dir_list = [os.path.join(path, x) for x in os.listdir(path) if x[-4:].upper() == myconstants.EXCEL_FILES_ENDS]
 
     if dir_list:
-        # Создадим список из путей к файлам и дат их создания.
+        # Если список не пустой, то создадим список из путей к файлам и дат их создания.
         date_list = [[x, os.path.getctime(x)] for x in dir_list]
 
         # Отсортируем список по дате создания в обратном порядке

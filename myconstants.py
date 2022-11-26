@@ -299,7 +299,7 @@ FACT_FILLER = "(факт=1)"
 OTHER_PROJECT_SUB_TYPE = "_Прочее"
 
 REPORT_FILE_PREFFIX = "Отчет - "
-EXCEL_FILES_ENDS = ".xlsx"
+EXCEL_FILES_ENDS = ".xlsx".lower()
 
 RAW_DATA_SHEET_NAME = "ИсходныеДанные"
 UNIQE_LISTS_SHEET_NAME = "УникальныеСписки"
