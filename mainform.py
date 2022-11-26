@@ -47,7 +47,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
         return True
 
-    def on_click_do_it(self):
+    def on_click_do_it(self, p_dont_clear_status=False):
         if self.pushButtonDoIt.isEnabled() and self.pushButtonDoIt.isVisible():
             raw_file_name = self.listViewRawData.currentIndex().data()
             report_file_name = self.listView.currentIndex().data()
@@ -60,7 +60,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             save_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT, self.reports_list.index(report_file_name) + 1)
             save_param(myconstants.PARAMETER_SAVED_SELECTED_RAW_FILE, raw_file_name)
 
-            self.parent.parent.reporter.create_report()
+            self.parent.parent.reporter.create_report(p_dont_clear_status=p_dont_clear_status)
 
     def on_dblclick_reports_list(self):
         self.on_click_do_it()
@@ -443,7 +443,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             self.move_selected_raw_file_2_archive()
             return
         if action_type == "WaitFileAndCreateReport":
-            # TODO: Реализовать функцию WaitFileAndCreateReport
+            self.parent.parent.waiting_file_4_report = True
             return
 
         if action_type == "UCostsSelector":
@@ -586,7 +586,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
             self.CreateReport.setEnabled(False)
             self.Exit.setEnabled(False)
-            #self.WaitFileAndCreateReport.setEnabled(False)
+            self.WaitFileAndCreateReport.setEnabled(False)
             self.GetLastFileFromDownLoads.setEnabled(False)
             self.MoveRawFile2Archive.setEnabled(False)
 
@@ -617,7 +617,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
             self.CreateReport.setEnabled(False)
             self.OpenLastReport.setEnabled(False)
-            #self.WaitFileAndCreateReport.setEnabled(False)
+            self.WaitFileAndCreateReport.setEnabled(False)
             self.GetLastFileFromDownLoads.setEnabled(False)
             self.MoveRawFile2Archive.setEnabled(False)
 
@@ -645,7 +645,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             self.Exit.setEnabled(True)
             self.OpenDownLoads.setEnabled(True)
             self.OpenSavedReportsFolder.setEnabled(True)
-            #self.WaitFileAndCreateReport.setEnabled(True)
+            self.WaitFileAndCreateReport.setEnabled(True)
             self.GetLastFileFromDownLoads.setEnabled(True)
             self.MoveRawFile2Archive.setEnabled(True)
 

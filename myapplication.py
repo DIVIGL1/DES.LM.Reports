@@ -15,7 +15,7 @@ from watchdog.events import FileSystemEventHandler
 class handlerRawFolder(FileSystemEventHandler):
     def __init__(self, parent):
         self.parent = parent
-    
+
     def on_created(self, event):
         if self.parent.drag_and_prop_in_process:
             return
@@ -37,6 +37,37 @@ class handlerRawFolder(FileSystemEventHandler):
             return
         new_filename = os.path.splitext(os.path.basename(event.dest_path))[0]
         self.parent.mainwindow.refresh_raw_files_list(new_filename)
+
+
+class handlerDownLoadFolder(FileSystemEventHandler):
+    def __init__(self, parent):
+        self.parent = parent
+    
+    def on_created(self, event):
+        if self.parent.drag_and_prop_in_process:
+            # При выполнении Drag&Drop не обрабатывать
+            return
+        if self.parent.reporter.report_creation_process:
+            # При формировании отчёта не обрабатываем:
+            return
+        if event.is_directory:
+            # Обрабатываем только файлы, не папки.
+            return
+
+        if event.src_path[-len(myconstants.EXCEL_FILES_ENDS):].lower() != myconstants.EXCEL_FILES_ENDS:
+            # Обрабатываем только файл Excel
+            return
+
+        self.waiting_file_4_report = True
+
+        new_filename = os.path.splitext(os.path.basename(event.src_path))[0] + myconstants.EXCEL_FILES_ENDS
+        self.parent.mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+        self.parent.mainwindow.ui.set_status(f"В папке 'Загрузки' появился новый файл: {new_filename}")
+        myutils.copy_file_as_drop_process(self.parent.mainwindow, [event.src_path])
+        self.parent.mainwindow.ui.on_click_do_it(p_dont_clear_status=True)
+        self.parent.mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+
+        self.waiting_file_4_report = False
 
 
 class handlerUserFolder(FileSystemEventHandler):
@@ -64,6 +95,7 @@ class handlerUserFolder(FileSystemEventHandler):
 
 class MyApplication:
     drag_and_prop_in_process = False
+    waiting_file_4_report = False
     def __init__(self):
         myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         self.report_parameters = MyReportParameters(self)
@@ -73,11 +105,19 @@ class MyApplication:
 
         self.mainwindow.show()
         if self.report_parameters.is_all_parameters_exist():
+            # Запустим мониторинг папки с "сырыми" данными:
             self.event_handler_raw_folder = handlerRawFolder(self)
             self.observer_raw_folder = Observer()
             control_path = mytablefuncs.get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)
             self.observer_raw_folder.schedule(self.event_handler_raw_folder, path=control_path, recursive=False)
             self.observer_raw_folder.start()
+
+            # Запустим мониторинг папки "Загрузки":
+            self.event_handler_download_folder = handlerDownLoadFolder(self)
+            self.observer_download_folder = Observer()
+            control_path = myutils.get_download_dir()
+            self.observer_download_folder.schedule(self.event_handler_download_folder, path=control_path, recursive=False)
+            self.observer_download_folder.start()
 
         # Проверяем наличие пользовательского каталога.
         # Если нет, то стараемся создать.
@@ -104,6 +144,7 @@ class MyApplication:
                             f"Не удалось создать файл пользовательских настроек: {one_file}")
                         self.mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
 
+            # Запустим мониторинг папки с пользовательскими данными:
             self.event_handler_use_folder = handlerUserFolder(self)
             self.observer_user_folder = Observer()
             self.observer_user_folder.schedule(self.event_handler_use_folder, path=user_files_path, recursive=False)

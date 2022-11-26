@@ -11,9 +11,7 @@ import myconstants
 
 
 def thread(my_func):
-    """
-    Запускает функцию в отдельным процессом.
-    """
+    # Запускает функцию в отдельным процессом.
     def wrapper(*args, **kwargs):
         my_thread = threading.Thread(target=my_func, args=args, kwargs=kwargs)
         my_thread.start()
@@ -95,7 +93,7 @@ def get_later_raw_file():
     # Получим список имен всего содержимого папки
     # и превратим их в абсолютные пути. Но обработаем
     # только те, которые являются файлами Excel.
-    dir_list = [os.path.join(path, x) for x in os.listdir(path) if x[-4:].upper() == myconstants.EXCEL_FILES_ENDS]
+    dir_list = [os.path.join(path, x) for x in os.listdir(path) if x[-len(myconstants.EXCEL_FILES_ENDS):].lower() == myconstants.EXCEL_FILES_ENDS]
 
     if dir_list:
         # Если список не пустой, то создадим список из путей к файлам и дат их создания.
@@ -171,7 +169,7 @@ def copy_file_as_drop_process(mainwindow, xls_files):
             ret_value = open_and_test_raw_struct(one_file_path, short_text=True)
             if type(ret_value) == str:
                 mainwindow.ui.set_status("   Структура файла не соответствует требованиям.")
-                mainwindow.ui.set_status("   Копирование не отклонено.")
+                mainwindow.ui.set_status("   Копирование отклонено.")
                 continue
 
         if drug_and_drop_type >= 3:

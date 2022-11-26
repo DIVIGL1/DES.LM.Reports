@@ -29,7 +29,7 @@ class reportCreator(object):
     def get_report_file_name_by_num(self, num):
         return self.reports_list[num]
     
-    def create_report(self):
+    def create_report(self, p_dont_clear_status=False):
         if self.parent.report_parameters.report_file_name is None:
             myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
             self.parent.mainwindow.ui.set_status("Необходимо выбрать отчётную форму.")
@@ -40,7 +40,10 @@ class reportCreator(object):
             return False
 
         self.start_timer()
-        self.parent.mainwindow.ui.clear_status()
+        if p_dont_clear_status:
+            pass
+        else:
+            self.parent.mainwindow.ui.clear_status()
 
         send_df_2_xls(self.parent.report_parameters)
 
