@@ -15,7 +15,8 @@ from myutils import (
     open_download_dir, get_later_raw_file,
     copy_file_as_drop_process, is_admin,
     open_dir_in_explore, get_home_dir,
-    open_file_in_application, test_create_dir
+    open_file_in_application, test_create_dir,
+    open_user_files_dir
 )
 
 
@@ -240,7 +241,6 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.comboBoxSelectUsers.addItems(all_grp_columns)
 
     def setup_form(self, reports_list):
-        self.Exit.setShortcut("Alt+F4")
         self.reports_list = reports_list
 
         self.setup_reports_list(reports_list)
@@ -276,6 +276,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.OpenSavedReportsFolder.triggered.connect(lambda: self.menu_action("OpenSavedReportsFolder"))
 
         self.OpenDownLoads.triggered.connect(lambda: self.menu_action("OpenDownLoads"))
+        self.OpenUserFilesFolder.triggered.connect(lambda: self.menu_action("OpenUserFilesFolder"))
         self.GetLastFileFromDownLoads.triggered.connect(lambda: self.menu_action("GetLastFileFromDownLoads"))
         self.MoveRawFile2Archive.triggered.connect(lambda: self.menu_action("MoveRawFile2Archive"))
 
@@ -310,6 +311,15 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         #----------------------------------
         self.Exit.triggered.connect(lambda: self.menu_action("Exit"))
         #----------------------------------
+        self.SystemUCosts.setCheckable(True)
+        self.UserUCosts.setCheckable(True)
+        self.SystemProjectsAddInfo.setCheckable(True)
+        self.UserProjectsAddInfo.setCheckable(True)
+        self.SystemEMails.setCheckable(True)
+        self.UserEMails.setCheckable(True)
+
+        self.Exit.setShortcut("Alt+F4")
+        self.update_user_files_menus()
 
         self.edit_pads_dict = {
             "Parameters4admin": [
@@ -363,32 +373,56 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.comminucate.updateStatusText.connect(self.update_status)
 
     def update_user_files_menus(self):
+        # Расположение пользовательских файлов:
         user_files_path = get_parameter_value(myconstants.USER_PARAMETERS_SECTION_NAME)
+
+        # Обработаем список всех возможных пользовательских файлов:
         for one_file in myconstants.USER_FILES_LIST:
+            # Полный путь до рассматриваемого файла (не заблокированного):
             user_file_path = os.path.join(os.path.join(user_files_path, one_file))
+            # Имя "заблокированного" файла:
             excluded_file = myconstants.USER_FILES_EXCLUDE_PREFFIX + one_file
+            # Полный путь до заблокированного файла:
             user_excluded_file_path = os.path.join(os.path.join(user_files_path, excluded_file))
 
+            # "Флаг": существует ли основной файл (НЕ заблокированный):
             user_file_exist = os.path.isfile(user_file_path)
+            # "Флаг": существует ли заблокированный файл:
             user_file_locked = os.path.isfile(user_excluded_file_path)
+            # "Флаг": есть ли хоть какой-то из этих файлов:
             one_of_2_files_exists = (user_file_exist or user_file_locked)
+
+            # Если рассматриваемый файл - это ставки пользователей, то:
             if one_file == myconstants.COSTS_TABLE:
                 self.UserUCosts.setEnabled(one_of_2_files_exists)
                 self.UCostsSwitcher.setEnabled(one_of_2_files_exists)
+
+                self.SystemUCosts.setChecked(not user_file_exist)
+                self.UserUCosts.setChecked(user_file_exist)
                 if not user_file_exist:
                     self.UCostsSwitcher.setText("Включить пользовательские настройки")
                 else:
                     self.UCostsSwitcher.setText("Отключить пользовательские настройки")
+
+            # Если рассматриваемый файл - это дополнительная информация о проектах, то:
             if one_file == myconstants.PROJECTS_LIST_ADD_INFO:
                 self.UserProjectsAddInfo.setEnabled(one_of_2_files_exists)
                 self.ProjectsAddInfoSwitcher.setEnabled(one_of_2_files_exists)
+
+                self.SystemProjectsAddInfo.setChecked(not user_file_exist)
+                self.UserProjectsAddInfo.setChecked(user_file_exist)
                 if not user_file_exist:
                     self.ProjectsAddInfoSwitcher.setText("Включить пользовательские настройки")
                 else:
                     self.ProjectsAddInfoSwitcher.setText("Отключить пользовательские настройки")
+
+            # Если рассматриваемый файл - это списки почтовых адресов, то:
             if one_file == myconstants.EMAILS_TABLE:
                 self.UserEMails.setEnabled(one_of_2_files_exists)
                 self.EMailsSwitcher.setEnabled(one_of_2_files_exists)
+
+                self.SystemEMails.setChecked(not user_file_exist)
+                self.UserEMails.setChecked(user_file_exist)
                 if not user_file_exist:
                     self.EMailsSwitcher.setText("Включить пользовательские настройки")
                 else:
@@ -419,6 +453,11 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         if action_type == "OpenDownLoads":
             open_download_dir()
             return
+
+        if action_type == "OpenUserFilesFolder":
+            open_user_files_dir()
+            return
+
         if action_type == "GetLastFileFromDownLoads":
             raw_file = get_later_raw_file()
             if raw_file is None:
@@ -660,7 +699,6 @@ class MyWindow(QtWidgets.QMainWindow):
         QtWidgets.QMainWindow.__init__(self, None)
         self.ui = QtMainWindow()
         self.ui.setupUi(self)
-        self.ui.update_user_files_menus()
         self.ui.parent = self
         self.ui.save_app_link(self.app)
         self.setWindowTitle(f"DES.LM.Reporter ({myconstants.APP_VERSION})")
@@ -683,9 +721,11 @@ class MyWindow(QtWidgets.QMainWindow):
 
     def refresh_raw_files_list(self, select_row_with_text=""):
         # Получим название текущего элемента:
+        p_passed_no_name = False
         select_row_num = 0
         if select_row_with_text == "":
-            # Есл название не указано, то берём сейчас выделенную строку:
+            p_passed_no_name = True
+            # Если название не указано, то сохраним строку, которая выделена сейчас:
             select_row_with_text = self.ui.listViewRawData.currentIndex().data()
             select_row_num = self.ui.listViewRawData.currentIndex().row() + 1
 
@@ -694,6 +734,7 @@ class MyWindow(QtWidgets.QMainWindow):
 
         self.ui.model = QtGui.QStandardItemModel()
         self.ui.listViewRawData.setModel(self.ui.model)
+        self.ui.model.removeRows(0, self.ui.model.rowCount())
 
         item2select = None
         counter = 0
@@ -706,8 +747,16 @@ class MyWindow(QtWidgets.QMainWindow):
                 item2select = item
             if (counter == select_row_num) and (item2select is None):
                 item2select = item
-        else:
-            if item2select is None:
+
+        if item2select is None:
+            # Не выбран элемент.
+            if p_passed_no_name and counter != 0:
+            # Ни какой элемент не был передан в функцию для выбора.
+            # То есть это случай когда исчез последний элемент
+            # и количество строк стало меньше, а значит надо
+            # выбрать тот что стал последним.
+                item2select = self.ui.model.item(counter - 1)
+            else:
                 item2select = self.ui.model.item(0)
 
         self.ui.listViewRawData.setCurrentIndex(self.ui.model.indexFromItem(item2select))

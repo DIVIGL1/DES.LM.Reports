@@ -7,8 +7,6 @@ import platform
 import hashlib
 import subprocess
 
-from PyQt5 import QtWidgets
-
 import myconstants
 
 
@@ -115,12 +113,19 @@ def open_download_dir():
     open_dir_in_explore(get_download_dir())
 
 
+def open_user_files_dir():
+    from mytablefuncs import get_parameter_value
+    user_files_path = get_parameter_value(myconstants.USER_PARAMETERS_SECTION_NAME)
+    user_files_path = user_files_path.replace("/", "\\")
+    open_dir_in_explore(user_files_path)
+
+
 def open_dir_in_explore(dir_path):
     os.system(f"explorer.exe {dir_path}")
 
 
 def test_create_dir(dir_path):
-    ''' Проверка на существование и создание директории. '''
+    # Проверка на существование и создание директории.
     if not os.path.isdir(dir_path):
         # Если её не существуем, то попробуем создать
         os.mkdir(dir_path)
@@ -233,10 +238,12 @@ def is_admin():
     hash_string = hashlib.blake2s(hash_string.encode(encoding = "utf-8"), digest_size=5).hexdigest()
     hash_file = os.path.join(user_files_path, hash_string)
 
-    return(os.path.isfile(hash_file))
+    return os.path.isfile(hash_file)
+
 
 def open_file_in_application(file_name):
     subprocess.Popen(file_name, shell=True)
+
 
 if __name__ == "__main__":
     print(get_files_list("RawData", "", ".xlsx"))

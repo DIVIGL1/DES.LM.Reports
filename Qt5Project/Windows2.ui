@@ -642,6 +642,8 @@
      <string>Данные</string>
     </property>
     <addaction name="OpenDownLoads"/>
+    <addaction name="OpenUserFilesFolder"/>
+    <addaction name="separator"/>
     <addaction name="GetLastFileFromDownLoads"/>
     <addaction name="separator"/>
     <addaction name="MoveRawFile2Archive"/>
@@ -902,6 +904,11 @@
   <action name="EMailsSwitcher">
    <property name="text">
     <string>Отключить пользовательский список</string>
+   </property>
+  </action>
+  <action name="OpenUserFilesFolder">
+   <property name="text">
+    <string>Открыть папку с пользовательскими файлами</string>
    </property>
   </action>
  </widget>
