@@ -123,9 +123,6 @@ class MyExcel:
                 self.report_parameters.parent.reporter.show_timer()
 
         self.oexcel.DisplayAlerts = self.save_DisplayAlerts
-        
-        # Не нашёл другого места, где кнопки должны быть разблокированы.
-        self.report_parameters.parent.mainwindow.ui.enable_buttons()
 
     def hide_and_delete_rows_and_columns(self):
         for curr_sheet_name in self.get_sheets_list():
