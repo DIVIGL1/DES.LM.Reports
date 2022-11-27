@@ -367,10 +367,13 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.listViewRawData.doubleClicked.connect(self.on_dblclick_raw_data)
 
         self.pushButtonOpenLastReport.clicked.connect(self.on_click_open_last_report)
-        self.status_text = ""
-        self.previous_status_text = ""
         self.comminucate = Communicate()
         self.comminucate.updateStatusText.connect(self.update_status)
+
+        self.status_text = ""
+        self.previous_status_text = ""
+        self.set_status("> " + myconstants.PARAMETER_WAITING_USER_ACTION)
+        self.statusBar.showMessage(myconstants.PARAMETER_WAITING_USER_ACTION)
 
     def update_user_files_menus(self):
         # Расположение пользовательских файлов:

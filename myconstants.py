@@ -319,6 +319,8 @@ PARAMETER_DEFAULT_VALUE_TOP_AND_BOTTOM_BOXES = [10, 10]
 
 PARAMETER_TIMES_TO_PRESS_F12 = 3
 
+PARAMETER_WAITING_USER_ACTION = "Ожидание действий пользователя"
+
 NO_CONTRACT_TYPES = ["А", "S", "В", "И", "Н"]
 NO_PORTFOLIO_TYPES = ["А", "S", "В", "И", "Н"]
 NO_CONTRACT_TEXT = "Не предусмотрен"

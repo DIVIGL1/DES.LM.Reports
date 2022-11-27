@@ -15,7 +15,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowModality(QtCore.Qt.ApplicationModal)
-        MainWindow.resize(816, 674)
+        MainWindow.resize(816, 685)
         MainWindow.setAcceptDrops(True)
         MainWindow.setStatusTip("")
         MainWindow.setWhatsThis("")
@@ -325,6 +325,9 @@ class Ui_MainWindow(object):
         self.EMailsSelector = QtWidgets.QMenu(self.EditSettingsFiles)
         self.EMailsSelector.setObjectName("EMailsSelector")
         MainWindow.setMenuBar(self.menuBar)
+        self.statusBar = QtWidgets.QStatusBar(MainWindow)
+        self.statusBar.setObjectName("statusBar")
+        MainWindow.setStatusBar(self.statusBar)
         self.CreateReport = QtWidgets.QAction(MainWindow)
         self.CreateReport.setObjectName("CreateReport")
         self.action_4 = QtWidgets.QAction(MainWindow)
