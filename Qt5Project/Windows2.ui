@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>816</width>
-    <height>674</height>
+    <height>685</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -705,6 +705,7 @@
    <addaction name="DataMenu"/>
    <addaction name="EditSettingsFiles"/>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="CreateReport">
    <property name="text">
     <string>Сформировать новый отчёт на основе выделенного шаблона</string>
