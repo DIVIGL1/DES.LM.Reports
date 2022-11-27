@@ -368,7 +368,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
         self.pushButtonOpenLastReport.clicked.connect(self.on_click_open_last_report)
         self.comminucate = Communicate()
-        self.comminucate.updateStatusText.connect(self.update_status)
+        self.comminucate.updateStatusText.connect(self.update_log_box_text)
 
         self.status_text = ""
         self.previous_status_text = ""
@@ -658,7 +658,10 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             for one_pad in self.edit_pads_dict["Parameters4user"]:
                 one_pad.setEnabled(True)
 
-    def update_status(self):
+    def set_status_bar_text(self, text, sec=5):
+        self.statusBar.showMessage(text, sec * 1000)
+
+    def update_log_box_text(self):
         self.plainTextEdit.setPlainText(self.status_text)
     
     def add_text_to_log_box(self, status_text):
@@ -722,8 +725,8 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.VerticalSplitter.splitterMoved.connect(self.save_coordinates)
         self.ui.HorisontalSplitter.splitterMoved.connect(self.save_coordinates)
 
-    def set_status_bar_text(self, text, sec):
-        self.ui.statusBar.showMessage(text, sec * 1000)
+    def set_status_bar_text(self, text, sec=5):
+        self.ui.set_status_bar_text(text, sec=5)
 
     def add_text_to_log_box(self, text):
         self.ui.add_text_to_log_box(text)
