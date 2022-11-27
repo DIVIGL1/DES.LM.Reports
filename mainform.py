@@ -433,35 +433,39 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
     def menu_action(self, action_type, p1="", p2=""):
         if action_type == "CreateReport":
+            self.set_status_bar_text("Выбрана функция формирования отчёта")
             self.on_click_do_it()
             return
         if action_type == "OpenLastReport":
+            self.set_status_bar_text("Выбрана функция открытия последнего сформированного отчёта")
             self.on_click_open_last_report()
             return
         if action_type == "OpenSavedReportsFolder":
+            self.set_status_bar_text("Выбрана функция директории с сохранёнными отчётами")
             section_path = os.path.join(get_home_dir(), get_parameter_value(myconstants.REPORTS_PREPARED_SECTION_NAME))
             open_dir_in_explore(section_path)
             return
         if action_type == "MoveRawFile2Archive":
+            self.set_status_bar_text("Выбрана функция переноса выделенного файла в архив")
             self.move_selected_raw_file_2_archive()
             return
         if action_type == "WaitFileAndCreateReport":
+            self.set_status_bar_text("... ждём новый файл в папке загрузка, после чего он будет скопирован и будет запущено формирование отчёта ...")
             self.parent.parent.waiting_file_4_report = True
             return
 
-        if action_type == "UCostsSelector":
-            print("UCostsSelector")
-            return
-
         if action_type == "OpenDownLoads":
+            self.set_status_bar_text("Выбрана функция открытия директории 'Загрузки'")
             open_download_dir()
             return
 
         if action_type == "OpenUserFilesFolder":
+            self.set_status_bar_text("Выбрана функция открытия директории с пользовательскими файлами")
             open_user_files_dir()
             return
 
         if action_type == "GetLastFileFromDownLoads":
+            self.set_status_bar_text("Выбрана функция копирования последнего файла Excel из директории 'Загрузки'")
             raw_file = get_later_raw_file()
             if raw_file is None:
                 return
@@ -470,9 +474,11 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             return
 
         if action_type == "EditReportForm":
+            self.set_status_bar_text("Выбрана функция редактирования выделенного шаблона отчёта")
             self.open_report_form()
             return
         if action_type == "EditRawFile":
+            self.set_status_bar_text("Выбрана функция редактирования выделенного файла с данными")
             self.open_raw_file()
             return
 
@@ -486,6 +492,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             user_file_locked = os.path.isfile(user_excluded_file_path)
 
             if user_file_exist:
+                self.set_status_bar_text("Выбрана функция, исключающая пользовательский файл с данными из обработки")
                 # У нас существует основной файл и его надо переименовать в "заблокированный"
                 # Наличие в это же время "заблокированного" файла нас не интересует.
                 try:
@@ -495,6 +502,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                     self.add_text_to_log_box("Не удалось отключить пользовательский файл.")
                     self.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
             elif user_file_locked:
+                self.set_status_bar_text("Выбрана функция, позволяющая использовать пользовательский файл в обработке")
                 # У нас НЕ существует основного файла, но существует "заблокированный".
                 # Переименуем его.
                 try:
@@ -507,6 +515,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             return
 
         if action_type == "OpenExcel":
+            self.set_status_bar_text("Выбрана функция редактирования одного из файла настроек")
             if p1 == "":
                 section = ""
             elif p1 == "UserParameters":
@@ -535,6 +544,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             return
 
         if action_type == "Exit":
+            self.set_status_bar_text("Выбрано прекращение работы программы")
             self.parent.close()
 
         print(action_type)
@@ -882,7 +892,7 @@ class MyWindow(QtWidgets.QMainWindow):
             QtWidgets.QMainWindow.closeEvent(self, e)
         else:
             e.ignore()
-
+            self.set_status_bar_text("Отказ от закрытия программы")
 
 if __name__ == "__main__":
     pass
