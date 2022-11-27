@@ -100,7 +100,7 @@ def load_parameter_table(tablename):
 
 def load_raw_data(raw_file, p_virtual_FTE, ui_handle):
     # Загружаем сырые данные
-    ui_handle.set_status("Начинаем загрузку и обработку исходных данных.")
+    ui_handle.add_text_to_log_box("Начинаем загрузку и обработку исходных данных.")
     df = None
     df_raw = open_and_test_raw_struct(raw_file)
     if type(df_raw) == str:
@@ -113,11 +113,11 @@ def load_raw_data(raw_file, p_virtual_FTE, ui_handle):
                 os.path.join(os.getcwd(), get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)),
                 myconstants.VIRTUAL_FTE_FILE_NAME)
         if not os.path.isfile(virtual_fte_file):
-            ui_handle.set_status("")
-            ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
-            ui_handle.set_status("Не обнаружен файл с искусственными FTE.")
-            ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
-            ui_handle.set_status("")
+            ui_handle.add_text_to_log_box("")
+            ui_handle.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+            ui_handle.add_text_to_log_box("Не обнаружен файл с искусственными FTE.")
+            ui_handle.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+            ui_handle.add_text_to_log_box("")
             df = df_raw
         else:
             df_virtual = open_and_test_raw_struct(virtual_fte_file, short_text=True)
@@ -136,7 +136,7 @@ def load_raw_data(raw_file, p_virtual_FTE, ui_handle):
     else:
         df = df_raw
 
-    ui_handle.set_status("Удаляем 'na'. Переименовываем столбцы и удаляем лишние.")
+    ui_handle.add_text_to_log_box("Удаляем 'na'. Переименовываем столбцы и удаляем лишние.")
     df.dropna(how='all', inplace=True)
     df.rename(columns=myconstants.RAW_DATA_COLUMNS, inplace=True)
     exist_drop_columns_list = list(set(myconstants.RAW_DATA_DROP_COLUMNS) & set(df.dtypes.keys()))
@@ -273,59 +273,59 @@ def prepare_data(
 ):
     data_df = load_raw_data(raw_file_name, p_virtual_FTE, ui_handle)
     if type(data_df) == str:
-        ui_handle.set_status(data_df)
+        ui_handle.add_text_to_log_box(data_df)
         return None
     month_hours_df = load_parameter_table(myconstants.MONTH_WORKING_HOURS_TABLE)
     if type(month_hours_df) == str:
-        ui_handle.set_status(month_hours_df)
+        ui_handle.add_text_to_log_box(month_hours_df)
         return None
     divisions_names_df = load_parameter_table(myconstants.DIVISIONS_NAMES_TABLE)
     if type(divisions_names_df) == str:
-        ui_handle.set_status(divisions_names_df)
+        ui_handle.add_text_to_log_box(divisions_names_df)
         return None
     fns_names_df = load_parameter_table(myconstants.FNS_NAMES_TABLE)
     if type(fns_names_df) == str:
-        ui_handle.set_status(fns_names_df)
+        ui_handle.add_text_to_log_box(fns_names_df)
         return None
     p_fns_subst_df = load_parameter_table(myconstants.P_FN_SUBST_TABLE)
     if type(p_fns_subst_df) == str:
-        ui_handle.set_status(p_fns_subst_df)
+        ui_handle.add_text_to_log_box(p_fns_subst_df)
         return None
     projects_sub_types_df = load_parameter_table(myconstants.PROJECTS_SUB_TYPES_TABLE)
     if type(projects_sub_types_df) == str:
-        ui_handle.set_status(projects_sub_types_df)
+        ui_handle.add_text_to_log_box(projects_sub_types_df)
         return None
     projects_types_descr_df = load_parameter_table(myconstants.PROJECTS_TYPES_DESCR)
     if type(projects_types_descr_df) == str:
-        ui_handle.set_status(projects_types_descr_df)
+        ui_handle.add_text_to_log_box(projects_types_descr_df)
         return None
     projects_sub_types_descr_df = load_parameter_table(myconstants.PROJECTS_SUB_TYPES_DESCR)
     if type(projects_sub_types_descr_df) == str:
-        ui_handle.set_status(projects_sub_types_descr_df)
+        ui_handle.add_text_to_log_box(projects_sub_types_descr_df)
         return None
     costs_df = load_parameter_table(myconstants.COSTS_TABLE)
     if type(costs_df) == str:
-        ui_handle.set_status(costs_df)
+        ui_handle.add_text_to_log_box(costs_df)
         return None
     emails_df = load_parameter_table(myconstants.EMAILS_TABLE)
     if type(emails_df) == str:
-        ui_handle.set_status(emails_df)
+        ui_handle.add_text_to_log_box(emails_df)
         return None
     vip_df = load_parameter_table(myconstants.VIP_TABLE)
     if type(vip_df) == str:
-        ui_handle.set_status(vip_df)
+        ui_handle.add_text_to_log_box(vip_df)
         return None
     portfolio_df = load_parameter_table(myconstants.PORTFEL_TABLE)
     if type(portfolio_df) == str:
-        ui_handle.set_status(portfolio_df)
+        ui_handle.add_text_to_log_box(portfolio_df)
         return None
     is_dog_name_df = load_parameter_table(myconstants.ISDOGNAME_TABLE)
     if type(is_dog_name_df) == str:
-        ui_handle.set_status(is_dog_name_df)
+        ui_handle.add_text_to_log_box(is_dog_name_df)
         return None
     projects_list_add_info = load_parameter_table(myconstants.PROJECTS_LIST_ADD_INFO)
     if type(projects_list_add_info) == str:
-        ui_handle.set_status(projects_list_add_info)
+        ui_handle.add_text_to_log_box(projects_list_add_info)
         return None
 
     if ui_handle.checkBoxOnlyProjectsWithAdd.isChecked():
@@ -348,43 +348,43 @@ def prepare_data(
     projects_list_add_info.rename(columns = myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST, inplace = True)
     projects_list_add_info.fillna(0.00, inplace = True)
 
-    ui_handle.set_status(f"Загружены таблицы с параметрами (всего строк 'сырых' данных: {data_df.shape[0]})")
+    ui_handle.add_text_to_log_box(f"Загружены таблицы с параметрами (всего строк 'сырых' данных: {data_df.shape[0]})")
     if data_df.shape[0] == 0:
-        ui_handle.set_status("")
-        ui_handle.set_status("")
-        ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
-        ui_handle.set_status("В данных нет ни одной строки!")
-        ui_handle.set_status("Сформировать отчёт невозможно!")
-        ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
+        ui_handle.add_text_to_log_box("")
+        ui_handle.add_text_to_log_box("")
+        ui_handle.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+        ui_handle.add_text_to_log_box("В данных нет ни одной строки!")
+        ui_handle.add_text_to_log_box("Сформировать отчёт невозможно!")
+        ui_handle.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
         return None
     for column_name in set(data_df.dtypes.keys()) - set(myconstants.DONT_REPLACE_ENTER):
         if data_df.dtypes[column_name] == type(str):
             data_df[column_name] = data_df[column_name].str.replace("\n", "")
             data_df[column_name] = data_df[column_name].str.strip()
-    ui_handle.set_status(f"Удалены переносы строк (всего строк обработанных данных: {data_df.shape[0]})")
+    ui_handle.add_text_to_log_box(f"Удалены переносы строк (всего строк обработанных данных: {data_df.shape[0]})")
 
     data_df["ShortProject"] = data_df["Project"].str[:5]
     projects_list_add_info["Project4AddInfo"] = projects_list_add_info["Project4AddInfo"].str[:5]
 
     data_df["FDate"] = data_df["FDate"].apply(lambda param: udata_2_date(param))
-    ui_handle.set_status(f"Обновлён формат данных даты первого дня месяца (всего строк обработанных данных: {data_df.shape[0]})")
+    ui_handle.add_text_to_log_box(f"Обновлён формат данных даты первого дня месяца (всего строк обработанных данных: {data_df.shape[0]})")
 
     data_df['Northern'].replace(myconstants.BOOLEAN_VALUES_SUBST, inplace=True)
     data_df = data_df.merge(month_hours_df, left_on="FDate", right_on="FirstDate", how="inner")
-    ui_handle.set_status(f"Проведено объединение с таблицей с рабочими часами (всего строк обработанных данных: {data_df.shape[0]})")
+    ui_handle.add_text_to_log_box(f"Проведено объединение с таблицей с рабочими часами (всего строк обработанных данных: {data_df.shape[0]})")
     if data_df.shape[0] == 0:
-        ui_handle.set_status("")
-        ui_handle.set_status("")
-        ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
-        ui_handle.set_status("В данных нет ни одной строки!")
-        ui_handle.set_status("Сформировать отчёт невозможно!")
-        ui_handle.set_status(myconstants.TEXT_LINES_SEPARATOR)
+        ui_handle.add_text_to_log_box("")
+        ui_handle.add_text_to_log_box("")
+        ui_handle.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+        ui_handle.add_text_to_log_box("В данных нет ни одной строки!")
+        ui_handle.add_text_to_log_box("Сформировать отчёт невозможно!")
+        ui_handle.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
         return None
     data_df["FDate"] = data_df["FDate"].dt.strftime('%Y_%m')
     
     data_df["SumUserFHours"] = data_df.groupby(["User", "FDate"])["FactHours"].transform("sum")
 
-    ui_handle.set_status("... начинаем пересчет фактических часов в FTE.")
+    ui_handle.add_text_to_log_box("... начинаем пересчет фактических часов в FTE.")
     data_df["PlanFTE"] = data_df["PlanFTE"].fillna(0)
     # Получим не округлённый FTE
     data_df["FactFTEUnRounded"] = \
@@ -433,12 +433,12 @@ def prepare_data(
     data_df["HourTo1FTE_Math"] = \
         data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: x[1] / max(x[0], 1), axis=1)
 
-    ui_handle.set_status(f"Добавлена доп информация по проектам.")
+    ui_handle.add_text_to_log_box(f"Добавлена доп информация по проектам.")
 
     if ui_handle.checkBoxOnlyProjectsWithAdd.isChecked():
         data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how="inner")
         if data_df.shape[0] == 0:
-            ui_handle.set_status(
+            ui_handle.add_text_to_log_box(
                 f"\n\n\n" +
                 f"{myconstants.TEXT_LINES_SEPARATOR}\n" +
                 f"В результирующей таблице нет данных.\n" +
@@ -456,11 +456,11 @@ def prepare_data(
 
     if p_delete_without_fact:
         data_df = data_df[data_df["FactFTE"] != 0]
-        ui_handle.set_status("Удалены строки без данных о факте.")
-        ui_handle.set_status(f"Пересчитано (всего строк обработанных данных: {data_df.shape[0]})")
+        ui_handle.add_text_to_log_box("Удалены строки без данных о факте.")
+        ui_handle.add_text_to_log_box(f"Пересчитано (всего строк обработанных данных: {data_df.shape[0]})")
 
         if data_df.shape[0] == 0:
-            ui_handle.set_status(
+            ui_handle.add_text_to_log_box(
                 f"\n\n\n" +
                 f"{myconstants.TEXT_LINES_SEPARATOR}\n" +
                 f"В результирующей таблице нет данных.\n" +
@@ -471,16 +471,16 @@ def prepare_data(
             return None
 
     data_df = data_df.merge(divisions_names_df, left_on="DivisionRaw", right_on="FullDivisionName", how="left")
-    ui_handle.set_status(f"Выполнено объединение с таблицей с подразделениями (всего строк обработанных данных: {data_df.shape[0]})")
-    ui_handle.set_status("... ищем пустые и восстанавливаем.")
+    ui_handle.add_text_to_log_box(f"Выполнено объединение с таблицей с подразделениями (всего строк обработанных данных: {data_df.shape[0]})")
+    ui_handle.add_text_to_log_box("... ищем пустые и восстанавливаем.")
     data_df["Division"] = data_df[["ShortDivisionName", "DivisionRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
-    ui_handle.set_status(f"Все подразделения заполнены (всего строк обработанных данных: {data_df.shape[0]})")
+    ui_handle.add_text_to_log_box(f"Все подразделения заполнены (всего строк обработанных данных: {data_df.shape[0]})")
 
     data_df = data_df.merge(p_fns_subst_df, left_on="Project", right_on="ProjectNum", how="left")
     data_df["FNRaw"] = data_df[["RealFNName", "FNRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
     data_df = data_df.merge(fns_names_df, left_on="FNRaw", right_on="FullFNName", how="left")
     data_df["FN"] = data_df[["ShortFNName", "FNRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
-    ui_handle.set_status(f"Данные объединены с таблицей с ФН (всего строк обработанных данных: {data_df.shape[0]})")
+    ui_handle.add_text_to_log_box(f"Данные объединены с таблицей с ФН (всего строк обработанных данных: {data_df.shape[0]})")
 
     data_df["JustUserName"] = data_df["User"].apply(lambda param: param.replace(myconstants.FIRED_NAME_TEXT, ""))
     if ui_handle.checkBoxSelectUsers.isChecked() and ui_handle.comboBoxSelectUsers.currentText() !="":
@@ -494,7 +494,7 @@ def prepare_data(
         costs_df = costs_df[["CostUserName"] + myconstants.COSTS_DATA_COLUMNS]
         data_df = data_df.merge(costs_df, left_on="JustUserName", right_on="CostUserName", how="inner")
         if data_df.shape[0] == 0:
-            ui_handle.set_status(
+            ui_handle.add_text_to_log_box(
                 f"\n\n\n" +
                 f"{myconstants.TEXT_LINES_SEPARATOR}\n" +
                 f"В результирующей таблице нет данных.\n" +
@@ -504,10 +504,10 @@ def prepare_data(
             )
             return None
         else:
-            ui_handle.set_status(f"Установлен фильтр по людям (всего строк обработанных данных: {data_df.shape[0]})")
+            ui_handle.add_text_to_log_box(f"Установлен фильтр по людям (всего строк обработанных данных: {data_df.shape[0]})")
     else:
         if ui_handle.checkBoxSelectUsers.isChecked():
-            ui_handle.set_status(
+            ui_handle.add_text_to_log_box(
                 f"{myconstants.TEXT_LINES_SEPARATOR}\n" +
                 f"Не выбрана ни одна группа сотрудников.\n" +
                 f"{myconstants.TEXT_LINES_SEPARATOR}"
@@ -530,7 +530,7 @@ def prepare_data(
             lambda param: "S" if param[0].find(myconstants.FACT_IS_PLAN_MARKER) >= 0 else param[1], axis=1)
 
     data_df = data_df.merge(projects_types_descr_df, left_on="ProjectType", right_on="ProjectTypeName", how="left")
-    ui_handle.set_status(f"Уточнены типы проектов (всего строк обработанных данных: {data_df.shape[0]})")
+    ui_handle.add_text_to_log_box(f"Уточнены типы проектов (всего строк обработанных данных: {data_df.shape[0]})")
 
     data_df = data_df.merge(projects_sub_types_df, left_on="Project", right_on="ProjectName", how="left")
     data_df["ProjectSubType"] = \
@@ -566,7 +566,7 @@ def prepare_data(
     if p_delete_not_prod_units:
         data_df = data_df[data_df["pNotProductUnit"] != 1]
 
-    ui_handle.set_status(f"... и типы ПОДпроектов (всего строк обработанных данных: {data_df.shape[0]})")
+    ui_handle.add_text_to_log_box(f"... и типы ПОДпроектов (всего строк обработанных данных: {data_df.shape[0]})")
 
     if p_delete_vacation:
         vacancy_text = myconstants.VACANCY_NAME_TEXT
@@ -576,10 +576,10 @@ def prepare_data(
                 lambda param: vacancy_text if param.replace(" ", "").lower()[:len(vacancy_text)] == vacancy_text else param)
         
         data_df = data_df[data_df["User"] != vacancy_text]
-        ui_handle.set_status(f"Удалены вакансии (всего строк обработанных данных: {data_df.shape[0]})")
+        ui_handle.add_text_to_log_box(f"Удалены вакансии (всего строк обработанных данных: {data_df.shape[0]})")
     
     add_combine_columns(data_df)
 
-    ui_handle.set_status(f"Добавлены производные столбцы (конкатенация) (всего строк данных: {data_df.shape[0]})")
+    ui_handle.add_text_to_log_box(f"Добавлены производные столбцы (конкатенация) (всего строк данных: {data_df.shape[0]})")
     
     return data_df[myconstants.RESULT_DATA_COLUMNS]

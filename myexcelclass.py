@@ -24,36 +24,36 @@ class MyExcel:
     def test_structure(self):
         ui_handle = self.report_parameters.parent.mainwindow.ui
         if myconstants.RAW_DATA_SHEET_NAME not in self.get_sheets_list():
-            ui_handle.set_status("")
-            ui_handle.set_status("")
-            ui_handle.set_status("[Ошибка в структуре отчета]")
-            ui_handle.set_status("")
-            ui_handle.set_status("В файле для выбранной формы отчёта отсутствует необходимый лист для данных.")
-            ui_handle.set_status("Формирование отчёта не возможно.")
+            ui_handle.add_text_to_log_box("")
+            ui_handle.add_text_to_log_box("")
+            ui_handle.add_text_to_log_box("[Ошибка в структуре отчета]")
+            ui_handle.add_text_to_log_box("")
+            ui_handle.add_text_to_log_box("В файле для выбранной формы отчёта отсутствует необходимый лист для данных.")
+            ui_handle.add_text_to_log_box("Формирование отчёта не возможно.")
 
             return False
         elif myconstants.UNIQE_LISTS_SHEET_NAME not in self.get_sheets_list():
-            ui_handle.set_status("")
-            ui_handle.set_status("")
-            ui_handle.set_status("[Ошибка в структуре отчета]")
-            ui_handle.set_status("")
-            ui_handle.set_status("В файле для выбранной формы отчёта отсутствует необходимый лист для уникальных списков.")
-            ui_handle.set_status("Формирование отчёта не возможно.")
+            ui_handle.add_text_to_log_box("")
+            ui_handle.add_text_to_log_box("")
+            ui_handle.add_text_to_log_box("[Ошибка в структуре отчета]")
+            ui_handle.add_text_to_log_box("")
+            ui_handle.add_text_to_log_box("В файле для выбранной формы отчёта отсутствует необходимый лист для уникальных списков.")
+            ui_handle.add_text_to_log_box("Формирование отчёта не возможно.")
 
             return False
         elif myconstants.SETTINGS_SHEET_NAME not in self.get_sheets_list():
-            ui_handle.set_status("")
-            ui_handle.set_status("")
-            ui_handle.set_status("[Ошибка в структуре отчета]")
-            ui_handle.set_status("")
-            ui_handle.set_status("В файле для выбранной формы отчёта отсутствует необходимый лист c настройками.")
-            ui_handle.set_status("Формирование отчёта не возможно.")
+            ui_handle.add_text_to_log_box("")
+            ui_handle.add_text_to_log_box("")
+            ui_handle.add_text_to_log_box("[Ошибка в структуре отчета]")
+            ui_handle.add_text_to_log_box("")
+            ui_handle.add_text_to_log_box("В файле для выбранной формы отчёта отсутствует необходимый лист c настройками.")
+            ui_handle.add_text_to_log_box("Формирование отчёта не возможно.")
 
             return False
         else:
-            ui_handle.change_last_status_line("Пройдена проверка структуры файла, содержащего форму отчёта.")
+            ui_handle.change_last_log_box_text("Пройдена проверка структуры файла, содержащего форму отчёта.")
 
-        ui_handle.set_status("Файл Excel с формой отчёта подгружен.")
+        ui_handle.add_text_to_log_box("Файл Excel с формой отчёта подгружен.")
         return True
     
     def get_sheets_list(self):
@@ -93,8 +93,8 @@ class MyExcel:
             else:
                 # Отчёт был подготовлен. Закончим его обработку.
                 report_prepared_name = self.report_parameters.report_prepared_name
-                self.report_parameters.parent.mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
-                self.report_parameters.parent.mainwindow.ui.set_status(f"Сохраняем в файл: {myutils.rel_path(report_prepared_name)}")
+                self.report_parameters.parent.mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+                self.report_parameters.parent.mainwindow.add_text_to_log_box(f"Сохраняем в файл: {myutils.rel_path(report_prepared_name)}")
 
                 # -----------------------------------
                 # Произведём пересчёт ячеек иначе, если не сработают формулы
@@ -111,7 +111,7 @@ class MyExcel:
 
                 self.save_report()
 
-                self.report_parameters.parent.mainwindow.ui.set_status("Отчёт сохранён.")
+                self.report_parameters.parent.mainwindow.add_text_to_log_box("Отчёт сохранён.")
                 myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, report_prepared_name)
 
                 if self.report_parameters.p_open_in_excel:

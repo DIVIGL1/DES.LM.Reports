@@ -61,11 +61,11 @@ class handlerDownLoadFolder(FileSystemEventHandler):
         self.waiting_file_4_report = True
 
         new_filename = os.path.splitext(os.path.basename(event.src_path))[0] + myconstants.EXCEL_FILES_ENDS
-        self.parent.mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
-        self.parent.mainwindow.ui.set_status(f"В папке 'Загрузки' появился новый файл: {new_filename}")
+        self.parent.mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+        self.parent.mainwindow.add_text_to_log_box(f"В папке 'Загрузки' появился новый файл: {new_filename}")
         myutils.copy_file_as_drop_process(self.parent.mainwindow, [event.src_path])
-        self.parent.mainwindow.ui.on_click_do_it(p_dont_clear_status=True)
-        self.parent.mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+        self.parent.mainwindow.ui.on_click_do_it(p_dont_clear_log_box=True)
+        self.parent.mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
 
         self.waiting_file_4_report = False
 
@@ -139,10 +139,10 @@ class MyApplication:
                     try:
                         shutil.copyfile(system_file_path, user_file_path)
                     except:
-                        self.mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
-                        self.mainwindow.ui.set_status(
+                        self.mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+                        self.mainwindow.add_text_to_log_box(
                             f"Не удалось создать файл пользовательских настроек: {one_file}")
-                        self.mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+                        self.mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
 
             # Запустим мониторинг папки с пользовательскими данными:
             self.event_handler_use_folder = handlerUserFolder(self)
@@ -151,9 +151,9 @@ class MyApplication:
             self.observer_user_folder.start()
 
         else:
-            self.mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
-            self.mainwindow.ui.set_status("Не удалось создать пользовательскую папку для хранения пользовательских настроек.")
-            self.mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+            self.mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+            self.mainwindow.add_text_to_log_box("Не удалось создать пользовательскую папку для хранения пользовательских настроек.")
+            self.mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
 
         self.mainwindow.ui.lock_unlock_interface_items()
         sys.exit(self.mainwindow.app.exec_())
@@ -183,11 +183,11 @@ class MyReportParameters:
         self.slasterror = ""
         if report_file_name is None:
             self.report_prepared_name = ""
-            self.parent.mainwindow.ui.set_status("Необходимо выбрать отчётную форму.")
+            self.parent.mainwindow.add_text_to_log_box("Необходимо выбрать отчётную форму.")
             return False
         if raw_file_name is None:
             self.report_prepared_name = ""
-            self.parent.mainwindow.ui.set_status("Необходимо выбрать файл, выгруженный из DES.LM для формирования отчёта.")
+            self.parent.mainwindow.add_text_to_log_box("Необходимо выбрать файл, выгруженный из DES.LM для формирования отчёта.")
             return False
 
         # Сохраним параметры для данного отчёта - требуются во время исполнение.

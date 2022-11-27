@@ -47,7 +47,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
         return True
 
-    def on_click_do_it(self, p_dont_clear_status=False):
+    def on_click_do_it(self, p_dont_clear_log_box=False):
         if self.pushButtonDoIt.isEnabled() and self.pushButtonDoIt.isVisible():
             raw_file_name = self.listViewRawData.currentIndex().data()
             report_file_name = self.listView.currentIndex().data()
@@ -60,7 +60,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             save_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT, self.reports_list.index(report_file_name) + 1)
             save_param(myconstants.PARAMETER_SAVED_SELECTED_RAW_FILE, raw_file_name)
 
-            self.parent.parent.reporter.create_report(p_dont_clear_status=p_dont_clear_status)
+            self.parent.parent.reporter.create_report(p_dont_clear_log_box=p_dont_clear_log_box)
 
     def on_dblclick_reports_list(self):
         self.on_click_do_it()
@@ -372,7 +372,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
         self.status_text = ""
         self.previous_status_text = ""
-        self.set_status("> " + myconstants.PARAMETER_WAITING_USER_ACTION)
+        self.add_text_to_log_box("> " + myconstants.PARAMETER_WAITING_USER_ACTION)
         self.statusBar.showMessage(myconstants.PARAMETER_WAITING_USER_ACTION)
 
     def update_user_files_menus(self):
@@ -491,18 +491,18 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 try:
                     os.rename(user_file_path, user_excluded_file_path)
                 except:
-                    self.set_status(myconstants.TEXT_LINES_SEPARATOR)
-                    self.set_status("Не удалось отключить пользовательский файл.")
-                    self.set_status(myconstants.TEXT_LINES_SEPARATOR)
+                    self.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+                    self.add_text_to_log_box("Не удалось отключить пользовательский файл.")
+                    self.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
             elif user_file_locked:
                 # У нас НЕ существует основного файла, но существует "заблокированный".
                 # Переименуем его.
                 try:
                     os.rename(user_excluded_file_path, user_file_path)
                 except:
-                    self.set_status(myconstants.TEXT_LINES_SEPARATOR)
-                    self.set_status("Не удалось подключить пользовательский файл.")
-                    self.set_status(myconstants.TEXT_LINES_SEPARATOR)
+                    self.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+                    self.add_text_to_log_box("Не удалось подключить пользовательский файл.")
+                    self.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
 
             return
 
@@ -541,9 +541,9 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
     def move_selected_raw_file_2_archive(self):
         raw_file_name = self.listViewRawData.currentIndex().data()
-        self.set_status(myconstants.TEXT_LINES_SEPARATOR)
+        self.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
         self.move_one_raw_file_2_archive(raw_file_name)
-        self.set_status(myconstants.TEXT_LINES_SEPARATOR)
+        self.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
 
     def move_one_raw_file_2_archive(self, raw_file_name):
         # Определим пути
@@ -559,9 +559,9 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
         try:
             os.replace(src_archive_file_path, dst_archive_file_path)
-            self.set_status(f"   Файл {raw_file_name} перемещён в архив.")
+            self.add_text_to_log_box(f"   Файл {raw_file_name} перемещён в архив.")
         except:
-            self.set_status(f"   Перемещение файла {raw_file_name} в архив не удалось - возникли ошибки.")
+            self.add_text_to_log_box(f"   Перемещение файла {raw_file_name} в архив не удалось - возникли ошибки.")
 
     def lock_unlock_interface_items(self):
         processing_report = self.parent.parent.reporter.report_creation_process
@@ -661,18 +661,18 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
     def update_status(self):
         self.plainTextEdit.setPlainText(self.status_text)
     
-    def set_status(self, status_text):
+    def add_text_to_log_box(self, status_text):
         start_text_value = self.status_text
         self.previous_status_text = self.status_text
         self.status_text = start_text_value + ("\n" if start_text_value != "" else "") + status_text
         self.comminucate.updateStatusText.emit()
 
-    def change_last_status_line(self, status_text):
+    def change_last_log_box_text(self, status_text):
         start_text_value = self.previous_status_text
         self.status_text = start_text_value + ("\n" if start_text_value != "" else "") + status_text
         self.comminucate.updateStatusText.emit()
 
-    def clear_status(self):
+    def clear_log_box(self):
         self.status_text = ""
         self.previous_status_text = ""
         self.comminucate.updateStatusText.emit()
@@ -721,6 +721,18 @@ class MyWindow(QtWidgets.QMainWindow):
 
         self.ui.VerticalSplitter.splitterMoved.connect(self.save_coordinates)
         self.ui.HorisontalSplitter.splitterMoved.connect(self.save_coordinates)
+
+    def set_status_bar_text(self, text, sec):
+        self.ui.statusBar.showMessage(text, sec * 1000)
+
+    def add_text_to_log_box(self, text):
+        self.ui.add_text_to_log_box(text)
+
+    def change_last_log_box_text(self, text):
+        self.ui.change_last_log_box_text(text)
+
+    def clear_log_box(self):
+        self.ui.clear_log_box()
 
     def refresh_raw_files_list(self, select_row_with_text=""):
         # Получим название текущего элемента:
@@ -783,25 +795,25 @@ class MyWindow(QtWidgets.QMainWindow):
         xls_files = [u.toLocalFile() for u in event.mimeData().urls() if u.toLocalFile()[-5:].lower() == ".xlsx"]
 
         if xls_files or not_xls_files:
-            self.ui.clear_status()
+            self.ui.clear_log_box()
         if not_xls_files:
-            self.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+            self.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
             if len(not_xls_files) == 1:
-                self.ui.set_status("Исключен из обработки:")
-                self.ui.set_status(f"   {not_xls_files[0]}")
+                self.add_text_to_log_box("Исключен из обработки:")
+                self.add_text_to_log_box(f"   {not_xls_files[0]}")
             else:
-                self.ui.set_status("Исключены из обработки:")
+                self.add_text_to_log_box("Исключены из обработки:")
 
                 for num, one_file in enumerate(not_xls_files):
-                    self.ui.set_status(f"   {num + 1}. {one_file}")
+                    self.add_text_to_log_box(f"   {num + 1}. {one_file}")
 
-            self.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+            self.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
 
         if not xls_files:
             pass
         else:
             if not not_xls_files:
-                self.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+                self.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
 
             copy_file_as_drop_process(self, xls_files)
 

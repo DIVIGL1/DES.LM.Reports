@@ -153,23 +153,23 @@ def copy_file_as_drop_process(mainwindow, xls_files):
     raw_section_path = get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)
     counter = 0
 
-    mainwindow.ui.set_status("Обрабатываем Excel файл" + ("ы:" if len(xls_files) > 1 else ":"))
+    mainwindow.add_text_to_log_box("Обрабатываем Excel файл" + ("ы:" if len(xls_files) > 1 else ":"))
     for file_num, one_file_path in enumerate(xls_files):
         if file_num > 0:
-            mainwindow.ui.set_status("")
+            mainwindow.add_text_to_log_box("")
 
         if len(xls_files) == 1:
-            mainwindow.ui.set_status(f"   {one_file_path}")
+            mainwindow.add_text_to_log_box(f"   {one_file_path}")
         else:
-            mainwindow.ui.set_status(f"   {file_num + 1}. {one_file_path}")
+            mainwindow.add_text_to_log_box(f"   {file_num + 1}. {one_file_path}")
         this_file_name = os.path.basename(one_file_path)
 
         if drug_and_drop_type >= 2:
             # Проверим структуру файла:
             ret_value = open_and_test_raw_struct(one_file_path, short_text=True)
             if type(ret_value) == str:
-                mainwindow.ui.set_status("   Структура файла не соответствует требованиям.")
-                mainwindow.ui.set_status("   Копирование отклонено.")
+                mainwindow.add_text_to_log_box("   Структура файла не соответствует требованиям.")
+                mainwindow.add_text_to_log_box("   Копирование отклонено.")
                 continue
 
         if drug_and_drop_type >= 3:
@@ -191,7 +191,7 @@ def copy_file_as_drop_process(mainwindow, xls_files):
                 data_in_file_period = f"{myconstants.MONTHS[start_month]}-{myconstants.MONTHS[end_month]} {report_year}"
             new_filename = f"{creation_str}  ({data_in_file_period}).xlsx"
             if new_filename != this_file_name:
-                mainwindow.ui.set_status(f"   Имя файла меняется на {new_filename}.")
+                mainwindow.add_text_to_log_box(f"   Имя файла меняется на {new_filename}.")
 
         else:
             new_filename = this_file_name
@@ -201,30 +201,30 @@ def copy_file_as_drop_process(mainwindow, xls_files):
             shutil.copy(one_file_path, raw_file_path)
             select_filename = os.path.splitext(os.path.basename(raw_file_path))[0]
             counter += 1
-            mainwindow.ui.set_status("   Файл скопирован.")
+            mainwindow.add_text_to_log_box("   Файл скопирован.")
         except (OSError, shutil.Error):
-            mainwindow.ui.set_status("   Копирование не удалось - возникли ошибки.")
+            mainwindow.add_text_to_log_box("   Копирование не удалось - возникли ошибки.")
             continue
 
         if drug_and_drop_type == 4:
             if this_file_name == new_filename:
                 # Не надо переименовывать файл сам в себя.
-                mainwindow.ui.set_status(
+                mainwindow.add_text_to_log_box(
                     f"   Исходный файл переименовывать не надо, так как он уже имеет нужное имя: {new_filename}.")
             else:
                 new_src_file_path = os.path.join(os.path.dirname(one_file_path), new_filename)
                 try:
                     os.rename(one_file_path, new_src_file_path)
-                    mainwindow.ui.set_status("   Исходный файл так же переименован.")
+                    mainwindow.add_text_to_log_box("   Исходный файл так же переименован.")
                 except (OSError, shutil.Error):
-                    mainwindow.ui.set_status("   Переименование исходного файла не удалось.")
+                    mainwindow.add_text_to_log_box("   Переименование исходного файла не удалось.")
 
     if counter == 1:
         mainwindow.refresh_raw_files_list(select_filename)
     else:
         mainwindow.refresh_raw_files_list()
 
-    mainwindow.ui.set_status(myconstants.TEXT_LINES_SEPARATOR)
+    mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
 
     mainwindow.parent.drag_and_prop_in_process = False
     mainwindow.ui.lock_unlock_interface_items()
