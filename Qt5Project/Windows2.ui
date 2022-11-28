@@ -625,7 +625,10 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="RportMenu">
+   <widget class="QMenu" name="ReportMenu">
+    <property name="statusTip">
+     <string>Меню 'Отчёты'</string>
+    </property>
     <property name="title">
      <string>Отчёты</string>
     </property>
@@ -638,6 +641,9 @@
     <addaction name="Exit"/>
    </widget>
    <widget class="QMenu" name="DataMenu">
+    <property name="statusTip">
+     <string>Меню 'Данные'</string>
+    </property>
     <property name="title">
      <string>Данные</string>
     </property>
@@ -649,10 +655,16 @@
     <addaction name="MoveRawFile2Archive"/>
    </widget>
    <widget class="QMenu" name="EditSettingsFiles">
+    <property name="statusTip">
+     <string>Меню 'Редактирование'</string>
+    </property>
     <property name="title">
      <string>Редактирование</string>
     </property>
     <widget class="QMenu" name="UCostsSelector">
+     <property name="statusTip">
+      <string>Сотрудники и их часовые ставки</string>
+     </property>
      <property name="title">
       <string>Сотрудники и их часовые ставки</string>
      </property>
@@ -701,13 +713,19 @@
     <addaction name="separator"/>
     <addaction name="Settings"/>
    </widget>
-   <addaction name="RportMenu"/>
+   <addaction name="ReportMenu"/>
    <addaction name="DataMenu"/>
    <addaction name="EditSettingsFiles"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="CreateReport">
    <property name="text">
+    <string>Сформировать новый отчёт на основе выделенного шаблона</string>
+   </property>
+   <property name="toolTip">
+    <string>Сформировать новый отчёт на основе выделенного шаблона</string>
+   </property>
+   <property name="statusTip">
     <string>Сформировать новый отчёт на основе выделенного шаблона</string>
    </property>
    <property name="shortcut">
@@ -723,6 +741,9 @@
    <property name="text">
     <string>Шаблон отчёта</string>
    </property>
+   <property name="statusTip">
+    <string>Редактировать шаблон отчёта</string>
+   </property>
    <property name="shortcut">
     <string>Ctrl+F2</string>
    </property>
@@ -731,12 +752,18 @@
    <property name="text">
     <string>Файл с данными</string>
    </property>
+   <property name="statusTip">
+    <string>Редактировать файл с данными</string>
+   </property>
    <property name="shortcut">
     <string>Alt+F2</string>
    </property>
   </action>
   <action name="OpenLastReport">
    <property name="text">
+    <string>Открыть последний сформированный отчёт</string>
+   </property>
+   <property name="statusTip">
     <string>Открыть последний сформированный отчёт</string>
    </property>
    <property name="shortcut">
@@ -747,9 +774,15 @@
    <property name="text">
     <string>Выход</string>
    </property>
+   <property name="statusTip">
+    <string>Завершить работу с программой</string>
+   </property>
   </action>
   <action name="OpenDownLoads">
    <property name="text">
+    <string>Открыть пользовательскую папку 'Загрузки'</string>
+   </property>
+   <property name="statusTip">
     <string>Открыть пользовательскую папку 'Загрузки'</string>
    </property>
    <property name="shortcut">
@@ -768,6 +801,9 @@
    <property name="text">
     <string>Получить последний xlsx-файл из папки 'Загрузки'</string>
    </property>
+   <property name="statusTip">
+    <string>Получить последний xlsx-файл из папки 'Загрузки'</string>
+   </property>
    <property name="shortcut">
     <string>Ctrl+Shift+F5</string>
    </property>
@@ -779,12 +815,18 @@
    <property name="text">
     <string>Открыть папку с сохранёнными отчётами</string>
    </property>
+   <property name="statusTip">
+    <string>Открыть папку с сохранёнными отчётами</string>
+   </property>
   </action>
   <action name="MoveRawFile2Archive">
    <property name="enabled">
     <bool>false</bool>
    </property>
    <property name="text">
+    <string>Переместить выделенный файл с данными в архив</string>
+   </property>
+   <property name="statusTip">
     <string>Переместить выделенный файл с данными в архив</string>
    </property>
    <property name="shortcut">
@@ -795,45 +837,72 @@
    <property name="text">
     <string>Рабочие часы в месяцах</string>
    </property>
+   <property name="statusTip">
+    <string>Редактировать таблицу с рабочими часами помесячно</string>
+   </property>
   </action>
   <action name="ShortDivisionNames">
    <property name="text">
     <string>Наименования подразделений</string>
+   </property>
+   <property name="statusTip">
+    <string>Редактирование наименований подразделений</string>
    </property>
   </action>
   <action name="ShortFNNames">
    <property name="text">
     <string>Наименования функциональных направлений</string>
    </property>
+   <property name="statusTip">
+    <string>Редактирование наименований функциональных направлений</string>
+   </property>
   </action>
   <action name="FNSusbst">
    <property name="text">
     <string>Подстановки названий функциональных направлений для отдельных проектов</string>
+   </property>
+   <property name="statusTip">
+    <string>Редактирование подстановок названий функциональных направлений для отдельных проектов</string>
    </property>
   </action>
   <action name="ProjectsSubTypes">
    <property name="text">
     <string>Подтипы проектов</string>
    </property>
+   <property name="statusTip">
+    <string>Редактирование подтипов проектов</string>
+   </property>
   </action>
   <action name="ProjectsTypesDescriptions">
    <property name="text">
     <string>Расшифровки типов (букв) проектов</string>
+   </property>
+   <property name="statusTip">
+    <string>Редактирование расшифровки типов (букв) проектов</string>
    </property>
   </action>
   <action name="ProjectsSubTypesDescriptions">
    <property name="text">
     <string>Расшифровки подтипов проектов</string>
    </property>
+   <property name="statusTip">
+    <string>Редактирование расшифровок подтипов проектов</string>
+   </property>
   </action>
   <action name="VIP">
    <property name="text">
+    <string>Список VIP - исключаемые из отчетов</string>
+   </property>
+   <property name="statusTip">
     <string>Список VIP - исключаемые из отчетов</string>
    </property>
   </action>
   <action name="BProg">
    <property name="text">
     <string>Портфели проектов</string>
+   </property>
+   <property name="statusTip">
+    <string>Редактирование портфелей проектов</string>
    </property>
   </action>
   <action name="CrossingIS">
@@ -845,12 +914,18 @@
    <property name="text">
     <string>Файл с общими настройками программы</string>
    </property>
+   <property name="statusTip">
+    <string>Файл с общими настройками программы</string>
+   </property>
   </action>
   <action name="WaitFileAndCreateReport">
    <property name="enabled">
     <bool>false</bool>
    </property>
    <property name="text">
+    <string>Дождаться новый файл в папке 'Загрузки', обработать и сформировать отчёт</string>
+   </property>
+   <property name="statusTip">
     <string>Дождаться новый файл в папке 'Загрузки', обработать и сформировать отчёт</string>
    </property>
    <property name="shortcut">
@@ -866,49 +941,79 @@
    <property name="text">
     <string>Пользовательские</string>
    </property>
+   <property name="statusTip">
+    <string>Сотрудники и часовые ставки - пользовательские настройки</string>
+   </property>
   </action>
   <action name="SystemUCosts">
    <property name="text">
     <string>Общие настройки</string>
+   </property>
+   <property name="statusTip">
+    <string>Сотрудники и часовые ставки - общие настройки программы</string>
    </property>
   </action>
   <action name="UCostsSwitcher">
    <property name="text">
     <string>Отключить пользовательские данные</string>
    </property>
+   <property name="statusTip">
+    <string>Переключение между программными и пользовательскими настройками</string>
+   </property>
   </action>
   <action name="UserProjectsAddInfo">
    <property name="text">
     <string>Пользовательские</string>
+   </property>
+   <property name="statusTip">
+    <string>Дополнительная информация - пользовательские настройки</string>
    </property>
   </action>
   <action name="ProjectsAddInfoSwitcher">
    <property name="text">
     <string>Отключить пользовательские данные</string>
    </property>
+   <property name="statusTip">
+    <string>Переключение между программными и пользовательскими настройками</string>
+   </property>
   </action>
   <action name="SystemProjectsAddInfo">
    <property name="text">
     <string>Общие настройки</string>
+   </property>
+   <property name="statusTip">
+    <string>Дополнительная информация - общие настройки программы</string>
    </property>
   </action>
   <action name="UserEMails">
    <property name="text">
     <string>Пользовательский</string>
    </property>
+   <property name="statusTip">
+    <string>Адреса электронной почты - пользовательские списки</string>
+   </property>
   </action>
   <action name="SystemEMails">
    <property name="text">
     <string>Общий список</string>
+   </property>
+   <property name="statusTip">
+    <string>Адреса электронной почты - общие списки программы</string>
    </property>
   </action>
   <action name="EMailsSwitcher">
    <property name="text">
     <string>Отключить пользовательский список</string>
    </property>
+   <property name="statusTip">
+    <string>Переключение между программными и пользовательскими списками</string>
+   </property>
   </action>
   <action name="OpenUserFilesFolder">
    <property name="text">
+    <string>Открыть папку с пользовательскими файлами</string>
+   </property>
+   <property name="statusTip">
     <string>Открыть папку с пользовательскими файлами</string>
    </property>
   </action>
