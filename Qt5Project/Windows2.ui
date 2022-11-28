@@ -923,10 +923,10 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Дождаться новый файл в папке 'Загрузки', обработать и сформировать отчёт</string>
+    <string>Сформировать отчёт с новым файлом, который появится в папке 'Загрузки'</string>
    </property>
    <property name="statusTip">
-    <string>Дождаться новый файл в папке 'Загрузки', обработать и сформировать отчёт</string>
+    <string>Сформировать отчёт с новым файлом, который появится в папке 'Загрузки'</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+F3</string>
