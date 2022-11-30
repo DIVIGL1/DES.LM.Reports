@@ -48,7 +48,9 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         return True
 
     def on_click_do_it(self, p_dont_clear_log_box=False):
-        if self.pushButtonDoIt.isEnabled() and self.pushButtonDoIt.isVisible():
+        if (self.pushButtonDoIt.isEnabled() and self.pushButtonDoIt.isVisible()) or self.parent.parent.waiting_file_4_report:
+            if self.parent.parent.waiting_file_4_report:
+                self.set_status_bar_text("... начинаем формировать отчёт на основании скопированного файла")
             raw_file_name = self.listViewRawData.currentIndex().data()
             report_file_name = self.listView.currentIndex().data()
 
@@ -279,6 +281,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.OpenUserFilesFolder.triggered.connect(lambda: self.menu_action("OpenUserFilesFolder"))
         self.GetLastFileFromDownLoads.triggered.connect(lambda: self.menu_action("GetLastFileFromDownLoads"))
         self.MoveRawFile2Archive.triggered.connect(lambda: self.menu_action("MoveRawFile2Archive"))
+        self.WaitFileAndCreateReport.triggered.connect(lambda: self.menu_action("WaitFileAndCreateReport"))
 
         self.EditReportForm.triggered.connect(lambda: self.menu_action("EditReportForm"))
         self.EditRawFile.triggered.connect(lambda: self.menu_action("EditRawFile"))
@@ -306,11 +309,11 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.UCostsSwitcher.triggered.connect(lambda: self.menu_action("ExcludeUserFile", "UserParameters", "UCosts"))
         self.ProjectsAddInfoSwitcher.triggered.connect(lambda: self.menu_action("ExcludeUserFile", "UserParameters", "ProjectsAddInfo"))
         self.EMailsSwitcher.triggered.connect(lambda: self.menu_action("ExcludeUserFile", "UserParameters", "EMails"))
-        #----------------------------------
+        # ----------------------------------
         self.Settings.triggered.connect(lambda: self.menu_action("OpenExcel", "", "Settings"))
-        #----------------------------------
+        # ----------------------------------
         self.Exit.triggered.connect(lambda: self.menu_action("Exit"))
-        #----------------------------------
+        # ----------------------------------
         self.SystemUCosts.setCheckable(True)
         self.UserUCosts.setCheckable(True)
         self.SystemProjectsAddInfo.setCheckable(True)
@@ -450,8 +453,9 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             self.move_selected_raw_file_2_archive()
             return
         if action_type == "WaitFileAndCreateReport":
-            self.set_status_bar_text("... ждём новый файл в папке загрузка, после чего он будет скопирован и будет запущено формирование отчёта ...")
+            self.set_status_bar_text("... ждём новый файл в папке загрузка, после чего он будет скопирован и будет запущено формирование отчёта ...", 0)
             self.parent.parent.waiting_file_4_report = True
+            self.lock_unlock_interface_items()
             return
 
         if action_type == "OpenDownLoads":
@@ -576,6 +580,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
     def lock_unlock_interface_items(self):
         processing_report = self.parent.parent.reporter.report_creation_process
         processing_drag_and_drop = self.parent.parent.drag_and_prop_in_process
+        processing_waiting_and_report = self.parent.parent.waiting_file_4_report
 
         is_user_admin = is_admin()
 
@@ -586,53 +591,22 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             self.pushButtonOpenLastReport.setVisible(False)
             self.pushButtonOpenLastReport.setEnabled(False)
 
-        if not processing_report and processing_drag_and_drop:
+        if processing_waiting_and_report:
             self.parent.setAcceptDrops(False)
             # ----------------------------------------------------------
-            # Drag&Drop!
+            # Ждём файл и формируем отчёт!
             # ----------------------------------------------------------
-            # Ситуация когда не надо запускать отчёты и выполнять
-            # другие функции с выводом на экран. Но можно открывать папки,
-            # редактировать файлы, перемещать файлы в архив.
+            # Ситуация когда не надо ничего делать - просто ждём
             # В этом случае запрещено:
             self.pushButtonDoIt.setEnabled(False)
-
             self.CreateReport.setEnabled(False)
-            self.Exit.setEnabled(False)
+
             self.WaitFileAndCreateReport.setEnabled(False)
             self.GetLastFileFromDownLoads.setEnabled(False)
             self.MoveRawFile2Archive.setEnabled(False)
 
-            # В этом случае разрешено:
-            self.OpenLastReport.setEnabled(True)
-            self.OpenSavedReportsFolder.setEnabled(False)
-            self.OpenDownLoads.setEnabled(True)
-
-            for one_pad in self.edit_pads_dict["Parameters4admin"]:
-                one_pad.setEnabled(is_user_admin)
-
-            for one_pad in self.edit_pads_dict["Parameters4user"]:
-                one_pad.setEnabled(True)
-
-        elif processing_report and not processing_drag_and_drop:
-            self.parent.setAcceptDrops(False)
-            # ----------------------------------------------------------
-            # Формируется отчёт!
-            # ----------------------------------------------------------
-            # Ситуация когда не надо выполнять Drag&Drop,
-            # не надо формировать другие отчёты,
-            # Не надо ничего редактировать через Excel
-            # и не надо перемещать файлы в архив.
-            # Но можно открывать папки.
-            # В этом случае запрещено:
-            self.pushButtonDoIt.setEnabled(False)
-            self.pushButtonOpenLastReport.setEnabled(False)
-
-            self.CreateReport.setEnabled(False)
             self.OpenLastReport.setEnabled(False)
-            self.WaitFileAndCreateReport.setEnabled(False)
-            self.GetLastFileFromDownLoads.setEnabled(False)
-            self.MoveRawFile2Archive.setEnabled(False)
+            self.OpenSavedReportsFolder.setEnabled(False)
 
             for one_pad in self.edit_pads_dict["Parameters4admin"]:
                 one_pad.setEnabled(False)
@@ -641,32 +615,91 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 one_pad.setEnabled(False)
 
             # В этом случае разрешено:
-            self.Exit.setEnabled(True)
             self.OpenDownLoads.setEnabled(True)
-            self.OpenSavedReportsFolder.setEnabled(False)
-
-        elif not processing_report and not processing_drag_and_drop:
-            self.parent.setAcceptDrops(True)
-            # ----------------------------------------------------------
-            # НЕ формируется отчёт и НЕ выполняется Drag&Drop...
-            # ----------------------------------------------------------
-            # В этом случае разрешено всё:
-            self.pushButtonDoIt.setEnabled(True)
-
-            self.CreateReport.setEnabled(True)
-            self.OpenLastReport.setEnabled(True)
             self.Exit.setEnabled(True)
-            self.OpenDownLoads.setEnabled(True)
-            self.OpenSavedReportsFolder.setEnabled(True)
-            self.WaitFileAndCreateReport.setEnabled(True)
-            self.GetLastFileFromDownLoads.setEnabled(True)
-            self.MoveRawFile2Archive.setEnabled(True)
 
-            for one_pad in self.edit_pads_dict["Parameters4admin"]:
-                one_pad.setEnabled(is_user_admin)
+        else:
+            if not processing_report and processing_drag_and_drop:
+                self.parent.setAcceptDrops(False)
+                # ----------------------------------------------------------
+                # Drag&Drop!
+                # ----------------------------------------------------------
+                # Ситуация когда не надо запускать отчёты и выполнять
+                # другие функции с выводом на экран. Но можно открывать папки,
+                # редактировать файлы, перемещать файлы в архив.
+                # В этом случае запрещено:
+                self.pushButtonDoIt.setEnabled(False)
 
-            for one_pad in self.edit_pads_dict["Parameters4user"]:
-                one_pad.setEnabled(True)
+                self.CreateReport.setEnabled(False)
+                self.Exit.setEnabled(False)
+                self.WaitFileAndCreateReport.setEnabled(False)
+                self.GetLastFileFromDownLoads.setEnabled(False)
+                self.MoveRawFile2Archive.setEnabled(False)
+
+                # В этом случае разрешено:
+                self.OpenLastReport.setEnabled(True)
+                self.OpenSavedReportsFolder.setEnabled(False)
+                self.OpenDownLoads.setEnabled(True)
+
+                for one_pad in self.edit_pads_dict["Parameters4admin"]:
+                    one_pad.setEnabled(is_user_admin)
+
+                for one_pad in self.edit_pads_dict["Parameters4user"]:
+                    one_pad.setEnabled(True)
+
+            elif processing_report and not processing_drag_and_drop:
+                self.parent.setAcceptDrops(False)
+                # ----------------------------------------------------------
+                # Формируется отчёт!
+                # ----------------------------------------------------------
+                # Ситуация когда не надо выполнять Drag&Drop,
+                # не надо формировать другие отчёты,
+                # Не надо ничего редактировать через Excel
+                # и не надо перемещать файлы в архив.
+                # Но можно открывать папки.
+                # В этом случае запрещено:
+                self.pushButtonDoIt.setEnabled(False)
+                self.pushButtonOpenLastReport.setEnabled(False)
+
+                self.CreateReport.setEnabled(False)
+                self.OpenLastReport.setEnabled(False)
+                self.WaitFileAndCreateReport.setEnabled(False)
+                self.GetLastFileFromDownLoads.setEnabled(False)
+                self.MoveRawFile2Archive.setEnabled(False)
+
+                for one_pad in self.edit_pads_dict["Parameters4admin"]:
+                    one_pad.setEnabled(False)
+
+                for one_pad in self.edit_pads_dict["Parameters4user"]:
+                    one_pad.setEnabled(False)
+
+                # В этом случае разрешено:
+                self.Exit.setEnabled(True)
+                self.OpenDownLoads.setEnabled(True)
+                self.OpenSavedReportsFolder.setEnabled(False)
+
+            elif not processing_report and not processing_drag_and_drop:
+                self.parent.setAcceptDrops(True)
+                # ----------------------------------------------------------
+                # НЕ формируется отчёт и НЕ выполняется Drag&Drop...
+                # ----------------------------------------------------------
+                # В этом случае разрешено всё:
+                self.pushButtonDoIt.setEnabled(True)
+
+                self.CreateReport.setEnabled(True)
+                self.OpenLastReport.setEnabled(True)
+                self.Exit.setEnabled(True)
+                self.OpenDownLoads.setEnabled(True)
+                self.OpenSavedReportsFolder.setEnabled(True)
+                self.WaitFileAndCreateReport.setEnabled(True)
+                self.GetLastFileFromDownLoads.setEnabled(True)
+                self.MoveRawFile2Archive.setEnabled(True)
+
+                for one_pad in self.edit_pads_dict["Parameters4admin"]:
+                    one_pad.setEnabled(is_user_admin)
+
+                for one_pad in self.edit_pads_dict["Parameters4user"]:
+                    one_pad.setEnabled(True)
 
     def set_status_bar_text(self, text, sec=5):
         self.statusBar.showMessage(text, sec * 1000)

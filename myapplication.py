@@ -44,6 +44,9 @@ class handlerDownLoadFolder(FileSystemEventHandler):
         self.parent = parent
     
     def on_created(self, event):
+        if not self.parent.waiting_file_4_report:
+            # Пока не появится соответствующий флаг, ничего не делаем
+            return
         if self.parent.drag_and_prop_in_process:
             # При выполнении Drag&Drop не обрабатывать
             return
@@ -58,16 +61,16 @@ class handlerDownLoadFolder(FileSystemEventHandler):
             # Обрабатываем только файл Excel
             return
 
-        self.waiting_file_4_report = True
-
         new_filename = os.path.splitext(os.path.basename(event.src_path))[0] + myconstants.EXCEL_FILES_ENDS
+        self.parent.mainwindow.set_status_bar_text("... обрабатываем файл обнаруженный в папке 'Загрузки'")
         self.parent.mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
         self.parent.mainwindow.add_text_to_log_box(f"В папке 'Загрузки' появился новый файл: {new_filename}")
         myutils.copy_file_as_drop_process(self.parent.mainwindow, [event.src_path])
         self.parent.mainwindow.ui.on_click_do_it(p_dont_clear_log_box=True)
         self.parent.mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
 
-        self.waiting_file_4_report = False
+        self.parent.waiting_file_4_report = False
+        self.parent.mainwindow.ui.lock_unlock_interface_items()
 
 
 class handlerUserFolder(FileSystemEventHandler):
