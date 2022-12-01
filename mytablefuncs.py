@@ -346,7 +346,7 @@ def prepare_data(
             projects_list_add_info = projects_list_add_info[projects_list_add_info[grp_clmn_name] == group_value]
 
     projects_list_add_info.rename(columns = myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST, inplace = True)
-    projects_list_add_info.fillna(0.00, inplace = True)
+    projects_list_add_info.fillna(0.00, inplace=True)
 
     ui_handle.add_text_to_log_box(f"Загружены таблицы с параметрами (всего строк 'сырых' данных: {data_df.shape[0]})")
     if data_df.shape[0] == 0:
@@ -478,6 +478,7 @@ def prepare_data(
 
     data_df = data_df.merge(p_fns_subst_df, left_on="Project", right_on="ProjectNum", how="left")
     data_df["FNRaw"] = data_df[["RealFNName", "FNRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
+    data_df["FNRaw"] = data_df["FNRaw"].fillna("")
     data_df = data_df.merge(fns_names_df, left_on="FNRaw", right_on="FullFNName", how="left")
     data_df["FN"] = data_df[["ShortFNName", "FNRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
     ui_handle.add_text_to_log_box(f"Данные объединены с таблицей с ФН (всего строк обработанных данных: {data_df.shape[0]})")
