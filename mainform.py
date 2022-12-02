@@ -285,6 +285,8 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
         self.EditReportForm.triggered.connect(lambda: self.menu_action("EditReportForm"))
         self.EditRawFile.triggered.connect(lambda: self.menu_action("EditRawFile"))
+
+        self.StopWaitingFile.triggered.connect(lambda: self.menu_action("StopWaitingFile"))
         #----------------------------------
         section = myconstants.PARAMETERS_SECTION_NAME
         self.WHours.triggered.connect(lambda: self.menu_action("OpenExcel", section, "WHours"))
@@ -452,9 +454,15 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             self.set_status_bar_text("Выбрана функция переноса выделенного файла в архив")
             self.move_selected_raw_file_2_archive()
             return
+
         if action_type == "WaitFileAndCreateReport":
-            self.set_status_bar_text("... ждём новый файл в папке загрузка, после чего он будет скопирован и будет запущено формирование отчёта ...", 0)
+            self.set_status_bar_text("... ждём новый файл в папке 'Загрузка', после чего он будет скопирован и будет запущено формирование отчёта ...", 0)
             self.parent.parent.waiting_file_4_report = True
+            self.lock_unlock_interface_items()
+            return
+        if action_type == "StopWaitingFile":
+            self.set_status_bar_text("Прекращено ожидание файла с данными в папке 'Загрузка'")
+            self.parent.parent.waiting_file_4_report = False
             self.lock_unlock_interface_items()
             return
 
@@ -596,7 +604,8 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             # ----------------------------------------------------------
             # Ждём файл и формируем отчёт!
             # ----------------------------------------------------------
-            # Ситуация когда не надо ничего делать - просто ждём
+            # Ситуация когда не надо ничего делать - просто ждём.
+
             # В этом случае запрещено:
             self.pushButtonDoIt.setEnabled(False)
             self.CreateReport.setEnabled(False)
@@ -606,7 +615,6 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             self.MoveRawFile2Archive.setEnabled(False)
 
             self.OpenLastReport.setEnabled(False)
-            self.OpenSavedReportsFolder.setEnabled(False)
 
             for one_pad in self.edit_pads_dict["Parameters4admin"]:
                 one_pad.setEnabled(False)
@@ -615,7 +623,12 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 one_pad.setEnabled(False)
 
             # В этом случае разрешено:
+            self.OpenSavedReportsFolder.setEnabled(True)
             self.OpenDownLoads.setEnabled(True)
+
+            self.Automation.setEnabled(True)
+            self.StopWaitingFile.setEnabled(True)
+
             self.Exit.setEnabled(True)
 
         else:
@@ -627,6 +640,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 # Ситуация когда не надо запускать отчёты и выполнять
                 # другие функции с выводом на экран. Но можно открывать папки,
                 # редактировать файлы, перемещать файлы в архив.
+
                 # В этом случае запрещено:
                 self.pushButtonDoIt.setEnabled(False)
 
@@ -634,11 +648,12 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 self.Exit.setEnabled(False)
                 self.WaitFileAndCreateReport.setEnabled(False)
                 self.GetLastFileFromDownLoads.setEnabled(False)
-                self.MoveRawFile2Archive.setEnabled(False)
+
+                self.Automation.setEnabled(False)
 
                 # В этом случае разрешено:
                 self.OpenLastReport.setEnabled(True)
-                self.OpenSavedReportsFolder.setEnabled(False)
+                self.OpenSavedReportsFolder.setEnabled(True)
                 self.OpenDownLoads.setEnabled(True)
 
                 for one_pad in self.edit_pads_dict["Parameters4admin"]:
@@ -657,6 +672,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 # Не надо ничего редактировать через Excel
                 # и не надо перемещать файлы в архив.
                 # Но можно открывать папки.
+
                 # В этом случае запрещено:
                 self.pushButtonDoIt.setEnabled(False)
                 self.pushButtonOpenLastReport.setEnabled(False)
@@ -665,7 +681,8 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 self.OpenLastReport.setEnabled(False)
                 self.WaitFileAndCreateReport.setEnabled(False)
                 self.GetLastFileFromDownLoads.setEnabled(False)
-                self.MoveRawFile2Archive.setEnabled(False)
+
+                self.Automation.setEnabled(False)
 
                 for one_pad in self.edit_pads_dict["Parameters4admin"]:
                     one_pad.setEnabled(False)
@@ -676,7 +693,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 # В этом случае разрешено:
                 self.Exit.setEnabled(True)
                 self.OpenDownLoads.setEnabled(True)
-                self.OpenSavedReportsFolder.setEnabled(False)
+                self.OpenSavedReportsFolder.setEnabled(True)
 
             elif not processing_report and not processing_drag_and_drop:
                 self.parent.setAcceptDrops(True)
@@ -687,13 +704,16 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 self.pushButtonDoIt.setEnabled(True)
 
                 self.CreateReport.setEnabled(True)
-                self.OpenLastReport.setEnabled(True)
+                self.OpenLastReport.setEnabled(self.pushButtonOpenLastReport.isEnabled() and self.pushButtonOpenLastReport.isVisible())
                 self.Exit.setEnabled(True)
                 self.OpenDownLoads.setEnabled(True)
                 self.OpenSavedReportsFolder.setEnabled(True)
                 self.WaitFileAndCreateReport.setEnabled(True)
                 self.GetLastFileFromDownLoads.setEnabled(True)
+
+                self.Automation.setEnabled(True)
                 self.MoveRawFile2Archive.setEnabled(True)
+                self.StopWaitingFile.setEnabled(False)
 
                 for one_pad in self.edit_pads_dict["Parameters4admin"]:
                     one_pad.setEnabled(is_user_admin)

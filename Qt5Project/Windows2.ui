@@ -57,6 +57,13 @@
     <property name="bottomMargin">
      <number>5</number>
     </property>
+    <item row="0" column="0">
+     <widget class="Line" name="line_4">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
     <item row="1" column="0">
      <widget class="QSplitter" name="VerticalSplitter">
       <property name="orientation">
@@ -607,13 +614,6 @@
       </widget>
      </widget>
     </item>
-    <item row="0" column="0">
-     <widget class="Line" name="line_4">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -634,9 +634,6 @@
     </property>
     <addaction name="CreateReport"/>
     <addaction name="OpenLastReport"/>
-    <addaction name="OpenSavedReportsFolder"/>
-    <addaction name="separator"/>
-    <addaction name="WaitFileAndCreateReport"/>
     <addaction name="separator"/>
     <addaction name="Exit"/>
    </widget>
@@ -647,9 +644,6 @@
     <property name="title">
      <string>Данные</string>
     </property>
-    <addaction name="OpenDownLoads"/>
-    <addaction name="OpenUserFilesFolder"/>
-    <addaction name="separator"/>
     <addaction name="GetLastFileFromDownLoads"/>
     <addaction name="separator"/>
     <addaction name="MoveRawFile2Archive"/>
@@ -699,12 +693,12 @@
     <addaction name="separator"/>
     <addaction name="ShortDivisionNames"/>
     <addaction name="ShortFNNames"/>
-    <addaction name="FNSusbst"/>
     <addaction name="separator"/>
     <addaction name="ProjectsSubTypes"/>
     <addaction name="ProjectsTypesDescriptions"/>
     <addaction name="ProjectsSubTypesDescriptions"/>
     <addaction name="BProg"/>
+    <addaction name="FNSusbst"/>
     <addaction name="ProjectsAddInfoSelector"/>
     <addaction name="separator"/>
     <addaction name="EMailsSelector"/>
@@ -713,9 +707,29 @@
     <addaction name="separator"/>
     <addaction name="Settings"/>
    </widget>
+   <widget class="QMenu" name="Automation">
+    <property name="title">
+     <string>Автоматизация</string>
+    </property>
+    <addaction name="WaitFileAndCreateReport"/>
+    <addaction name="StopWaitingFile"/>
+   </widget>
+   <widget class="QMenu" name="menu">
+    <property name="statusTip">
+     <string>Меню 'Папки'</string>
+    </property>
+    <property name="title">
+     <string>Папки</string>
+    </property>
+    <addaction name="OpenDownLoads"/>
+    <addaction name="OpenUserFilesFolder"/>
+    <addaction name="OpenSavedReportsFolder"/>
+   </widget>
    <addaction name="ReportMenu"/>
    <addaction name="DataMenu"/>
+   <addaction name="Automation"/>
    <addaction name="EditSettingsFiles"/>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="CreateReport">
@@ -745,7 +759,7 @@
     <string>Редактировать шаблон отчёта</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+F2</string>
+    <string>Alt+T</string>
    </property>
   </action>
   <action name="EditRawFile">
@@ -756,7 +770,7 @@
     <string>Редактировать файл с данными</string>
    </property>
    <property name="shortcut">
-    <string>Alt+F2</string>
+    <string>Alt+D</string>
    </property>
   </action>
   <action name="OpenLastReport">
@@ -780,13 +794,13 @@
   </action>
   <action name="OpenDownLoads">
    <property name="text">
-    <string>Открыть пользовательскую папку 'Загрузки'</string>
+    <string>Загрузки</string>
    </property>
    <property name="statusTip">
     <string>Открыть пользовательскую папку 'Загрузки'</string>
    </property>
    <property name="shortcut">
-    <string>F5</string>
+    <string>Ctrl+1</string>
    </property>
   </action>
   <action name="action_5">
@@ -805,23 +819,26 @@
     <string>Получить последний xlsx-файл из папки 'Загрузки'</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+F5</string>
+    <string>F5</string>
    </property>
   </action>
   <action name="OpenSavedReportsFolder">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
-    <string>Открыть папку с сохранёнными отчётами</string>
+    <string>Сохранённые отчёты</string>
    </property>
    <property name="statusTip">
     <string>Открыть папку с сохранёнными отчётами</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+3</string>
+   </property>
   </action>
   <action name="MoveRawFile2Archive">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Переместить выделенный файл с данными в архив</string>
@@ -830,7 +847,7 @@
     <string>Переместить выделенный файл с данными в архив</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+A</string>
+    <string>F6</string>
    </property>
   </action>
   <action name="WHours">
@@ -859,10 +876,10 @@
   </action>
   <action name="FNSusbst">
    <property name="text">
-    <string>Подстановки названий функциональных направлений для отдельных проектов</string>
+    <string>Принадлежность проектов функциональным направлениям</string>
    </property>
    <property name="statusTip">
-    <string>Редактирование подстановок названий функциональных направлений для отдельных проектов</string>
+    <string>Редактирование подстановок функциональных направлений для отдельных проектов</string>
    </property>
   </action>
   <action name="ProjectsSubTypes">
@@ -920,16 +937,16 @@
   </action>
   <action name="WaitFileAndCreateReport">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
-    <string>Сформировать отчёт с новым файлом, который появится в папке 'Загрузки'</string>
+    <string>Дождаться новый файл в папке 'Загрузки' и сформировать отчёт</string>
    </property>
    <property name="statusTip">
     <string>Сформировать отчёт с новым файлом, который появится в папке 'Загрузки'</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+F3</string>
+    <string>F7</string>
    </property>
   </action>
   <action name="action">
@@ -1011,10 +1028,32 @@
   </action>
   <action name="OpenUserFilesFolder">
    <property name="text">
-    <string>Открыть папку с пользовательскими файлами</string>
+    <string>Пользовательске файлы</string>
    </property>
    <property name="statusTip">
     <string>Открыть папку с пользовательскими файлами</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+2</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="text">
+    <string>Автоматизация</string>
+   </property>
+  </action>
+  <action name="StopWaitingFile">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Прекратить ожидание</string>
+   </property>
+   <property name="statusTip">
+    <string>Прекратить ожидание файла в папке 'Загрузки'</string>
+   </property>
+   <property name="shortcut">
+    <string>F7</string>
    </property>
   </action>
  </widget>
