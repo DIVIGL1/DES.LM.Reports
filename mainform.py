@@ -50,7 +50,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
     def on_click_do_it(self, p_dont_clear_log_box=False):
         if (self.pushButtonDoIt.isEnabled() and self.pushButtonDoIt.isVisible()) or self.parent.parent.waiting_file_4_report:
             if self.parent.parent.waiting_file_4_report:
-                self.set_status_bar_text("... начинаем формировать отчёт на основании скопированного файла")
+                self.set_status_bar_text("... начинаем формировать отчёт на основании скопированного файла", 10)
             raw_file_name = self.listViewRawData.currentIndex().data()
             report_file_name = self.listView.currentIndex().data()
 

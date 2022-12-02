@@ -42,8 +42,8 @@ class handlerRawFolder(FileSystemEventHandler):
 class handlerDownLoadFolder(FileSystemEventHandler):
     def __init__(self, parent):
         self.parent = parent
-    
-    def on_created(self, event):
+
+    def process_downloaded_file(self, event):
         if not self.parent.waiting_file_4_report:
             # Пока не появится соответствующий флаг, ничего не делаем
             return
@@ -71,6 +71,12 @@ class handlerDownLoadFolder(FileSystemEventHandler):
 
         self.parent.waiting_file_4_report = False
         self.parent.mainwindow.ui.lock_unlock_interface_items()
+
+    def on_modified(self, event):
+        self.process_downloaded_file(event)
+
+    def on_created(self, event):
+        self.process_downloaded_file(event)
 
 
 class handlerUserFolder(FileSystemEventHandler):
