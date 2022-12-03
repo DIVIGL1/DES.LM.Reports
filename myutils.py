@@ -251,11 +251,10 @@ def open_file_in_application(file_name):
 
 
 def get_resource_path(relative):
-
     if hasattr(sys, '_MEIPASS'):
-        return os.path.join(sys._MEIPASS, "Picts", relative)
+        return os.path.join(sys._MEIPASS, relative)
     else:
-        return os.path.join(os.path.abspath("."), "Picts", relative)
+        return os.path.join(os.path.abspath("."), relative)
 
 if __name__ == "__main__":
     print(get_files_list("RawData", "", ".xlsx"))
