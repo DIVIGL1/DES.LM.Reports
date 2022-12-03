@@ -1,5 +1,6 @@
 import datetime
 import os
+import sys
 import pickle
 import shutil
 import threading
@@ -243,6 +244,13 @@ def is_admin():
 def open_file_in_application(file_name):
     subprocess.Popen(file_name, shell=True)
 
+
+def get_resource_path(relative):
+
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative)
+    else:
+        return os.path.join(os.path.abspath("."), relative)
 
 if __name__ == "__main__":
     print(get_files_list("RawData", "", ".xlsx"))

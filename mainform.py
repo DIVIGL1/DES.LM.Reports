@@ -16,9 +16,8 @@ from myutils import (
     copy_file_as_drop_process, is_admin,
     open_dir_in_explore, get_home_dir,
     open_file_in_application, test_create_dir,
-    open_user_files_dir
+    open_user_files_dir, get_resource_path
 )
-
 
 class animatedGifLabel(QtWidgets.QLabel):
     def __init__(self):
@@ -27,7 +26,7 @@ class animatedGifLabel(QtWidgets.QLabel):
         self.setGeometry(QtCore.QRect(0, 0, size, size))
         # self.setText("animatedGifLabel")
 
-        self.movie = QtGui.QMovie("radar.gif")
+        self.movie = QtGui.QMovie(get_resource_path("radar.gif"))
         self.movie.setScaledSize(QtCore.QSize(18, 18))
         self.setMovie(self.movie)
         self.stop()
