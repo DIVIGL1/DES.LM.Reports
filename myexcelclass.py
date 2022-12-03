@@ -93,6 +93,7 @@ class MyExcel:
             else:
                 # Отчёт был подготовлен. Закончим его обработку.
                 report_prepared_name = self.report_parameters.report_prepared_name
+                self.report_parameters.parent.mainwindow.set_status_bar_text("Отчёт сформирован. Идёт сохранение...")
                 self.report_parameters.parent.mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
                 self.report_parameters.parent.mainwindow.add_text_to_log_box(f"Сохраняем в файл: {myutils.rel_path(report_prepared_name)}")
 
