@@ -137,7 +137,7 @@ def test_create_dir(dir_path):
 
 
 @thread
-def copy_file_as_drop_process(mainwindow, xls_files):
+def copy_file_as_drop_process(mainwindow, xls_files, create_report=False):
     from mytablefuncs import open_and_test_raw_struct, get_parameter_value
     # Установим флаг, который используется при проверке изменений на диске (FileSystemEventHandler),
     # а так же на основании него определяется какие элементы доступны в интерфейсе.
@@ -225,10 +225,15 @@ def copy_file_as_drop_process(mainwindow, xls_files):
     else:
         mainwindow.refresh_raw_files_list()
 
-    mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+    if not mainwindow.parent.report_automation_in_process:
+        mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
 
     mainwindow.parent.drag_and_prop_in_process = False
-    mainwindow.ui.lock_unlock_interface_items()
+    if create_report:
+        mainwindow.set_status_bar_text("... начинаем формировать отчёт на основании скопированного файла", 3)
+        mainwindow.parent.reporter.create_report(p_dont_clear_log_box=True)
+    else:
+        mainwindow.ui.lock_unlock_interface_items()
 
 
 def is_admin():

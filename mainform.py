@@ -20,14 +20,14 @@ from myutils import (
 )
 
 class animatedGifLabel(QtWidgets.QLabel):
-    def __init__(self):
+    def __init__(self, pict_name):
         super().__init__()
         size = 10
         self.setGeometry(QtCore.QRect(0, 0, size, size))
         # self.setText("animatedGifLabel")
 
-        self.movie = QtGui.QMovie(get_resource_path("radar.gif"))
-        self.movie.setScaledSize(QtCore.QSize(18, 18))
+        self.movie = QtGui.QMovie(get_resource_path(pict_name + ".gif"))
+        self.movie.setScaledSize(QtCore.QSize(15, 15))
         self.setMovie(self.movie)
         self.stop()
 
@@ -67,28 +67,14 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
         return True
 
-    def on_click_do_it(self, p_dont_clear_log_box=False):
-        if (self.pushButtonDoIt.isEnabled() and self.pushButtonDoIt.isVisible()) or self.parent.parent.waiting_file_4_report:
-            if self.parent.parent.waiting_file_4_report:
-                self.set_status_bar_text("... начинаем формировать отчёт на основании скопированного файла", 10)
-            raw_file_name = self.listViewRawData.currentIndex().data()
-            report_file_name = self.listViewReports.currentIndex().data()
-
-            if not self.parent.parent.report_parameters.is_all_parameters_exist():
-                return
-
-            self.resize_text_and_button()
-            self.parent.parent.report_parameters.update(raw_file_name, report_file_name)
-            save_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT, self.reports_list.index(report_file_name) + 1)
-            save_param(myconstants.PARAMETER_SAVED_SELECTED_RAW_FILE, raw_file_name)
-
-            self.parent.parent.reporter.create_report(p_dont_clear_log_box=p_dont_clear_log_box)
-
     def on_dblclick_reports_list(self):
         self.on_click_do_it()
 
     def on_dblclick_raw_data(self):
         self.on_click_do_it()
+
+    def on_click_do_it(self, p_dont_clear_log_box=False):
+        self.parent.parent.reporter.create_report(p_dont_clear_log_box=p_dont_clear_log_box)
 
     def on_click_open_last_report(self):
         if self.pushButtonOpenLastReport.isEnabled() and self.pushButtonOpenLastReport.isVisible():
@@ -504,14 +490,17 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             return
 
         if action_type == "WaitFileAndCreateReport":
-            self.parent.clock.start()
             self.set_status_bar_text("... ждём новый файл в папке 'Загрузка', после чего он будет скопирован и будет запущено формирование отчёта ...", 0)
+            self.clear_log_box()
+            self.add_text_to_log_box("Программа переведена в режим ожидания нового файла в папке 'Загрузка'.")
+            self.add_text_to_log_box("Он будет скопирован и на его основании запустится формирование отчёта.")
             self.parent.parent.waiting_file_4_report = True
             self.lock_unlock_interface_items()
             return
         if action_type == "StopWaitingFile":
-            self.parent.clock.stop()
             self.set_status_bar_text("Прекращено ожидание файла с данными в папке 'Загрузка'")
+            self.clear_log_box()
+            self.add_text_to_log_box("> " + myconstants.PARAMETER_WAITING_USER_ACTION)
             self.parent.parent.waiting_file_4_report = False
             self.lock_unlock_interface_items()
             return
@@ -636,35 +625,35 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             self.add_text_to_log_box(f"   Перемещение файла {raw_file_name} в архив не удалось - возникли ошибки.")
 
     def lock_unlock_interface_items(self):
-        processing_report = self.parent.parent.reporter.report_creation_process
+        processing_report = self.parent.parent.reporter.report_creation_in_process
         processing_drag_and_drop = self.parent.parent.drag_and_prop_in_process
-        processing_waiting_and_report = self.parent.parent.waiting_file_4_report
+        waiting_file_4_report = self.parent.parent.waiting_file_4_report
+        report_automation_in_process = self.parent.parent.report_automation_in_process
+        last_report_exists = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "") != ""
 
         is_user_admin = is_admin()
 
-        if load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, ""):
-            self.pushButtonOpenLastReport.setVisible(True)
-            self.pushButtonOpenLastReport.setEnabled(True)
-        else:
-            self.pushButtonOpenLastReport.setVisible(False)
-            self.pushButtonOpenLastReport.setEnabled(False)
-
-        if processing_waiting_and_report:
+        if waiting_file_4_report or report_automation_in_process:
             self.parent.setAcceptDrops(False)
             # ----------------------------------------------------------
-            # Ждём файл и формируем отчёт!
+            # Ждём файл. ...или запущен автоматический
+            # процесс: копирование файла и формирование отчёта
             # ----------------------------------------------------------
             # Ситуация когда не надо ничего делать - просто ждём.
+
+            self.parent.report_preparation_ag.stop()
+            self.parent.wait_file_ag.start()
 
             # В этом случае запрещено:
             self.pushButtonDoIt.setEnabled(False)
             self.CreateReport.setEnabled(False)
 
-            self.WaitFileAndCreateReport.setEnabled(False)
             self.GetLastFileFromDownLoads.setEnabled(False)
             self.MoveRawFile2Archive.setEnabled(False)
 
             self.OpenLastReport.setEnabled(False)
+
+            self.WaitFileAndCreateReport.setEnabled(False)
 
             for one_pad in self.edit_pads_dict["Parameters4admin"]:
                 one_pad.setEnabled(False)
@@ -676,10 +665,14 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             self.OpenSavedReportsFolder.setEnabled(True)
             self.OpenDownLoads.setEnabled(True)
 
-            self.Automation.setEnabled(True)
-            self.StopWaitingFile.setEnabled(True)
-
             self.Exit.setEnabled(True)
+
+            # А вот это разрешено только если НЕ запущен автомат:
+            self.StopWaitingFile.setEnabled(True and not report_automation_in_process)
+
+            # Кнопка не доступна, но видна если есть последний отчёт
+            self.pushButtonOpenLastReport.setEnabled(False)
+            self.pushButtonOpenLastReport.setVisible(last_report_exists)
 
         else:
             if not processing_report and processing_drag_and_drop:
@@ -696,7 +689,6 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
                 self.CreateReport.setEnabled(False)
                 self.Exit.setEnabled(False)
-                self.WaitFileAndCreateReport.setEnabled(False)
                 self.GetLastFileFromDownLoads.setEnabled(False)
 
                 self.Automation.setEnabled(False)
@@ -712,6 +704,10 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 for one_pad in self.edit_pads_dict["Parameters4user"]:
                     one_pad.setEnabled(True)
 
+                # Кнопка доступна только если есть отчёт
+                self.pushButtonOpenLastReport.setEnabled(last_report_exists)
+                self.pushButtonOpenLastReport.setVisible(last_report_exists)
+
             elif processing_report and not processing_drag_and_drop:
                 self.parent.setAcceptDrops(False)
                 # ----------------------------------------------------------
@@ -723,13 +719,15 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 # и не надо перемещать файлы в архив.
                 # Но можно открывать папки.
 
+                self.parent.wait_file_ag.stop()
+                self.parent.report_preparation_ag.start()
+
                 # В этом случае запрещено:
                 self.pushButtonDoIt.setEnabled(False)
                 self.pushButtonOpenLastReport.setEnabled(False)
 
                 self.CreateReport.setEnabled(False)
                 self.OpenLastReport.setEnabled(False)
-                self.WaitFileAndCreateReport.setEnabled(False)
                 self.GetLastFileFromDownLoads.setEnabled(False)
 
                 self.Automation.setEnabled(False)
@@ -745,11 +743,19 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 self.OpenDownLoads.setEnabled(True)
                 self.OpenSavedReportsFolder.setEnabled(True)
 
+                # Кнопка не доступна, но видна если есть последний отчёт
+                self.pushButtonOpenLastReport.setEnabled(False)
+                self.pushButtonOpenLastReport.setVisible(last_report_exists)
+
             elif not processing_report and not processing_drag_and_drop:
                 self.parent.setAcceptDrops(True)
                 # ----------------------------------------------------------
                 # НЕ формируется отчёт и НЕ выполняется Drag&Drop...
                 # ----------------------------------------------------------
+
+                self.parent.wait_file_ag.stop()
+                self.parent.report_preparation_ag.stop()
+
                 # В этом случае разрешено всё:
                 self.pushButtonDoIt.setEnabled(True)
 
@@ -770,6 +776,10 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
                 for one_pad in self.edit_pads_dict["Parameters4user"]:
                     one_pad.setEnabled(True)
+
+                # Кнопка доступна и видна только если есть отчёт
+                self.pushButtonOpenLastReport.setEnabled(last_report_exists)
+                self.pushButtonOpenLastReport.setVisible(last_report_exists)
 
     def set_status_bar_text(self, text, sec=5):
         self.statusBar.showMessage(text, sec * 1000)
@@ -838,8 +848,11 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.VerticalSplitter.splitterMoved.connect(self.save_coordinates)
         self.ui.HorisontalSplitter.splitterMoved.connect(self.save_coordinates)
 
-        self.clock = animatedGifLabel()
-        self.ui.statusBar.addPermanentWidget(self.clock)
+        self.wait_file_ag = animatedGifLabel("search")
+        self.ui.statusBar.addPermanentWidget(self.wait_file_ag)
+
+        self.report_preparation_ag = animatedGifLabel("spinner")
+        self.ui.statusBar.addPermanentWidget(self.report_preparation_ag)
 
     def set_status_bar_text(self, text, sec=5):
         self.ui.set_status_bar_text(text, sec=5)
@@ -902,7 +915,7 @@ class MyWindow(QtWidgets.QMainWindow):
             event.ignore()
 
     def dropEvent(self, event):
-        processing_report = self.parent.reporter.report_creation_process
+        processing_report = self.parent.reporter.report_creation_in_process
         processing_drag_and_drop = self.parent.drag_and_prop_in_process
         if processing_report or processing_drag_and_drop:
             # Ничего не делаем в это время.

@@ -44,34 +44,40 @@ class handlerDownLoadFolder(FileSystemEventHandler):
         self.parent = parent
 
     def process_downloaded_file(self, event):
+        if self.parent.report_automation_in_process:
+            # Процесс обработки уже идёт
+            return
+
+        self.parent.report_automation_in_process = True
         if not self.parent.waiting_file_4_report:
             # Пока не появится соответствующий флаг, ничего не делаем
+            self.parent.report_automation_in_process = False
             return
         if self.parent.drag_and_prop_in_process:
             # При выполнении Drag&Drop не обрабатывать
+            self.parent.report_automation_in_process = False
             return
-        if self.parent.reporter.report_creation_process:
+        if self.parent.reporter.report_creation_in_process:
             # При формировании отчёта не обрабатываем:
+            self.parent.report_automation_in_process = False
             return
         if event.is_directory:
             # Обрабатываем только файлы, не папки.
+            self.parent.report_automation_in_process = False
             return
 
         if event.src_path[-len(myconstants.EXCEL_FILES_ENDS):].lower() != myconstants.EXCEL_FILES_ENDS:
             # Обрабатываем только файл Excel
+            self.parent.report_automation_in_process = False
             return
 
         new_filename = os.path.splitext(os.path.basename(event.src_path))[0] + myconstants.EXCEL_FILES_ENDS
-        self.parent.mainwindow.clock.stop()
         self.parent.mainwindow.set_status_bar_text("... обрабатываем файл обнаруженный в папке 'Загрузки'")
         self.parent.mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
         self.parent.mainwindow.add_text_to_log_box(f"В папке 'Загрузки' появился новый файл: {new_filename}")
-        myutils.copy_file_as_drop_process(self.parent.mainwindow, [event.src_path])
-        self.parent.mainwindow.ui.on_click_do_it(p_dont_clear_log_box=True)
-        self.parent.mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
-
         self.parent.waiting_file_4_report = False
-        self.parent.mainwindow.ui.lock_unlock_interface_items()
+        myutils.copy_file_as_drop_process(self.parent.mainwindow, [event.src_path], create_report=True)
+        self.parent.mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
 
     def on_modified(self, event):
         self.process_downloaded_file(event)
@@ -106,6 +112,8 @@ class handlerUserFolder(FileSystemEventHandler):
 class MyApplication:
     drag_and_prop_in_process = False
     waiting_file_4_report = False
+    report_automation_in_process = False
+
     def __init__(self):
         myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
         self.report_parameters = MyReportParameters(self)

@@ -11,7 +11,7 @@ from myexcelclass import MyExcel
 
 
 class reportCreator(object):
-    report_creation_process = False
+    report_creation_in_process = False
     def __init__(self, parent, *args):
         super(reportCreator, self).__init__(*args)
         self.parent = parent
@@ -30,24 +30,43 @@ class reportCreator(object):
         return self.reports_list[num]
     
     def create_report(self, p_dont_clear_log_box=False):
-        if self.parent.report_parameters.report_file_name is None:
-            myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
-            self.parent.mainwindow.add_text_to_log_box("Необходимо выбрать отчётную форму.")
-            return False
-        if self.parent.report_parameters.raw_file_name is None:
-            myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
-            self.parent.mainwindow.add_text_to_log_box("Необходимо выбрать файл, выгруженный из DES.LM для формирования отчёта.")
-            return False
+        ret_value = True
 
-        self.start_timer()
-        if p_dont_clear_log_box:
-            pass
+        if self.report_creation_in_process or self.parent.drag_and_prop_in_process:
+            ret_value = False
         else:
-            self.parent.mainwindow.ui.clear_log_box()
+            if not self.parent.report_parameters.is_all_parameters_exist():
+                ret_value = False
+            else:
+                raw_file_name = self.parent.mainwindow.ui.listViewRawData.currentIndex().data()
+                report_file_name = self.parent.mainwindow.ui.listViewReports.currentIndex().data()
 
-        send_df_2_xls(self.parent.report_parameters)
+                # TODO: Разобраться нужна ли следующая строка
+                self.parent.mainwindow.ui.resize_text_and_button()
 
-        return True
+                self.parent.report_parameters.update(raw_file_name, report_file_name)
+                myutils.save_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT,
+                                   self.reports_list.index(report_file_name) + 1)
+                myutils.save_param(myconstants.PARAMETER_SAVED_SELECTED_RAW_FILE, raw_file_name)
+
+                if self.parent.report_parameters.report_file_name is None:
+                    myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
+                    self.parent.mainwindow.add_text_to_log_box("Необходимо выбрать отчётную форму.")
+                    ret_value = False
+                else:
+                    if self.parent.report_parameters.raw_file_name is None:
+                        myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
+                        self.parent.mainwindow.add_text_to_log_box("Необходимо выбрать файл, выгруженный из DES.LM для формирования отчёта.")
+                        ret_value = False
+                    else:
+                        self.report_creation_in_process = True
+                        self.start_timer()
+                        if not p_dont_clear_log_box:
+                            self.parent.mainwindow.ui.clear_log_box()
+
+                        send_df_2_xls(self.parent.report_parameters)
+
+        return ret_value
 
     def start_timer(self):
         self.start_prog_time = time.time()
@@ -56,13 +75,14 @@ class reportCreator(object):
         end_prog_time = time.time()
         duration_in_seconds = int(end_prog_time - self.start_prog_time)
         self.parent.mainwindow.add_text_to_log_box("Время выполнения: {0:0>2}:{1:0>2}".format(duration_in_seconds // 60, duration_in_seconds % 60))
+        self.parent.mainwindow.set_status_bar_text("Отчёт сформирован и сохранён")
 
 
 @myutils.thread
 def send_df_2_xls(report_parameters):
-    report_parameters.parent.reporter.report_creation_process = True
     ui_handle = report_parameters.parent.mainwindow.ui
     ui_handle.lock_unlock_interface_items()
+    ret_value = None
 
     # ----------------------------------------------------
     # Определим ключевые параметры в переменные,
@@ -146,104 +166,106 @@ def send_df_2_xls(report_parameters):
         ui_handle.add_text_to_log_box(f"{myutils.rel_path(report_prepared_name)}")
         ui_handle.add_text_to_log_box("Формирование отчёта невозможно.")
         myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
-        return False
-
-    pythoncom.CoInitializeEx(0)
-
-    report_df = prepare_data(
-        raw_file_name,
-        p_delete_vip,
-        p_delete_not_prod_units,
-        p_projects_with_add_info,
-        p_delete_without_fact,
-        p_curr_month_half,
-        p_delete_pers_data,
-        p_delete_vacation,
-        p_virtual_FTE,
-        ui_handle
-    )
-    ret_value = None
-    if report_df is None:
         ret_value = False
-    else:
-        ui_handle.add_text_to_log_box(f"Таблица для загрузки полностью подготовлена (всего строк данных: {report_df.shape[0]})")
 
-        oexcel = MyExcel(report_parameters)
-        if oexcel.not_ready:
-            # Что-то пошло не так.
+    if ret_value is None:
+        pythoncom.CoInitializeEx(0)
+
+        report_df = prepare_data(
+            raw_file_name,
+            p_delete_vip,
+            p_delete_not_prod_units,
+            p_projects_with_add_info,
+            p_delete_without_fact,
+            p_curr_month_half,
+            p_delete_pers_data,
+            p_delete_vacation,
+            p_virtual_FTE,
+            ui_handle
+        )
+        if report_df is None:
             ret_value = False
         else:
-            ui_handle.add_text_to_log_box("Начинаем перенос строк в Excel:")
-            data_sheet = oexcel.work_book.Sheets[myconstants.RAW_DATA_SHEET_NAME]
-            ulist_sheet = oexcel.work_book.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME]
+            ui_handle.add_text_to_log_box(f"Таблица для загрузки полностью подготовлена (всего строк данных: {report_df.shape[0]})")
 
-            data_array = report_df.to_numpy()
-            data_sheet.Range(data_sheet.Cells(2, 1), data_sheet.Cells(len(data_array) + 1, len(data_array[0]))).Value = data_array
+            oexcel = MyExcel(report_parameters)
+            if oexcel.not_ready:
+                # Что-то пошло не так.
+                ret_value = False
+            else:
+                ui_handle.add_text_to_log_box("Начинаем перенос строк в Excel:")
+                data_sheet = oexcel.work_book.Sheets[myconstants.RAW_DATA_SHEET_NAME]
+                ulist_sheet = oexcel.work_book.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME]
 
-            ui_handle.add_text_to_log_box("Строки в Excel скопированы.")
-            ui_handle.add_text_to_log_box("Формируем списки с уникальными значениями.")
+                data_array = report_df.to_numpy()
+                data_sheet.Range(data_sheet.Cells(2, 1), data_sheet.Cells(len(data_array) + 1, len(data_array[0]))).Value = data_array
 
-            # Заполним списки уникальными значениями
-            column = 1
-            values_dict = dict()
-            while True:
-                uniq_col_name = ulist_sheet.Cells(1, column).value
-                if (type(uniq_col_name) != str) and (uniq_col_name is not None):
-                    ui_handle.add_text_to_log_box("")
-                    ui_handle.add_text_to_log_box("")
-                    ui_handle.add_text_to_log_box("[Ошибка в структуре отчета]")
-                    ui_handle.add_text_to_log_box("")
-                    ui_handle.add_text_to_log_box("В файле для выбранной формы на листе для уникальных списков в строке 1:1 ")
-                    ui_handle.add_text_to_log_box("в качестве наименований списков должны быть символьные значения.")
-                    ui_handle.add_text_to_log_box("Формирование отчёта остановлено.")
-                    myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
+                ui_handle.add_text_to_log_box("Строки в Excel скопированы.")
+                ui_handle.add_text_to_log_box("Формируем списки с уникальными значениями.")
 
-                    ret_value = False
-                    break
+                # Заполним списки уникальными значениями
+                column = 1
+                values_dict = dict()
+                while True:
+                    uniq_col_name = ulist_sheet.Cells(1, column).value
+                    if (type(uniq_col_name) != str) and (uniq_col_name is not None):
+                        ui_handle.add_text_to_log_box("")
+                        ui_handle.add_text_to_log_box("")
+                        ui_handle.add_text_to_log_box("[Ошибка в структуре отчета]")
+                        ui_handle.add_text_to_log_box("")
+                        ui_handle.add_text_to_log_box("В файле для выбранной формы на листе для уникальных списков в строке 1:1 ")
+                        ui_handle.add_text_to_log_box("в качестве наименований списков должны быть символьные значения.")
+                        ui_handle.add_text_to_log_box("Формирование отчёта остановлено.")
+                        myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
 
-                if uniq_col_name is not None and uniq_col_name.replace(" ", "") != "":
-                    values_dict[uniq_col_name] = column
-                    column += 1
-                else:
-                    break
+                        ret_value = False
+                        break
 
-            if ret_value is None:
-                full_column_list = report_df.columns.tolist()
-                columns_4_unique_list = [column for column in values_dict.keys() if column in full_column_list]
-                if len(columns_4_unique_list) == 0:
-                    ui_handle.add_text_to_log_box("")
-                    ui_handle.add_text_to_log_box("")
-                    ui_handle.add_text_to_log_box("[Ошибка в структуре отчета]")
-                    ui_handle.add_text_to_log_box("")
-                    ui_handle.add_text_to_log_box("В файле для выбранной формы на листе для уникальных списков")
-                    ui_handle.add_text_to_log_box("не указан требуемый уникальный список из возможного перечня.")
-                    ui_handle.add_text_to_log_box("Формирование отчёта остановлено.")
-                    myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
-
-                    ret_value = False
-                else:
-                    ui_handle.add_text_to_log_box(f"Всего списков c уникальными данными: {len(columns_4_unique_list)} шт.")
-                    ui_handle.add_text_to_log_box("")
-                    unique_elements_list = None
-                    for index, one_column in enumerate(columns_4_unique_list):
-                        unique_elements_list = sorted(report_df[one_column].unique())
-                        ui_handle.change_last_log_box_text(f"{index + 1} из {len(columns_4_unique_list)} ({one_column}): {len(unique_elements_list)}")
-
-                        data_array = [[one_uelement] for one_uelement in unique_elements_list]
-                        ulist_sheet.Range(
-                            ulist_sheet.Cells(2, values_dict[one_column]), ulist_sheet.Cells(len(data_array) + 1, values_dict[one_column])
-                        ).Value = data_array
-
-                    if len(columns_4_unique_list) == 1:
-                        ui_handle.change_last_log_box_text(f"Значений в списке {len(unique_elements_list)} шт.")
+                    if uniq_col_name is not None and uniq_col_name.replace(" ", "") != "":
+                        values_dict[uniq_col_name] = column
+                        column += 1
                     else:
-                        ui_handle.change_last_log_box_text("Собраны и сохранены списки с уникальными значениями.")
+                        break
 
-                    oexcel.report_prepared = True
+                if ret_value is None:
+                    full_column_list = report_df.columns.tolist()
+                    columns_4_unique_list = [column for column in values_dict.keys() if column in full_column_list]
+                    if len(columns_4_unique_list) == 0:
+                        ui_handle.add_text_to_log_box("")
+                        ui_handle.add_text_to_log_box("")
+                        ui_handle.add_text_to_log_box("[Ошибка в структуре отчета]")
+                        ui_handle.add_text_to_log_box("")
+                        ui_handle.add_text_to_log_box("В файле для выбранной формы на листе для уникальных списков")
+                        ui_handle.add_text_to_log_box("не указан требуемый уникальный список из возможного перечня.")
+                        ui_handle.add_text_to_log_box("Формирование отчёта остановлено.")
+                        myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
 
-        del oexcel
+                        ret_value = False
+                    else:
+                        ui_handle.add_text_to_log_box(f"Всего списков c уникальными данными: {len(columns_4_unique_list)} шт.")
+                        ui_handle.add_text_to_log_box("")
+                        unique_elements_list = None
+                        for index, one_column in enumerate(columns_4_unique_list):
+                            unique_elements_list = sorted(report_df[one_column].unique())
+                            ui_handle.change_last_log_box_text(f"{index + 1} из {len(columns_4_unique_list)} ({one_column}): {len(unique_elements_list)}")
 
-    report_parameters.parent.reporter.report_creation_process = False
+                            data_array = [[one_uelement] for one_uelement in unique_elements_list]
+                            ulist_sheet.Range(
+                                ulist_sheet.Cells(2, values_dict[one_column]), ulist_sheet.Cells(len(data_array) + 1, values_dict[one_column])
+                            ).Value = data_array
+
+                        if len(columns_4_unique_list) == 1:
+                            ui_handle.change_last_log_box_text(f"Значений в списке {len(unique_elements_list)} шт.")
+                        else:
+                            ui_handle.change_last_log_box_text("Собраны и сохранены списки с уникальными значениями.")
+
+                        oexcel.report_prepared = True
+
+            del oexcel
+
+    report_parameters.parent.reporter.report_creation_in_process = False
+    report_parameters.parent.report_automation_in_process = False
+
     ui_handle.lock_unlock_interface_items()
 
     return ret_value
