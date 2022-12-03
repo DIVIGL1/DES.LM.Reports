@@ -407,13 +407,12 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.listViewRawData.doubleClicked.connect(self.on_dblclick_raw_data)
 
         self.pushButtonOpenLastReport.clicked.connect(self.on_click_open_last_report)
-        self.comminucate = Communicate()
-        self.comminucate.commander.connect(lambda command: self.parent.communication_handler(command))
 
         self.status_text = ""
         self.previous_status_text = ""
         self.add_text_to_log_box("> " + myconstants.PARAMETER_WAITING_USER_ACTION)
         self.statusBar.showMessage(myconstants.PARAMETER_WAITING_USER_ACTION)
+        self.lock_unlock_interface_items()
 
     def update_user_files_menus(self):
         # Расположение пользовательских файлов:
@@ -643,11 +642,9 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             # Ситуация когда не надо ничего делать - просто ждём.
 
             if processing_report:
-                self.comminucate.commander.emit("wait_file_ag stop")
-                self.comminucate.commander.emit("report_preparation_ag start")
+                self.parent.ag_switcher("report_preparation_ag")
             else:
-                self.comminucate.commander.emit("wait_file_ag start")
-                self.comminucate.commander.emit("report_preparation_ag stop")
+                self.parent.ag_switcher("wait_file_ag")
 
             # В этом случае запрещено:
             self.pushButtonDoIt.setEnabled(False)
@@ -689,6 +686,8 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 # другие функции с выводом на экран. Но можно открывать папки,
                 # редактировать файлы, перемещать файлы в архив.
 
+                self.parent.ag_switcher("drag_and_drop_ag")
+
                 # В этом случае запрещено:
                 self.pushButtonDoIt.setEnabled(False)
 
@@ -724,8 +723,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 # и не надо перемещать файлы в архив.
                 # Но можно открывать папки.
 
-                self.comminucate.commander.emit("wait_file_ag stop")
-                self.comminucate.commander.emit("report_preparation_ag start")
+                self.parent.ag_switcher("report_preparation_ag")
 
                 # В этом случае запрещено:
                 self.pushButtonDoIt.setEnabled(False)
@@ -758,8 +756,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 # НЕ формируется отчёт и НЕ выполняется Drag&Drop...
                 # ----------------------------------------------------------
 
-                self.comminucate.commander.emit("wait_file_ag stop")
-                self.comminucate.commander.emit("report_preparation_ag stop")
+                self.parent.ag_switcher("waiting_user_action_ag")
 
                 # В этом случае разрешено всё:
                 self.pushButtonDoIt.setEnabled(True)
@@ -796,17 +793,17 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         start_text_value = self.status_text
         self.previous_status_text = self.status_text
         self.status_text = start_text_value + ("\n" if start_text_value != "" else "") + status_text
-        self.comminucate.commander.emit("update_log_box_text")
+        self.parent.communicate.commander.emit("update_log_box_text")
 
     def change_last_log_box_text(self, status_text):
         start_text_value = self.previous_status_text
         self.status_text = start_text_value + ("\n" if start_text_value != "" else "") + status_text
-        self.comminucate.commander.emit("update_log_box_text")
+        self.parent.communicate.commander.emit("update_log_box_text")
 
     def clear_log_box(self):
         self.status_text = ""
         self.previous_status_text = ""
-        self.comminucate.commander.emit("update_log_box_text")
+        self.parent.communicate.commander.emit("update_log_box_text")
         
     def resize_text_and_button(self):
         last_report_filename = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT)
@@ -856,25 +853,55 @@ class MyWindow(QtWidgets.QMainWindow):
         self.wait_file_ag = animatedGifLabel("search")
         self.ui.statusBar.addPermanentWidget(self.wait_file_ag)
 
-        self.report_preparation_ag = animatedGifLabel("spinner")
+        self.report_preparation_ag = animatedGifLabel("book")
         self.ui.statusBar.addPermanentWidget(self.report_preparation_ag)
+
+        self.drag_and_drop_ag = animatedGifLabel("download")
+        self.ui.statusBar.addPermanentWidget(self.drag_and_drop_ag)
+
+        self.waiting_user_action_ag = animatedGifLabel("coffee")
+        self.ui.statusBar.addPermanentWidget(self.waiting_user_action_ag)
+
+        self.communicate = Communicate()
+        self.communicate.commander.connect(lambda command: self.communication_handler(command))
+
+
+    def ag_switcher(self, ag_name):
+        ag_list = [
+            "wait_file_ag",
+            "drag_and_drop_ag",
+            "report_preparation_ag",
+            "waiting_user_action_ag",
+        ]
+
+        for element in ag_list:
+            if element == ag_name:
+                self.communicate.commander.emit(element + " start")
+            else:
+                self.communicate.commander.emit(element + " stop")
 
     def communication_handler(self, command):
         if command == "wait_file_ag start":
             self.wait_file_ag.start()
-            print(command)
-        if command == "wait_file_ag stop":
+        elif command == "wait_file_ag stop":
             self.wait_file_ag.stop()
-            print(command)
 
-        if command == "report_preparation_ag start":
+        elif command == "drag_and_drop_ag start":
+            self.drag_and_drop_ag.start()
+        elif command == "drag_and_drop_ag stop":
+            self.drag_and_drop_ag.stop()
+
+        elif command == "waiting_user_action_ag start":
+            self.waiting_user_action_ag.start()
+        elif command == "waiting_user_action_ag stop":
+            self.waiting_user_action_ag.stop()
+
+        elif command == "report_preparation_ag start":
             self.report_preparation_ag.start()
-            print(command)
-        if command == "report_preparation_ag stop":
+        elif command == "report_preparation_ag stop":
             self.report_preparation_ag.stop()
-            print(command)
 
-        if command == "update_log_box_text":
+        elif command == "update_log_box_text":
             self.ui.plainTextEdit.setPlainText(self.ui.status_text)
 
     def set_status_bar_text(self, text, sec=5):
