@@ -100,7 +100,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         if self.listView.currentIndex().data() is None:
             return
         
-        s_preff = self.listView.currentIndex().data() + " --> "
+        s_preff = self.get_preff()
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VIP, self.checkBoxDeleteVIP.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_CURRMONTHHALF, self.checkBoxCurrMonthAHalf.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, self.checkBoxDeleteNotProduct.isChecked())
@@ -123,6 +123,11 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         )
 
         save_param(myconstants.PARAMETER_SAVED_DRAG_AND_DROP_VARIANT, drug_and_drop_type)
+
+    def on_combobox_changed(self):
+        s_preff = self.get_preff()
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_COMBO_BOX_TEXT_GROUPS, self.comboBoxPGroups.currentText())
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_COMBO_BOX_TEXT_USERS, self.comboBoxSelectUsers.currentText())
 
     def setup_radio_buttons_dd(self):
         value = load_param(
@@ -196,7 +201,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.checkBoxSelectUsers.setChecked(saved_value)
         self.comboBoxSelectUsers.setVisible(saved_value)
         if saved_value:
-            self.setup_comboBoxSelectUsers()
+            self.setup_combobox_select_users()
 
     def onclick_checkbox_select_users(self):
         # Обработка клика по чекбоксу включения/выключения выбора групп пользователей
@@ -205,7 +210,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_SELECT_USERS, p_selected)
         self.comboBoxSelectUsers.setVisible(p_selected)
         if p_selected:
-            self.setup_comboBoxSelectUsers()
+            self.setup_combobox_select_users()
 
     def setup_combobox_pgroups(self):
         self.comboBoxPGroups.clear()
@@ -232,7 +237,17 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
         self.comboBoxPGroups.addItems(groups_list)
 
-    def setup_comboBoxSelectUsers(self):
+        s_preff = self.get_preff()
+        saved_selected_text = load_param(
+            s_preff + myconstants.PARAMETER_SAVED_VALUE_COMBO_BOX_TEXT_GROUPS,
+            myconstants.PARAMETER_SAVED_VALUE_COMBO_BOX_TEXT_GROUPS_DEFVALUE
+        )
+
+        index = self.comboBoxPGroups.findText(saved_selected_text, QtCore.Qt.MatchFixedString)
+        if index >= 0:
+            self.comboBoxPGroups.setCurrentIndex(index)
+
+    def setup_combobox_select_users(self):
         self.comboBoxSelectUsers.clear()
         df = load_parameter_table(myconstants.COSTS_TABLE)
         if type(df) == str:
@@ -241,6 +256,16 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             all_grp_columns = [clmn[1:] for clmn in df.columns if clmn[0] == myconstants.GROUP_COLUMNS_STARTER]
 
         self.comboBoxSelectUsers.addItems(all_grp_columns)
+
+        s_preff = self.get_preff()
+        saved_selected_text = load_param(
+            s_preff + myconstants.PARAMETER_SAVED_VALUE_COMBO_BOX_TEXT_USERS,
+            myconstants.PARAMETER_SAVED_VALUE_COMBO_BOX_TEXT_USERS_DEFVALUE
+        )
+
+        index = self.comboBoxSelectUsers.findText(saved_selected_text, QtCore.Qt.MatchFixedString)
+        if index >= 0:
+            self.comboBoxSelectUsers.setCurrentIndex(index)
 
     def setup_form(self, reports_list):
         self.reports_list = reports_list
@@ -271,6 +296,9 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.radioButtonDD2.clicked.connect(self.on_click_radioButtonDD)
         self.radioButtonDD3.clicked.connect(self.on_click_radioButtonDD)
         self.radioButtonDD4.clicked.connect(self.on_click_radioButtonDD)
+
+        self.comboBoxPGroups.activated.connect(self.on_combobox_changed)
+        self.comboBoxSelectUsers.activated.connect(self.on_combobox_changed)
 
         # Формируем обработку пунктов меню:
         self.CreateReport.triggered.connect(lambda: self.menu_action("CreateReport"))
@@ -362,7 +390,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.setup_checkbox_only_projects_with_add()
         self.setup_checkbox_select_users()
         self.setup_combobox_pgroups()
-        self.setup_comboBoxSelectUsers()
+        self.setup_combobox_select_users()
 
         self.setup_radio_buttons_dd()
 
