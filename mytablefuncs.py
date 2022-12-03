@@ -491,7 +491,6 @@ def prepare_data(
         costs_df[group_field_name] = costs_df[group_field_name].fillna("").astype(str).replace(r'\s+', '', regex=True)
 
         costs_df = costs_df[costs_df[group_field_name] != ""]
-        print(costs_df)
         costs_df = costs_df[["CostUserName"] + myconstants.COSTS_DATA_COLUMNS]
         data_df = data_df.merge(costs_df, left_on="JustUserName", right_on="CostUserName", how="inner")
         if data_df.shape[0] == 0:
