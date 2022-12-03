@@ -20,6 +20,27 @@ from myutils import (
 )
 
 
+class animatedGifLabel(QtWidgets.QLabel):
+    def __init__(self):
+        super().__init__()
+        size = 10
+        self.setGeometry(QtCore.QRect(0, 0, size, size))
+        # self.setText("animatedGifLabel")
+
+        self.movie = QtGui.QMovie("radar.gif")
+        self.movie.setScaledSize(QtCore.QSize(18, 18))
+        self.setMovie(self.movie)
+        self.stop()
+
+    def start(self):
+        self.setVisible(True)
+        self.movie.start()
+
+    def stop(self):
+        self.setVisible(False)
+        self.movie.stop()
+
+
 class Communicate(QObject):
     updateStatusText = pyqtSignal()
 
@@ -484,11 +505,13 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             return
 
         if action_type == "WaitFileAndCreateReport":
+            self.parent.clock.start()
             self.set_status_bar_text("... ждём новый файл в папке 'Загрузка', после чего он будет скопирован и будет запущено формирование отчёта ...", 0)
             self.parent.parent.waiting_file_4_report = True
             self.lock_unlock_interface_items()
             return
         if action_type == "StopWaitingFile":
+            self.parent.clock.stop()
             self.set_status_bar_text("Прекращено ожидание файла с данными в папке 'Загрузка'")
             self.parent.parent.waiting_file_4_report = False
             self.lock_unlock_interface_items()
@@ -815,6 +838,9 @@ class MyWindow(QtWidgets.QMainWindow):
 
         self.ui.VerticalSplitter.splitterMoved.connect(self.save_coordinates)
         self.ui.HorisontalSplitter.splitterMoved.connect(self.save_coordinates)
+
+        self.clock = animatedGifLabel()
+        self.ui.statusBar.addPermanentWidget(self.clock)
 
     def set_status_bar_text(self, text, sec=5):
         self.ui.set_status_bar_text(text, sec=5)
