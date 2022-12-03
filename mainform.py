@@ -41,7 +41,7 @@ class animatedGifLabel(QtWidgets.QLabel):
 
 
 class Communicate(QObject):
-    updateStatusText = pyqtSignal()
+    commander = pyqtSignal(str)
 
 
 class QtMainWindow(myQt_form.Ui_MainWindow):
@@ -74,6 +74,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.on_click_do_it()
 
     def on_click_do_it(self, p_dont_clear_log_box=False):
+        self.set_status_bar_text("Начато формирование отчёта...")
         self.parent.parent.reporter.create_report(p_dont_clear_log_box=p_dont_clear_log_box)
 
     def on_click_open_last_report(self):
@@ -407,7 +408,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
         self.pushButtonOpenLastReport.clicked.connect(self.on_click_open_last_report)
         self.comminucate = Communicate()
-        self.comminucate.updateStatusText.connect(self.update_log_box_text)
+        self.comminucate.commander.connect(lambda command: self.parent.communication_handler(command))
 
         self.status_text = ""
         self.previous_status_text = ""
@@ -641,8 +642,12 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             # ----------------------------------------------------------
             # Ситуация когда не надо ничего делать - просто ждём.
 
-            self.parent.report_preparation_ag.stop()
-            self.parent.wait_file_ag.start()
+            if processing_report:
+                self.comminucate.commander.emit("wait_file_ag stop")
+                self.comminucate.commander.emit("report_preparation_ag start")
+            else:
+                self.comminucate.commander.emit("wait_file_ag start")
+                self.comminucate.commander.emit("report_preparation_ag stop")
 
             # В этом случае запрещено:
             self.pushButtonDoIt.setEnabled(False)
@@ -719,8 +724,8 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 # и не надо перемещать файлы в архив.
                 # Но можно открывать папки.
 
-                self.parent.wait_file_ag.stop()
-                self.parent.report_preparation_ag.start()
+                self.comminucate.commander.emit("wait_file_ag stop")
+                self.comminucate.commander.emit("report_preparation_ag start")
 
                 # В этом случае запрещено:
                 self.pushButtonDoIt.setEnabled(False)
@@ -753,8 +758,8 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 # НЕ формируется отчёт и НЕ выполняется Drag&Drop...
                 # ----------------------------------------------------------
 
-                self.parent.wait_file_ag.stop()
-                self.parent.report_preparation_ag.stop()
+                self.comminucate.commander.emit("wait_file_ag stop")
+                self.comminucate.commander.emit("report_preparation_ag stop")
 
                 # В этом случае разрешено всё:
                 self.pushButtonDoIt.setEnabled(True)
@@ -791,17 +796,17 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         start_text_value = self.status_text
         self.previous_status_text = self.status_text
         self.status_text = start_text_value + ("\n" if start_text_value != "" else "") + status_text
-        self.comminucate.updateStatusText.emit()
+        self.comminucate.commander.emit("update_log_box_text")
 
     def change_last_log_box_text(self, status_text):
         start_text_value = self.previous_status_text
         self.status_text = start_text_value + ("\n" if start_text_value != "" else "") + status_text
-        self.comminucate.updateStatusText.emit()
+        self.comminucate.commander.emit("update_log_box_text")
 
     def clear_log_box(self):
         self.status_text = ""
         self.previous_status_text = ""
-        self.comminucate.updateStatusText.emit()
+        self.comminucate.commander.emit("update_log_box_text")
         
     def resize_text_and_button(self):
         last_report_filename = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT)
@@ -853,6 +858,24 @@ class MyWindow(QtWidgets.QMainWindow):
 
         self.report_preparation_ag = animatedGifLabel("spinner")
         self.ui.statusBar.addPermanentWidget(self.report_preparation_ag)
+
+    def communication_handler(self, command):
+        if command == "wait_file_ag start":
+            self.wait_file_ag.start()
+            print(command)
+        if command == "wait_file_ag stop":
+            self.wait_file_ag.stop()
+            print(command)
+
+        if command == "report_preparation_ag start":
+            self.report_preparation_ag.start()
+            print(command)
+        if command == "report_preparation_ag stop":
+            self.report_preparation_ag.stop()
+            print(command)
+
+        if command == "update_log_box_text":
+            self.ui.plainTextEdit.setPlainText(self.ui.status_text)
 
     def set_status_bar_text(self, text, sec=5):
         self.ui.set_status_bar_text(text, sec=5)
