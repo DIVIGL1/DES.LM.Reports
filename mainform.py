@@ -35,7 +35,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             reports_list = []
     
         self.model = QtGui.QStandardItemModel()
-        self.listView.setModel(self.model)
+        self.listViewReports.setModel(self.model)
 
         for one_report in reports_list:
             item = QtGui.QStandardItem(one_report)
@@ -43,7 +43,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         
         item = self.model.item(load_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT, 1) - 1)
 
-        self.listView.setCurrentIndex(self.model.indexFromItem(item))
+        self.listViewReports.setCurrentIndex(self.model.indexFromItem(item))
 
         return True
 
@@ -52,7 +52,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             if self.parent.parent.waiting_file_4_report:
                 self.set_status_bar_text("... начинаем формировать отчёт на основании скопированного файла", 10)
             raw_file_name = self.listViewRawData.currentIndex().data()
-            report_file_name = self.listView.currentIndex().data()
+            report_file_name = self.listViewReports.currentIndex().data()
 
             if not self.parent.parent.report_parameters.is_all_parameters_exist():
                 return
@@ -82,7 +82,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         report_file_name = \
             os.path.join(
                 os.path.join(os.getcwd(), get_parameter_value(myconstants.REPORTS_SECTION_NAME)),
-                myconstants.REPORT_FILE_PREFFIX + self.listView.currentIndex().data() + myconstants.EXCEL_FILES_ENDS
+                myconstants.REPORT_FILE_PREFFIX + self.listViewReports.currentIndex().data() + myconstants.EXCEL_FILES_ENDS
             )
 
         open_file_in_application(report_file_name)
@@ -97,7 +97,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         open_file_in_application(raw_file_name)
 
     def on_click_checkboxes(self):
-        if self.listView.currentIndex().data() is None:
+        if self.listViewReports.currentIndex().data() is None:
             return
         
         s_preff = self.get_preff()
@@ -146,10 +146,10 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.setup_checkbox_select_users()
 
     def get_preff(self):
-        if self.listView.currentIndex().data() is None:
+        if self.listViewReports.currentIndex().data() is None:
             s_preff = ""
         else:
-            s_preff = self.listView.currentIndex().data() + " --> "
+            s_preff = self.listViewReports.currentIndex().data() + " --> "
         return(s_preff)
 
     def setup_check_boxes(self):
@@ -394,9 +394,9 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
         self.setup_radio_buttons_dd()
 
-        self.listView.clicked.connect(self.on_click_reports_list)
+        self.listViewReports.clicked.connect(self.on_click_reports_list)
         
-        self.listView.doubleClicked.connect(self.on_dblclick_reports_list)
+        self.listViewReports.doubleClicked.connect(self.on_dblclick_reports_list)
         self.listViewRawData.doubleClicked.connect(self.on_dblclick_raw_data)
 
         self.pushButtonOpenLastReport.clicked.connect(self.on_click_open_last_report)

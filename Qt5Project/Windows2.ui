@@ -110,7 +110,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QListView" name="listView">
+             <widget class="QListView" name="listViewReports">
               <property name="minimumSize">
                <size>
                 <width>200</width>
@@ -1058,7 +1058,7 @@
   </action>
  </widget>
  <tabstops>
-  <tabstop>listView</tabstop>
+  <tabstop>listViewReports</tabstop>
   <tabstop>listViewRawData</tabstop>
   <tabstop>checkBoxDelPDn</tabstop>
   <tabstop>checkBoxDeleteNotProduct</tabstop>
