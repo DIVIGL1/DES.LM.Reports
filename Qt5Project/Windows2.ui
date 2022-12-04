@@ -712,6 +712,10 @@
      <string>Автоматизация</string>
     </property>
     <addaction name="WaitFileAndCreateReport"/>
+    <addaction name="separator"/>
+    <addaction name="LoadDataFromDESLM"/>
+    <addaction name="action_DES_LM"/>
+    <addaction name="separator"/>
     <addaction name="StopWaitingFile"/>
    </widget>
    <widget class="QMenu" name="menu">
@@ -1053,7 +1057,29 @@
     <string>Прекратить ожидание файла в папке 'Загрузки'</string>
    </property>
    <property name="shortcut">
-    <string>F7</string>
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="LoadDataFromDESLM">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Загрузить данные из DES.LM</string>
+   </property>
+   <property name="shortcut">
+    <string>F8</string>
+   </property>
+  </action>
+  <action name="action_DES_LM">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Загрузить данные из DES.LM и сформировать отчёт</string>
+   </property>
+   <property name="shortcut">
+    <string>F9</string>
    </property>
   </action>
  </widget>
