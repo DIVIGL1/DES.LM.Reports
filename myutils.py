@@ -256,7 +256,10 @@ def get_resource_path(relative):
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS, relative)
     else:
-        return os.path.join(os.path.abspath("."), relative)
+        if os.path.isdir("Picts"):
+            return os.path.join(os.path.abspath("."), "Picts", relative)
+        else:
+            return os.path.join(os.path.abspath("."), relative)
 
 
 def get_des_lm_url_parameters(year=None, month1=1, month2=None):
@@ -286,7 +289,6 @@ def get_des_lm_url_parameters(year=None, month1=1, month2=None):
     parameter_data = myconstants.PARAMETERS_FOR_GETTING_DATA_FOR_URL.copy()
     parameter_str = parameter_data[0][myconstants.PARAMETER_STR_KEY_WITH_PERIOD]
     for one_parameter in replace_data:
-        print(one_parameter)
         parameter_str = parameter_str.replace(one_parameter[0], one_parameter[1])
 
     parameter_data[0][myconstants.PARAMETER_STR_KEY_WITH_PERIOD] = parameter_str
@@ -294,4 +296,4 @@ def get_des_lm_url_parameters(year=None, month1=1, month2=None):
 
 
 if __name__ == "__main__":
-    print(get_des_lm_url_parameters(2022, 1, 12))
+    get_data_using_url("")
