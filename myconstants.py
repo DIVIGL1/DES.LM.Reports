@@ -296,16 +296,17 @@ PARAMETER_STR_YEAR = "YEAR"
 PARAMETER_STR_MONTH1 = "MONTH1"
 PARAMETER_STR_MONTH2 = "MONTH2"
 PARAMETER_STR_LASTDAYOFMONHT = "LASTDAYOFMONHT"
+PARAMETER_STR_KEY_WITH_PERIOD = "inputValue"
 
 PARAMETERS_FOR_GETTING_DATA_FOR_URL = [
     {
         "name": "period",
         "reportParameterType":"PERIOD",
         "inputValue": (
-                f"{PARAMETER_STR_YEAR}-{PARAMETER_STR_MONTH1}" +
-                "-01T00:00:00.000+03:00-" +
+                f"{PARAMETER_STR_YEAR}-{PARAMETER_STR_MONTH1}-01" +
+                "T00:00:00.000+03:00-" +
                 f"{PARAMETER_STR_YEAR}-{PARAMETER_STR_MONTH2}-{PARAMETER_STR_LASTDAYOFMONHT}" +
-                "00:00:00.000+03:00"
+                "T00:00:00.000+03:00"
         )
     }
 ]

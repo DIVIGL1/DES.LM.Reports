@@ -7,6 +7,8 @@ import threading
 import platform
 import hashlib
 import subprocess
+import json
+import requests
 
 import myconstants
 
@@ -256,5 +258,40 @@ def get_resource_path(relative):
     else:
         return os.path.join(os.path.abspath("."), relative)
 
+
+def get_des_lm_url_parameters(year=None, month1=1, month2=None):
+    if year is None:
+        year = datetime.datetime.now().year
+
+    if month2 is None:
+        month2 = month1
+    month2 = max(month1, month2)
+
+    last_day_of_month2 = datetime.date(year, month2, 1) + datetime.timedelta(days=32)
+    last_day_of_month2 = datetime.date(last_day_of_month2.year, last_day_of_month2.month, 1) - datetime.timedelta(days=1)
+    last_day_of_month2 = f"{last_day_of_month2.day}"
+
+    month1 = f"{month1:02}"
+    month2 = f"{month2:02}"
+
+    year = f"{year:04}"
+
+    replace_data = [
+        (myconstants.PARAMETER_STR_YEAR, year),
+        (myconstants.PARAMETER_STR_MONTH1, month1),
+        (myconstants.PARAMETER_STR_MONTH2, month2),
+        (myconstants.PARAMETER_STR_LASTDAYOFMONHT, last_day_of_month2),
+    ]
+
+    parameter_data = myconstants.PARAMETERS_FOR_GETTING_DATA_FOR_URL.copy()
+    parameter_str = parameter_data[0][myconstants.PARAMETER_STR_KEY_WITH_PERIOD]
+    for one_parameter in replace_data:
+        print(one_parameter)
+        parameter_str = parameter_str.replace(one_parameter[0], one_parameter[1])
+
+    parameter_data[0][myconstants.PARAMETER_STR_KEY_WITH_PERIOD] = parameter_str
+    return(parameter_data)
+
+
 if __name__ == "__main__":
-    print(get_files_list("RawData", "", ".xlsx"))
+    print(get_des_lm_url_parameters(2022, 1, 12))
