@@ -862,6 +862,9 @@ class MyWindow(QtWidgets.QMainWindow):
         self.waiting_user_action_ag = animatedGifLabel("coffee")
         self.ui.statusBar.addPermanentWidget(self.waiting_user_action_ag)
 
+        self.get_internet_data_ag = animatedGifLabel("internet")
+        self.ui.statusBar.addPermanentWidget(self.get_internet_data_ag)
+
         self.communicate = Communicate()
         self.communicate.commander.connect(lambda command: self.communication_handler(command))
 
@@ -872,6 +875,7 @@ class MyWindow(QtWidgets.QMainWindow):
             "drag_and_drop_ag",
             "report_preparation_ag",
             "waiting_user_action_ag",
+            "get_internet_data_ag",
         ]
 
         for element in ag_list:
@@ -899,6 +903,11 @@ class MyWindow(QtWidgets.QMainWindow):
         elif command == "report_preparation_ag start":
             self.report_preparation_ag.start()
         elif command == "report_preparation_ag stop":
+            self.report_preparation_ag.stop()
+
+        elif command == "get_internet_data_ag start":
+            self.report_preparation_ag.start()
+        elif command == "get_internet_data_ag stop":
             self.report_preparation_ag.stop()
 
         elif command == "update_log_box_text":
