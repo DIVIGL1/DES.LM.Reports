@@ -10,6 +10,7 @@ ReportsPrepared
 RawData
 build
 dist
+AccessCodes
 mef.bat
 requirements.bat
 *.spec
@@ -18,7 +19,9 @@ requirements.bat
 *.exe
 *.zip
 *.ttf
+*.key
 Отчет - Подр-Сотрудник Кат.План.Лимиты.xlsx
+iCodes.py
 
 # Qt-es
 object_script.*.Release
