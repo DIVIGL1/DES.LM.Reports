@@ -296,7 +296,14 @@ def get_des_lm_url_parameters(year=None, month1=1, month2=None):
 
 
 @thread
-def get_data_using_url(url, year=None, month1=1, month2=None):
+def get_data_using_url(year=None, month1=1, month2=None):
+    from iCodes import get_des_lm_url
+    data = get_des_lm_url()
+    if data["ret_code"] != 1:
+        pass
+    else:
+        url = data["url"]
+
     data = get_des_lm_url_parameters(year=year, month1=month1, month2=month2)
     rs = requests.post(url, data=json.dumps(data), headers={"Content-Type": "application/json"})
 
@@ -304,11 +311,9 @@ def get_data_using_url(url, year=None, month1=1, month2=None):
 
     filename = f"{cdt.year:04}-{cdt.month:02}-{cdt.day:02} {cdt.hour:02}-{cdt.minute:02}  DES.LM.Reports" + myconstants.EXCEL_FILES_ENDS
     filename = os.path.join(get_download_dir(), filename)
-    print(filename)
 
     with open(filename, "wb") as file:
         file.write(rs.content)
 
-
 if __name__ == "__main__":
-    get_data_using_url("")
+    print(get_data_using_url(month2=datetime.datetime.now().month))

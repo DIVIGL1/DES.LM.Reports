@@ -602,7 +602,7 @@ class Ui_MainWindow(object):
         self.action_2.setText(_translate("MainWindow", "Автоматизация"))
         self.StopWaitingFile.setText(_translate("MainWindow", "Прекратить ожидание"))
         self.StopWaitingFile.setStatusTip(_translate("MainWindow", "Прекратить ожидание файла в папке \'Загрузки\'"))
-        self.StopWaitingFile.setShortcut(_translate("MainWindow", "F7, F9"))
+        self.StopWaitingFile.setShortcut(_translate("MainWindow", "F7"))
         self.LoadDataFromDESLM.setText(_translate("MainWindow", "Загрузить данные из DES.LM"))
         self.LoadDataFromDESLM.setShortcut(_translate("MainWindow", "F8"))
         self.action_DES_LM.setText(_translate("MainWindow", "Загрузить данные из DES.LM и сформировать отчёт"))
