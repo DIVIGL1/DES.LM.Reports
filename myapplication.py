@@ -72,6 +72,11 @@ class handlerDownLoadFolder(FileSystemEventHandler):
             return
 
         new_filename = os.path.splitext(os.path.basename(event.src_path))[0] + myconstants.EXCEL_FILES_ENDS
+        if new_filename[0] != "~":
+            # Это временный файл - не обрабатываем
+            self.parent.report_automation_in_process = False
+            return
+
         self.parent.mainwindow.set_status_bar_text("... обрабатываем файл обнаруженный в папке 'Загрузки'")
         self.parent.mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
         self.parent.mainwindow.add_text_to_log_box(f"В папке 'Загрузки' появился новый файл: {new_filename}")
