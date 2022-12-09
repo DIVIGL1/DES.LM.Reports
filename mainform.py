@@ -322,6 +322,9 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.EditRawFile.triggered.connect(lambda: self.menu_action("EditRawFile"))
 
         self.StopWaitingFile.triggered.connect(lambda: self.menu_action("StopWaitingFile"))
+
+        self.GetUserCode.triggered.connect(lambda: QtWidgets.QApplication.clipboard().setText(str(self.GetUserCode.text())))
+
         #----------------------------------
         section = myconstants.PARAMETERS_SECTION_NAME
         self.WHours.triggered.connect(lambda: self.menu_action("OpenExcel", section, "WHours"))
@@ -413,6 +416,10 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.add_text_to_log_box("> " + myconstants.PARAMETER_WAITING_USER_ACTION)
         self.statusBar.showMessage(myconstants.PARAMETER_WAITING_USER_ACTION)
         self.lock_unlock_interface_items()
+
+        from iCodes import get_secret_code
+        self.GetUserCode.setText(f"Пользовательский код: [{get_secret_code()}]")
+
 
     def update_user_files_menus(self):
         # Расположение пользовательских файлов:
