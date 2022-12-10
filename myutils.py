@@ -296,7 +296,11 @@ def get_des_lm_url_parameters(year=None, month1=1, month2=None):
 
 
 @thread
-def get_data_using_url(year=None, month1=1, month2=None):
+def get_data_using_url(window=None, year=None, month1=1, month2=None):
+    if not window is None:
+        window.parent.internet_downloading_in_process = True
+        window.ui.lock_unlock_interface_items()
+
     from iCodes import get_des_lm_url
     data = get_des_lm_url()
     if data["ret_code"] != 1:
@@ -315,11 +319,17 @@ def get_data_using_url(year=None, month1=1, month2=None):
     else:
         data_in_file_period = f"{myconstants.MONTHS[month1]}-{myconstants.MONTHS[month2]} {year}"
 
-    filename = f"{cdt.year:04}-{cdt.month:02}-{cdt.day:02} {cdt.hour:02}-{cdt.minute:02}  DES.LM.Reports ({data_in_file_period})" + myconstants.EXCEL_FILES_ENDS
-    filename = os.path.join(get_download_dir(), filename)
+    only_filename = f"{cdt.year:04}-{cdt.month:02}-{cdt.day:02} {cdt.hour:02}-{cdt.minute:02}  DES.LM.Reports ({data_in_file_period})" + myconstants.EXCEL_FILES_ENDS
+    filename = os.path.join(get_download_dir(), only_filename)
 
     with open(filename, "wb") as file:
         file.write(rs.content)
+
+    if not window is None:
+        window.add_text_to_log_box(f"Завершена загрузка данных из DES.LM через Интернет - получен файл: {only_filename}")
+        window.parent.internet_downloading_in_process = False
+        window.ui.lock_unlock_interface_items()
+
 
 if __name__ == "__main__":
     print(get_data_using_url(month2=datetime.datetime.now().month))
