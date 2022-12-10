@@ -240,6 +240,8 @@ PROJECTS_TYPES_DESCR = "ProjectsTypesDescriptions.xlsx"
 PROJECTS_SUB_TYPES_TABLE = "ProjectsSubTypes.xlsx"
 PROJECTS_SUB_TYPES_DESCR = "ProjectsSubTypesDescriptions.xlsx"
 PROJECTS_LIST_ADD_INFO = "ProjectsAddInfo.xlsx"
+YEARS_LIST_TABLE = "Years4Periods.xlsx"
+
 PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST = {
     "Наименование проекта (только текст)": "Project4AddInfo",
     "Выруч_Янв": "SumInCome01",
@@ -287,6 +289,7 @@ PARAMETERS_ALL_TABLES = {
     PORTFEL_TABLE: ("Таблица списка портфелей проектов", "ID_DES.LM_project"),
     ISDOGNAME_TABLE: ("Таблица наименований ИС из контракта", "ID_DES.LM_project"),
     PROJECTS_LIST_ADD_INFO: ("Таблица наименований ИС из контракта", "Наименование проекта (только текст)"),
+    YEARS_LIST_TABLE: ("Таблица годов по которым можно формировать отчёт", "Years4Period")
 }
 
 EMAIL_INFO_COLUMNS = ["manager_email", "Personal_email", "user_email", "boss_email"]
