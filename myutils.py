@@ -357,6 +357,7 @@ def get_data_using_url(mainwindow=None, year=None, month1=1, month2=None, create
                 copy_file_as_drop_process(mainwindow, [filename], create_report=create_report)
 
 
+@thread
 def test_access_key(mainwindow):
     from iCodes import get_des_lm_url, get_secret_code
     data = get_des_lm_url()
