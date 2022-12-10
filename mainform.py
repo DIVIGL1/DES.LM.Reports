@@ -20,7 +20,7 @@ from myutils import (
     open_dir_in_explore, get_home_dir,
     open_file_in_application, test_create_dir,
     open_user_files_dir, get_resource_path,
-    get_data_using_url,
+    get_data_using_url, test_access_key
 )
 
 class animatedGifLabel(QtWidgets.QLabel):
@@ -485,8 +485,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.statusBar.showMessage(myconstants.PARAMETER_WAITING_USER_ACTION)
         self.lock_unlock_interface_items()
 
-        from iCodes import get_secret_code
-        self.GetUserCode.setText(f"Пользовательский код: [{get_secret_code()}]")
+        test_access_key(self.parent)
 
 
     def update_user_files_menus(self):

@@ -310,39 +310,55 @@ def get_data_using_url(mainwindow=None, year=None, month1=1, month2=None, create
     from iCodes import get_des_lm_url
     data = get_des_lm_url()
     if data["ret_code"] != 1:
-        pass
+        # Либо код устарел, либо что-то с Интернетом:
+        if not mainwindow is None:
+            # Надо остановить процессы и вывести сообщение на экран
+            mainwindow.parent.internet_downloading_in_process = False
+            mainwindow.parent.report_automation_in_process
+            mainwindow.add_text_to_log_box(f"Не удалось получить доступ к DES.LM.")
+            mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+            mainwindow.ui.lock_unlock_interface_items()
     else:
         url = data["url"]
 
-    data = get_des_lm_url_parameters(year=year, month1=month1, month2=month2)
+        data = get_des_lm_url_parameters(year=year, month1=month1, month2=month2)
 
-    rs = requests.post(url, data=json.dumps(data), headers={"Content-Type": "application/json"})
+        rs = requests.post(url, data=json.dumps(data), headers={"Content-Type": "application/json"})
 
-    cdt = datetime.datetime.now()
+        cdt = datetime.datetime.now()
 
-    if month1 == month2:
-        data_in_file_period = f"{myconstants.MONTHS[month2]} {year}"
-    else:
-        data_in_file_period = f"{myconstants.MONTHS[month1]}-{myconstants.MONTHS[month2]} {year}"
+        if month1 == month2:
+            data_in_file_period = f"{myconstants.MONTHS[month2]} {year}"
+        else:
+            data_in_file_period = f"{myconstants.MONTHS[month1]}-{myconstants.MONTHS[month2]} {year}"
 
-    only_filename = f"{cdt.year:04}-{cdt.month:02}-{cdt.day:02} {cdt.hour:02}-{cdt.minute:02}-{cdt.second:02}  DES.LM.Reports ({data_in_file_period})" + myconstants.EXCEL_FILES_ENDS
-    filename = os.path.join(get_download_dir(), only_filename)
+        only_filename = f"{cdt.year:04}-{cdt.month:02}-{cdt.day:02} {cdt.hour:02}-{cdt.minute:02}-{cdt.second:02}  DES.LM.Reports ({data_in_file_period})" + myconstants.EXCEL_FILES_ENDS
+        filename = os.path.join(get_download_dir(), only_filename)
 
-    with open(filename, "wb") as file:
-        file.write(rs.content)
+        with open(filename, "wb") as file:
+            file.write(rs.content)
 
-    if not mainwindow is None:
-        mainwindow.add_text_to_log_box(f"Завершена загрузка данных из DES.LM через Интернет - получен файл: {only_filename}")
+        if not mainwindow is None:
+            mainwindow.add_text_to_log_box(f"Завершена загрузка данных из DES.LM через Интернет.")
+            mainwindow.add_text_to_log_box(f"Файл: {only_filename} размещён в папке 'Загрузки'.")
 
-        if not mainwindow.parent.report_automation_in_process:
-            mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+            if not mainwindow.parent.report_automation_in_process:
+                mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
 
-        mainwindow.parent.internet_downloading_in_process = False
-        mainwindow.ui.lock_unlock_interface_items()
+            mainwindow.parent.internet_downloading_in_process = False
+            mainwindow.ui.lock_unlock_interface_items()
 
-        if mainwindow.parent.report_automation_in_process:
-            and_create_report(mainwindow=mainwindow, create_report=create_report)
+            if mainwindow.parent.report_automation_in_process:
+                copy_file_as_drop_process(mainwindow, [filename], create_report=create_report)
 
+
+def test_access_key(mainwindow):
+    from iCodes import get_des_lm_url, get_secret_code
+    data = get_des_lm_url()
+    if data["ret_code"] == -1:
+        mainwindow.ui.LoadDataFromDESLM.setVisible(False)
+        mainwindow.ui.LoadFromDELMAndCreateReport.setVisible(False)
+        mainwindow.ui.GetUserCode.setText(f"Истёк срок валидности. Пользовательский код : [{get_secret_code()}]")
 
 if __name__ == "__main__":
     print(get_data_using_url(month2=datetime.datetime.now().month))
