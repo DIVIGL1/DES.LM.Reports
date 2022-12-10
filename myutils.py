@@ -231,6 +231,12 @@ def copy_file_as_drop_process(mainwindow, xls_files, create_report=False):
         mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
 
     mainwindow.parent.drag_and_prop_in_process = False
+
+    and_create_report(mainwindow=mainwindow, create_report=create_report)
+    return
+
+
+def and_create_report(mainwindow, create_report=False):
     if create_report:
         mainwindow.set_status_bar_text("... начинаем формировать отчёт на основании скопированного файла", 3)
         mainwindow.parent.reporter.create_report(p_dont_clear_log_box=True)
@@ -296,10 +302,10 @@ def get_des_lm_url_parameters(year=None, month1=1, month2=None):
 
 
 @thread
-def get_data_using_url(window=None, year=None, month1=1, month2=None):
-    if not window is None:
-        window.parent.internet_downloading_in_process = True
-        window.ui.lock_unlock_interface_items()
+def get_data_using_url(mainwindow=None, year=None, month1=1, month2=None, create_report=None):
+    if not mainwindow is None:
+        mainwindow.parent.internet_downloading_in_process = True
+        mainwindow.ui.lock_unlock_interface_items()
 
     from iCodes import get_des_lm_url
     data = get_des_lm_url()
@@ -319,16 +325,23 @@ def get_data_using_url(window=None, year=None, month1=1, month2=None):
     else:
         data_in_file_period = f"{myconstants.MONTHS[month1]}-{myconstants.MONTHS[month2]} {year}"
 
-    only_filename = f"{cdt.year:04}-{cdt.month:02}-{cdt.day:02} {cdt.hour:02}-{cdt.minute:02}  DES.LM.Reports ({data_in_file_period})" + myconstants.EXCEL_FILES_ENDS
+    only_filename = f"{cdt.year:04}-{cdt.month:02}-{cdt.day:02} {cdt.hour:02}-{cdt.minute:02}-{cdt.second:02}  DES.LM.Reports ({data_in_file_period})" + myconstants.EXCEL_FILES_ENDS
     filename = os.path.join(get_download_dir(), only_filename)
 
     with open(filename, "wb") as file:
         file.write(rs.content)
 
-    if not window is None:
-        window.add_text_to_log_box(f"Завершена загрузка данных из DES.LM через Интернет - получен файл: {only_filename}")
-        window.parent.internet_downloading_in_process = False
-        window.ui.lock_unlock_interface_items()
+    if not mainwindow is None:
+        mainwindow.add_text_to_log_box(f"Завершена загрузка данных из DES.LM через Интернет - получен файл: {only_filename}")
+
+        if not mainwindow.parent.report_automation_in_process:
+            mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+
+        mainwindow.parent.internet_downloading_in_process = False
+        mainwindow.ui.lock_unlock_interface_items()
+
+        if mainwindow.parent.report_automation_in_process:
+            and_create_report(mainwindow=mainwindow, create_report=create_report)
 
 
 if __name__ == "__main__":

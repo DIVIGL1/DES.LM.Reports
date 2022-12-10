@@ -323,6 +323,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.WaitFileAndCreateReport.triggered.connect(lambda: self.menu_action("WaitFileAndCreateReport"))
 
         self.LoadDataFromDESLM.triggered.connect(lambda: self.menu_action("LoadDataFromDESLM"))
+        self.LoadFromDELMAndCreateReport.triggered.connect(lambda: self.menu_action("LoadFromDELMAndCreateReport"))
 
         self.StopWaitingFile.triggered.connect(lambda: self.menu_action("StopWaitingFile"))
 
@@ -576,6 +577,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             self.clear_log_box()
             self.add_text_to_log_box("> " + myconstants.PARAMETER_WAITING_USER_ACTION)
             self.parent.parent.waiting_file_4_report = False
+            self.parent.parent.report_automation_in_process = False
             self.lock_unlock_interface_items()
             return
 
@@ -643,20 +645,25 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             month2 = int(month2)
 
             # Запросим отчёт:
-            get_data_using_url(window=self.parent, year=year, month1=month1, month2=month2)
+            get_data_using_url(mainwindow=self.parent, year=year, month1=month1, month2=month2, create_report=p1)
 
             return
 
         if action_type == "LoadFromDELMAndCreateReport":
             self.parent.parent.report_automation_in_process = True
+            self.menu_action("LoadDataFromDESLM", p1=True)
+
+            return
 
         if action_type == "EditReportForm":
             self.set_status_bar_text("Выбрана функция редактирования выделенного шаблона отчёта")
             self.open_report_form()
+
             return
         if action_type == "EditRawFile":
             self.set_status_bar_text("Выбрана функция редактирования выделенного файла с данными")
             self.open_raw_file()
+
             return
 
         if action_type == "ExcludeUserFile":
@@ -718,6 +725,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
             xls_file_path = os.path.join(os.path.join(os.getcwd(), section, p2 + myconstants.EXCEL_FILES_ENDS))
             open_file_in_application(xls_file_path)
+
             return
 
         if action_type == "Exit":
@@ -785,6 +793,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             self.OpenLastReport.setEnabled(False)
 
             self.WaitFileAndCreateReport.setEnabled(False)
+            self.LoadFromDELMAndCreateReport.setEnabled(False)
 
             for one_pad in self.edit_pads_dict["Parameters4admin"]:
                 one_pad.setEnabled(False)
@@ -799,7 +808,10 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             self.Exit.setEnabled(True)
 
             # А вот это разрешено только если НЕ запущен автомат:
-            self.StopWaitingFile.setEnabled(True and not report_automation_in_process)
+            if report_automation_in_process and not internet_downloading_in_process:
+                self.StopWaitingFile.setEnabled(False)
+            else:
+                self.StopWaitingFile.setEnabled(True)
 
             # Кнопка не доступна, но видна если есть последний отчёт
             self.pushButtonOpenLastReport.setEnabled(False)
@@ -904,6 +916,8 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
                 self.Automation.setEnabled(True)
                 self.MoveRawFile2Archive.setEnabled(True)
+                self.LoadFromDELMAndCreateReport.setEnabled(True)
+
                 self.StopWaitingFile.setEnabled(False)
 
                 for one_pad in self.edit_pads_dict["Parameters4admin"]:
