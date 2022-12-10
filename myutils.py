@@ -286,7 +286,7 @@ def get_des_lm_url_parameters(year=None, month1=1, month2=None):
         (myconstants.PARAMETER_STR_LASTDAYOFMONHT, last_day_of_month2),
     ]
 
-    parameter_data = myconstants.PARAMETERS_FOR_GETTING_DATA_FOR_URL.copy()
+    parameter_data = [myconstants.PARAMETERS_FOR_GETTING_DATA_FOR_URL.copy()]
     parameter_str = parameter_data[0][myconstants.PARAMETER_STR_KEY_WITH_PERIOD]
     for one_parameter in replace_data:
         parameter_str = parameter_str.replace(one_parameter[0], one_parameter[1])
@@ -305,11 +305,17 @@ def get_data_using_url(year=None, month1=1, month2=None):
         url = data["url"]
 
     data = get_des_lm_url_parameters(year=year, month1=month1, month2=month2)
+
     rs = requests.post(url, data=json.dumps(data), headers={"Content-Type": "application/json"})
 
     cdt = datetime.datetime.now()
 
-    filename = f"{cdt.year:04}-{cdt.month:02}-{cdt.day:02} {cdt.hour:02}-{cdt.minute:02}  DES.LM.Reports" + myconstants.EXCEL_FILES_ENDS
+    if month1 == month2:
+        data_in_file_period = f"{myconstants.MONTHS[month2]} {year}"
+    else:
+        data_in_file_period = f"{myconstants.MONTHS[month1]}-{myconstants.MONTHS[month2]} {year}"
+
+    filename = f"{cdt.year:04}-{cdt.month:02}-{cdt.day:02} {cdt.hour:02}-{cdt.minute:02}  DES.LM.Reports ({data_in_file_period})" + myconstants.EXCEL_FILES_ENDS
     filename = os.path.join(get_download_dir(), filename)
 
     with open(filename, "wb") as file:
