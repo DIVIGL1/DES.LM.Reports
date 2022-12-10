@@ -241,6 +241,7 @@ PROJECTS_SUB_TYPES_TABLE = "ProjectsSubTypes.xlsx"
 PROJECTS_SUB_TYPES_DESCR = "ProjectsSubTypesDescriptions.xlsx"
 PROJECTS_LIST_ADD_INFO = "ProjectsAddInfo.xlsx"
 YEARS_LIST_TABLE = "Years4Periods.xlsx"
+MONTHS_LIST_TABLE = "DataPeriods.xlsx"
 
 PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST = {
     "Наименование проекта (только текст)": "Project4AddInfo",
@@ -289,7 +290,8 @@ PARAMETERS_ALL_TABLES = {
     PORTFEL_TABLE: ("Таблица списка портфелей проектов", "ID_DES.LM_project"),
     ISDOGNAME_TABLE: ("Таблица наименований ИС из контракта", "ID_DES.LM_project"),
     PROJECTS_LIST_ADD_INFO: ("Таблица наименований ИС из контракта", "Наименование проекта (только текст)"),
-    YEARS_LIST_TABLE: ("Таблица годов по которым можно формировать отчёт", "Years4Period")
+    YEARS_LIST_TABLE: ("Таблица годов, по которым можно формировать отчёт", "Years4Period"),
+    MONTHS_LIST_TABLE: ("Таблица периодов (месяцев), по которым можно формировать отчёт", "DataPeriodName")
 }
 
 EMAIL_INFO_COLUMNS = ["manager_email", "Personal_email", "user_email", "boss_email"]
@@ -299,6 +301,8 @@ PARAMETER_STR_MONTH1 = "MONTH1"
 PARAMETER_STR_MONTH2 = "MONTH2"
 PARAMETER_STR_LASTDAYOFMONHT = "LASTDAYOFMONHT"
 PARAMETER_STR_KEY_WITH_PERIOD = "inputValue"
+
+MONTHS_LIST_TABLE_PARAM_COLUMNS = ["StartMonth", "EndMonth"]
 
 PARAMETERS_FOR_GETTING_DATA_FOR_URL = [
     {
