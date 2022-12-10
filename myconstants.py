@@ -294,7 +294,6 @@ PARAMETERS_ALL_TABLES = {
 
 EMAIL_INFO_COLUMNS = ["manager_email", "Personal_email", "user_email", "boss_email"]
 
-
 PARAMETER_STR_YEAR = "YEAR"
 PARAMETER_STR_MONTH1 = "MONTH1"
 PARAMETER_STR_MONTH2 = "MONTH2"
@@ -372,6 +371,7 @@ PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL = "Открывать ли сформиро�
 PARAMETER_SAVED_VALUE_COMBO_BOXES_TEXTS = "Значения выбранные в выпадающих списках"
 PARAMETER_SAVED_VALUE_COMBO_BOX_TEXT_GROUPS = "Значение выбранное в выпадающем списке с группами проектов"
 PARAMETER_SAVED_VALUE_COMBO_BOX_TEXT_USERS = "Значение выбранное в выпадающем списке с пользователями"
+PARAMETER_SAVED_VALUE_LAST_SELECTED_YEAR = "Последний выбранный год для данных из DES.LM"
 
 
 DO_IT_PREFFIX = ""

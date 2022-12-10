@@ -402,35 +402,29 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         # В меню с параметрами добавим пункты с доступными годами
         df_years_list = load_parameter_table(myconstants.YEARS_LIST_TABLE)
         curr_year = datetime.datetime.now().year
+
+        selected_year = load_param(myconstants.PARAMETER_SAVED_VALUE_LAST_SELECTED_YEAR, curr_year)
+        self.parent.parent.reporter.year_parameter = selected_year
+
         if type(df_years_list) == str:
             years_list = [curr_year]
         else:
             df_years_list = df_years_list.dropna()
             years_list = df_years_list[myconstants.PARAMETERS_ALL_TABLES[myconstants.YEARS_LIST_TABLE][1]].to_list()
-            years_list = sorted(list(set(years_list + [curr_year])))
+            years_list = sorted(list(set(years_list + [curr_year] + [selected_year])))
 
-        # for counter, year in enumerate(years_list):
-        #     obj = QtWidgets.QAction(str(year), self.parent)
-        #     obj.setCheckable(True)
-        #     obj.triggered.connect(lambda: self.menu_action("SelectYearParameter", obj))
-        #     self.DESLM_Year.addAction(obj)
-        #     if year == curr_year:
-        #         obj.setChecked(True)
-        #         self.DESLM_Year.setTitle(f"Выбран год: {year}")
-
-        # Step 1. Remove the old options from the menu
-        self.DESLM_Year.clear()
-        # Step 2. Dynamically create the actions
         actions = []
         for year in years_list:
             action = QtWidgets.QAction(str(year), self.parent)
             action.setCheckable(True)
-            action.triggered.connect(partial(self.menu_action, "SelectYearParameter", str(year), action))
+            fnc = partial(self.menu_action, "SelectYearParameter", str(year), action)
+            if year == selected_year:
+                save_fnc = fnc
+            action.triggered.connect(fnc)
             actions.append(action)
-        # Step 3. Add the actions to the menu
+
         self.DESLM_Year.addActions(actions)
-
-
+        save_fnc()
         # ------------------------------------------------------------
 
 
@@ -571,6 +565,9 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
         if action_type == "SelectYearParameter":
             self.set_status_bar_text(f"Для загружаемых из DES.LM данных выбран год {p1}")
+            self.parent.parent.reporter.year_parameter = int(p1)
+            save_param(myconstants.PARAMETER_SAVED_VALUE_LAST_SELECTED_YEAR, int(p1))
+
             self.DESLM_Year.setTitle("Выбран год: " + p1)
             for act in self.DESLM_Year.actions():
                 act.setChecked(False)
