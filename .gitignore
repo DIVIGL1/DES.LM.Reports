@@ -5,6 +5,7 @@
 _tmp_*.*
 ~_tmp_*.*
 _local_*.*
+_tmp_Picts
 __pycache__
 ReportsPrepared
 RawData
