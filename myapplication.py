@@ -117,6 +117,7 @@ class handlerUserFolder(FileSystemEventHandler):
 class MyApplication:
     drag_and_prop_in_process = False
     waiting_file_4_report = False
+    internet_downloading_in_process = False
     report_automation_in_process = False
 
     def __init__(self):

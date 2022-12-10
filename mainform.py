@@ -622,6 +622,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             p2.setChecked(True)
             return
         if action_type == "LoadDataFromDESLM":
+
             self.set_status_bar_text("Выбрана функция загрузки данных из DES.LM")
             month1 = self.parent.parent.reporter.month1_parameter
             month2 = self.parent.parent.reporter.month2_parameter
@@ -642,9 +643,12 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             month2 = int(month2)
 
             # Запросим отчёт:
-            get_data_using_url(year=year, month1=month1, month2=month2)
+            get_data_using_url(window=self.parent, year=year, month1=month1, month2=month2)
 
             return
+
+        if action_type == "LoadFromDELMAndCreateReport":
+            self.parent.parent.report_automation_in_process = True
 
         if action_type == "EditReportForm":
             self.set_status_bar_text("Выбрана функция редактирования выделенного шаблона отчёта")
@@ -749,6 +753,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
     def lock_unlock_interface_items(self):
         processing_report = self.parent.parent.reporter.report_creation_in_process
         processing_drag_and_drop = self.parent.parent.drag_and_prop_in_process
+        internet_downloading_in_process = self.parent.parent.internet_downloading_in_process
         waiting_file_4_report = self.parent.parent.waiting_file_4_report
         report_automation_in_process = self.parent.parent.report_automation_in_process
         last_report_exists = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "") != ""
@@ -765,7 +770,9 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
             if processing_report:
                 self.parent.ag_switcher("report_preparation_ag")
-            else:
+            elif internet_downloading_in_process:
+                self.parent.ag_switcher("get_internet_data_ag")
+            elif waiting_file_4_report:
                 self.parent.ag_switcher("wait_file_ag")
 
             # В этом случае запрещено:
@@ -878,7 +885,11 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 # НЕ формируется отчёт и НЕ выполняется Drag&Drop...
                 # ----------------------------------------------------------
 
-                self.parent.ag_switcher("waiting_user_action_ag")
+                if internet_downloading_in_process:
+                    # Но скачивается файл из Интернета
+                    self.parent.ag_switcher("get_internet_data_ag")
+                else:
+                    self.parent.ag_switcher("waiting_user_action_ag")
 
                 # В этом случае разрешено всё:
                 self.pushButtonDoIt.setEnabled(True)
@@ -1028,9 +1039,9 @@ class MyWindow(QtWidgets.QMainWindow):
             self.report_preparation_ag.stop()
 
         elif command == "get_internet_data_ag start":
-            self.report_preparation_ag.start()
+            self.get_internet_data_ag.start()
         elif command == "get_internet_data_ag stop":
-            self.report_preparation_ag.stop()
+            self.get_internet_data_ag.stop()
 
         elif command == "update_log_box_text":
             self.ui.plainTextEdit.setPlainText(self.ui.status_text)
