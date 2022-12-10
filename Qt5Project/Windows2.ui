@@ -711,23 +711,21 @@
     <property name="title">
      <string>Автоматизация</string>
     </property>
-    <widget class="QMenu" name="menu_DES_LM">
+    <widget class="QMenu" name="Parameters4DESLM">
      <property name="title">
       <string>Параметры запроса данных из DES.LM</string>
      </property>
-     <widget class="QMenu" name="menu_2">
+     <widget class="QMenu" name="DESLM_Year">
       <property name="title">
-       <string>Год: 2022</string>
+       <string>Выбран год:</string>
       </property>
-      <addaction name="action2022"/>
-      <addaction name="action2023"/>
      </widget>
-     <addaction name="menu_2"/>
+     <addaction name="DESLM_Year"/>
      <addaction name="separator"/>
     </widget>
     <addaction name="WaitFileAndCreateReport"/>
     <addaction name="separator"/>
-    <addaction name="menu_DES_LM"/>
+    <addaction name="Parameters4DESLM"/>
     <addaction name="LoadDataFromDESLM"/>
     <addaction name="LoadFromDELMAndCreateReport"/>
     <addaction name="separator"/>
@@ -1115,6 +1113,11 @@
    </property>
    <property name="text">
     <string>Пользовательсткий код:</string>
+   </property>
+  </action>
+  <action name="action1">
+   <property name="text">
+    <string>1</string>
    </property>
   </action>
  </widget>
