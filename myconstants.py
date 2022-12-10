@@ -304,8 +304,7 @@ PARAMETER_STR_KEY_WITH_PERIOD = "inputValue"
 
 MONTHS_LIST_TABLE_PARAM_COLUMNS = ["StartMonth", "EndMonth"]
 
-PARAMETERS_FOR_GETTING_DATA_FOR_URL = [
-    {
+PARAMETERS_FOR_GETTING_DATA_FOR_URL ={
         "name": "period",
         "reportParameterType":"PERIOD",
         "inputValue": (
@@ -314,8 +313,7 @@ PARAMETERS_FOR_GETTING_DATA_FOR_URL = [
                 f"{PARAMETER_STR_YEAR}-{PARAMETER_STR_MONTH2}-{PARAMETER_STR_LASTDAYOFMONHT}" +
                 "T00:00:00.000+03:00"
         )
-    }
-]
+}
 
 
 USER_FILES_LIST = [COSTS_TABLE, PROJECTS_LIST_ADD_INFO, EMAILS_TABLE]
@@ -376,6 +374,7 @@ PARAMETER_SAVED_VALUE_COMBO_BOXES_TEXTS = "Значения выбранные �
 PARAMETER_SAVED_VALUE_COMBO_BOX_TEXT_GROUPS = "Значение выбранное в выпадающем списке с группами проектов"
 PARAMETER_SAVED_VALUE_COMBO_BOX_TEXT_USERS = "Значение выбранное в выпадающем списке с пользователями"
 PARAMETER_SAVED_VALUE_LAST_SELECTED_YEAR = "Последний выбранный год для данных из DES.LM"
+PARAMETER_SAVED_VALUE_LAST_SELECTED_MONTHS_PARAMETERS_NUM = "Номер последнего выбранного параметра с месяцами для данных из DES.LM"
 
 
 DO_IT_PREFFIX = ""
@@ -396,6 +395,7 @@ PARAMETER_SAVED_VALUE_DEL_RAWSHEET_DEFVALUE = False
 PARAMETER_SAVED_VALUE_OPEN_IN_EXCEL_DEFVALUE = True
 PARAMETER_SAVED_VALUE_COMBO_BOX_TEXT_GROUPS_DEFVALUE = TEXT_4_ALL_GROUPS
 PARAMETER_SAVED_VALUE_COMBO_BOX_TEXT_USERS_DEFVALUE = TEXT_4_ALL_USERS
+PARAMETER_SAVED_VALUE_LAST_SELECTED_MONTHS_PARAMETERS_NUM_DEFVALUE = 0
 
 PARAMETER_SAVED_SELECTED_REPORT = "Номер последнего выбранного отчёта"
 PARAMETER_SAVED_SELECTED_RAW_FILE = "Имя файла последнего выбранного файла с сырыми данными"

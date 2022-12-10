@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # pyuic5 -x Qt5Project/Windows2.ui -o myQt_form.py
 # pyuic5 -x Qt5Project/_tmp_QLV.ui -o _tmp_QLV_form.py
 
@@ -321,10 +322,12 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.MoveRawFile2Archive.triggered.connect(lambda: self.menu_action("MoveRawFile2Archive"))
         self.WaitFileAndCreateReport.triggered.connect(lambda: self.menu_action("WaitFileAndCreateReport"))
 
-        self.EditReportForm.triggered.connect(lambda: self.menu_action("EditReportForm"))
-        self.EditRawFile.triggered.connect(lambda: self.menu_action("EditRawFile"))
+        self.LoadDataFromDESLM.triggered.connect(lambda: self.menu_action("LoadDataFromDESLM"))
 
         self.StopWaitingFile.triggered.connect(lambda: self.menu_action("StopWaitingFile"))
+
+        self.EditReportForm.triggered.connect(lambda: self.menu_action("EditReportForm"))
+        self.EditRawFile.triggered.connect(lambda: self.menu_action("EditRawFile"))
 
         self.GetUserCode.triggered.connect(lambda: QtWidgets.QApplication.clipboard().setText(str(self.GetUserCode.text())))
 
@@ -399,13 +402,13 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             ]
         }
 
+        self.LoadDataFromDESLM.setEnabled(True)
         # ------------------------------------------------------------
         # В меню с параметрами добавим пункты с доступными годами
         df_years_list = load_parameter_table(myconstants.YEARS_LIST_TABLE)
         curr_year = datetime.datetime.now().year
 
         selected_year = load_param(myconstants.PARAMETER_SAVED_VALUE_LAST_SELECTED_YEAR, curr_year)
-        self.parent.parent.reporter.year_parameter = selected_year
 
         if type(df_years_list) == str:
             years_list = [curr_year]
@@ -415,35 +418,48 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             years_list = sorted(list(set(years_list + [curr_year] + [selected_year])))
 
         actions = []
+        saved_action_fnc = None
         for year in years_list:
             action = QtWidgets.QAction(str(year), self.parent)
             action.setCheckable(True)
             fnc = partial(self.menu_action, "SelectYearParameter", str(year), action)
             if year == selected_year:
-                saved_fnc = fnc
+                saved_action_fnc = fnc
             action.triggered.connect(fnc)
             actions.append(action)
 
         self.DESLM_Year.addActions(actions)
-        saved_fnc()
+        saved_action_fnc()
         # ------------------------------------------------------------
         # В меню с параметрами добавим пункты со списком доступных параметров
         df_parameters_list = load_parameter_table(myconstants.MONTHS_LIST_TABLE)
+        parameters_num = load_param(
+            myconstants.PARAMETER_SAVED_VALUE_LAST_SELECTED_MONTHS_PARAMETERS_NUM,
+            myconstants.PARAMETER_SAVED_VALUE_LAST_SELECTED_MONTHS_PARAMETERS_NUM_DEFVALUE
+        )
 
-        if type(df_years_list) != str:
+        if type(df_parameters_list) == str:
+            self.Parameters4DESLM.setVisible(False)
+        else:
             df_parameters_list = df_parameters_list.dropna()
-            periods_list = df_parameters_list[myconstants.PARAMETERS_ALL_TABLES[myconstants.MONTHS_LIST_TABLE][1]].to_list()
-            periods_list = sorted(periods_list)
+            key_column = myconstants.PARAMETERS_ALL_TABLES[myconstants.MONTHS_LIST_TABLE][1]
+            df_parameters_list = df_parameters_list[[key_column] + myconstants.MONTHS_LIST_TABLE_PARAM_COLUMNS]
+            periods_list = df_parameters_list.sort_values(by=key_column).values
 
-        actions = []
-        for period in periods_list:
-            action = QtWidgets.QAction(period, self.parent)
-            action.setCheckable(True)
-            fnc = partial(self.menu_action, "SelectReportPeriodParameter", period, action)
-            action.triggered.connect(fnc)
-            actions.append(action)
+            actions = []
+            saved_action_fnc = None
+            for num, period in enumerate(periods_list):
+                action = QtWidgets.QAction(period[0], self.parent)
+                action.setCheckable(True)
+                fnc = partial(self.menu_action, "SelectReportPeriodParameter", [num, period], action)
+                if num == parameters_num or saved_action_fnc is None:
+                    saved_action_fnc = fnc
 
-        self.Parameters4DESLM.addActions(actions)
+                action.triggered.connect(fnc)
+                actions.append(action)
+
+            self.Parameters4DESLM.addActions(actions)
+            saved_action_fnc()
         # ------------------------------------------------------------
 
 
@@ -595,27 +611,39 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             return
 
         if action_type == "SelectReportPeriodParameter":
-            self.set_status_bar_text(f"Для загружаемых из DES.LM данных выбран период: {p1}")
-            df_parameters_list = load_parameter_table(myconstants.MONTHS_LIST_TABLE)
-            if type(df_parameters_list) == str:
-                self.set_status_bar_text(f"Не удалось загрузить таблицу периодов (месяцев), по которым можно формировать отчёт")
+            self.set_status_bar_text(f"Для загружаемых из DES.LM данных выбран период: {p1[1][0]}")
+            self.parent.parent.reporter.month1_parameter = p1[1][1]
+            self.parent.parent.reporter.month2_parameter = p1[1][2]
+            save_param(myconstants.PARAMETER_SAVED_VALUE_LAST_SELECTED_MONTHS_PARAMETERS_NUM, p1[0])
+
+            for act in self.Parameters4DESLM.actions():
+                act.setChecked(False)
+
+            p2.setChecked(True)
+            return
+        if action_type == "LoadDataFromDESLM":
+            self.set_status_bar_text("Выбрана функция загрузки данных из DES.LM")
+            month1 = self.parent.parent.reporter.month1_parameter
+            month2 = self.parent.parent.reporter.month2_parameter
+            this_month = datetime.datetime.now().month
+            prev_month = max(1, this_month - 1)
+            month1 = month1.replace("this-1", f"{prev_month:02}").replace("this", f"{this_month:02}")
+            month2 = month2.replace("this-1", f"{prev_month:02}").replace("this", f"{this_month:02}")
+            year = int(self.parent.parent.reporter.year_parameter)
+
+            self.clear_log_box()
+            self.add_text_to_log_box("Запущена загрузка данных из DES.LM.")
+            if month1 == month2:
+                self.add_text_to_log_box(f"Параметры: год: {year}, месяц: {month2}")
             else:
-                key_column = myconstants.PARAMETERS_ALL_TABLES[myconstants.MONTHS_LIST_TABLE][1]
-                params = df_parameters_list[df_parameters_list[key_column] == p1][myconstants.MONTHS_LIST_TABLE_PARAM_COLUMNS].values
-                month1, month2 = list(params[0])
-                this_month = datetime.datetime.now().month
-                prev_month = max(1, this_month - 1)
-                month1 = int(month1.replace("this-1", f"{prev_month:02}").replace("this", f"{this_month:02}"))
-                month2 = int(month2.replace("this-1", f"{prev_month:02}").replace("this", f"{this_month:02}"))
-                year = int(self.parent.parent.reporter.year_parameter)
+                self.add_text_to_log_box(f"Параметры: год: {year}, месяцы с: {month1}  по: {month2}")
 
-                # Оставим отметку на том пункте, который выбрали последним - позволит увидеть, какой параметр был выбран.
-                for act in self.DESLM_Year.actions():
-                    act.setChecked(False)
-                p2.setChecked(True)
+            month1 = int(month1)
+            month2 = int(month2)
 
-                # Запросим отчёт:
-                get_data_using_url(year=year, month1=month1, month2=month2)
+            # Запросим отчёт:
+            get_data_using_url(year=year, month1=month1, month2=month2)
+
             return
 
         if action_type == "EditReportForm":
