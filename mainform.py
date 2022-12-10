@@ -20,7 +20,8 @@ from myutils import (
     open_dir_in_explore, get_home_dir,
     open_file_in_application, test_create_dir,
     open_user_files_dir, get_resource_path,
-    get_data_using_url, test_access_key
+    get_data_using_url, test_access_key,
+    open_raw_files_dir
 )
 
 class animatedGifLabel(QtWidgets.QLabel):
@@ -314,10 +315,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         # Формируем обработку пунктов меню:
         self.CreateReport.triggered.connect(lambda: self.menu_action("CreateReport"))
         self.OpenLastReport.triggered.connect(lambda: self.menu_action("OpenLastReport"))
-        self.OpenSavedReportsFolder.triggered.connect(lambda: self.menu_action("OpenSavedReportsFolder"))
 
-        self.OpenDownLoads.triggered.connect(lambda: self.menu_action("OpenDownLoads"))
-        self.OpenUserFilesFolder.triggered.connect(lambda: self.menu_action("OpenUserFilesFolder"))
         self.GetLastFileFromDownLoads.triggered.connect(lambda: self.menu_action("GetLastFileFromDownLoads"))
         self.MoveRawFile2Archive.triggered.connect(lambda: self.menu_action("MoveRawFile2Archive"))
         self.WaitFileAndCreateReport.triggered.connect(lambda: self.menu_action("WaitFileAndCreateReport"))
@@ -367,6 +365,11 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.UserProjectsAddInfo.setCheckable(True)
         self.SystemEMails.setCheckable(True)
         self.UserEMails.setCheckable(True)
+
+        self.OpenDownLoads.triggered.connect(lambda: self.menu_action("OpenDownLoads"))
+        self.OpenUserFilesFolder.triggered.connect(lambda: self.menu_action("OpenUserFilesFolder"))
+        self.OpenSavedReportsFolder.triggered.connect(lambda: self.menu_action("OpenSavedReportsFolder"))
+        self.OpenRawDataFolder.triggered.connect(lambda: self.menu_action("OpenRawDataFolder"))
 
         self.Exit.setShortcut("Alt+F4")
         self.update_user_files_menus()
@@ -588,6 +591,11 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         if action_type == "OpenUserFilesFolder":
             self.set_status_bar_text("Выбрана функция открытия директории с пользовательскими файлами")
             open_user_files_dir()
+            return
+
+        if action_type == "OpenRawDataFolder":
+            self.set_status_bar_text("Выбрана функция открытия директории с 'сырыми' файлами из DES.LM")
+            open_raw_files_dir()
             return
 
         if action_type == "GetLastFileFromDownLoads":

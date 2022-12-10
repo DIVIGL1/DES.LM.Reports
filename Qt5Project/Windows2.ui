@@ -743,6 +743,7 @@
     <addaction name="OpenDownLoads"/>
     <addaction name="OpenUserFilesFolder"/>
     <addaction name="OpenSavedReportsFolder"/>
+    <addaction name="OpenRawDataFolder"/>
    </widget>
    <addaction name="ReportMenu"/>
    <addaction name="DataMenu"/>
@@ -1069,7 +1070,7 @@
     <string>Прекратить ожидание данных</string>
    </property>
    <property name="statusTip">
-    <string>Прекратить ожидание файла в папке 'Загрузки'</string>
+    <string>Прекратить ожидание файла в папке 'Загрузки' или из Интернет</string>
    </property>
    <property name="shortcut">
     <string>F7</string>
@@ -1080,7 +1081,10 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Загрузить данные из DES.LM</string>
+    <string>Загрузить данные из DES.LM в папку 'Загрузки'</string>
+   </property>
+   <property name="statusTip">
+    <string>Начать загрузку данных из DES.LM через Интернет и сохранить в папке 'Загрузки'</string>
    </property>
    <property name="shortcut">
     <string>Alt+F8</string>
@@ -1103,6 +1107,9 @@
    <property name="text">
     <string>Загрузить данные из DES.LM и сформировать отчёт</string>
    </property>
+   <property name="statusTip">
+    <string>Загрузить данные из DES.LM через Интернет и на основании них сформировать отчёт по выделенной форме</string>
+   </property>
    <property name="shortcut">
     <string>Ctrl+F8</string>
    </property>
@@ -1114,10 +1121,24 @@
    <property name="text">
     <string>Пользовательсткий код:</string>
    </property>
+   <property name="statusTip">
+    <string>Скопировать пользовательский код в буфер обмена</string>
+   </property>
   </action>
   <action name="action1">
    <property name="text">
     <string>1</string>
+   </property>
+  </action>
+  <action name="OpenRawDataFolder">
+   <property name="text">
+    <string>'Сырые' данные из DES.LM</string>
+   </property>
+   <property name="statusTip">
+    <string>Открыть папку с 'cырыми' данными из DES.LM</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+4</string>
    </property>
   </action>
  </widget>

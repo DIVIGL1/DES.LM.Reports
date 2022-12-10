@@ -121,6 +121,11 @@ def open_user_files_dir():
     user_files_path = user_files_path.replace("/", "\\")
     open_dir_in_explore(user_files_path)
 
+def open_raw_files_dir():
+    from mytablefuncs import get_parameter_value
+    user_files_path = get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)
+    user_files_path = user_files_path.replace("/", "\\")
+    open_dir_in_explore(user_files_path)
 
 def open_dir_in_explore(dir_path):
     os.system(f"explorer.exe {dir_path}")
