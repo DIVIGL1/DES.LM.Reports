@@ -279,7 +279,39 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         if index >= 0:
             self.comboBoxSelectUsers.setCurrentIndex(index)
 
+    def setup_icons_and_toolbar(self):
+        # Структура параметка:
+        #     1) action
+        #     2) имя иконки
+        #     3) признак: использовать иконку для меню
+        #     4) признак: создать кнопку в toolbar с иконкой
+        actions_data = [
+            (self.Exit, "exit"),
+            ("", "----------------------------"),
+            (self.CreateReport, "create_report"),
+            (self.LoadDataFromDESLM, "download", True, False),
+            (self.Parameters4DESLM, "parameters", True, False),
+            (self.Settings, "settings", True, False),
+            (self.GetUserCode, "key", True, False),
+        ]
+
+        for one_action_data in actions_data:
+            self.setup_one_action(*one_action_data)
+
+    def setup_one_action(self, action, pict, menu=True, toolbar=True):
+        if action:
+            icon = QtGui.QIcon()
+            icon.addPixmap(QtGui.QPixmap(get_resource_path(pict)), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+
+            if menu: action.setIcon(icon)
+            if toolbar: self.toolBar.addAction(action)
+        else:
+            self.toolBar.addSeparator()
+
+
     def setup_form(self, reports_list):
+        self.setup_icons_and_toolbar()
+
         self.reports_list = reports_list
 
         self.setup_reports_list(reports_list)
@@ -1004,19 +1036,19 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.VerticalSplitter.splitterMoved.connect(self.save_coordinates)
         self.ui.HorisontalSplitter.splitterMoved.connect(self.save_coordinates)
 
-        self.wait_file_ag = animatedGifLabel("search")
+        self.wait_file_ag = animatedGifLabel("search_process")
         self.ui.statusBar.addPermanentWidget(self.wait_file_ag)
 
-        self.report_preparation_ag = animatedGifLabel("book")
+        self.report_preparation_ag = animatedGifLabel("report_process")
         self.ui.statusBar.addPermanentWidget(self.report_preparation_ag)
 
-        self.drag_and_drop_ag = animatedGifLabel("download")
+        self.drag_and_drop_ag = animatedGifLabel("drag_drop_process")
         self.ui.statusBar.addPermanentWidget(self.drag_and_drop_ag)
 
-        self.waiting_user_action_ag = animatedGifLabel("coffee")
+        self.waiting_user_action_ag = animatedGifLabel("coffee_process")
         self.ui.statusBar.addPermanentWidget(self.waiting_user_action_ag)
 
-        self.get_internet_data_ag = animatedGifLabel("internet")
+        self.get_internet_data_ag = animatedGifLabel("download_process")
         self.ui.statusBar.addPermanentWidget(self.get_internet_data_ag)
 
         self.communicate = Communicate()
