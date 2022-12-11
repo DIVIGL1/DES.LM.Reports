@@ -359,12 +359,51 @@ def get_data_using_url(mainwindow=None, year=None, month1=1, month2=None, create
 
 @thread
 def test_access_key(mainwindow):
+    mainwindow.ui.LoadDataFromDESLM.setVisible(False)
+    mainwindow.ui.LoadFromDELMAndCreateReport.setVisible(False)
     from iCodes import get_des_lm_url, get_secret_code
     data = get_des_lm_url()
+    menu = True
+    toolbar = False
+    action = mainwindow.ui.GetUserCode
+    if data["ret_code"] == 1:
+        mainwindow.ui.LoadDataFromDESLM.setVisible(True)
+        mainwindow.ui.LoadFromDELMAndCreateReport.setVisible(True)
+        action.setVisible(False)
+        return
+
     if data["ret_code"] == -1:
-        mainwindow.ui.LoadDataFromDESLM.setVisible(False)
-        mainwindow.ui.LoadFromDELMAndCreateReport.setVisible(False)
+        # Истёк срок действия ключа
         mainwindow.ui.GetUserCode.setText(f"Истёк срок валидности. Пользовательский код : [{get_secret_code()}]")
+        pict = "locked"
+        mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
+        return
+
+    if data["ret_code"] == -2:
+        # Получена не правильная ссылка
+        mainwindow.ui.GetUserCode.setText(f"Проблема с доступом! Пользовательский код : [{get_secret_code()}]")
+        pict = "cancel"
+        mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
+        return
+
+    if data["ret_code"] == -3:
+        # Нет локального файла ключа
+        mainwindow.ui.GetUserCode.setText(f"Пользовательский код : [{get_secret_code()}]")
+        pict = "key"
+        mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
+        return
+
+    if data["ret_code"] == -4:
+        # Нет доступа в Интернет
+        mainwindow.ui.GetUserCode.setText(f"Нет доступа в Интернет. Пользовательский код : [{get_secret_code()}]")
+        pict = "cancel"
+        mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
+        return
+
+    if data["ret_code"] == -5:
+        # Не понятная проблема
+        action.setVisible(False)
+        return
 
 if __name__ == "__main__":
     print(get_data_using_url(month2=datetime.datetime.now().month))
