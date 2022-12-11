@@ -1151,7 +1151,7 @@
     <string notr="true">Шаблон отчёта</string>
    </property>
    <property name="iconText">
-    <string notr="true">Шаблон отчёта</string>
+    <string notr="true"> </string>
    </property>
    <property name="toolTip">
     <string notr="true">Шаблон отчёта</string>
@@ -1171,7 +1171,7 @@
     <string notr="true">Файл с данными</string>
    </property>
    <property name="iconText">
-    <string notr="true">Файл с данными</string>
+    <string notr="true"> </string>
    </property>
    <property name="toolTip">
     <string notr="true">Файл с данными</string>
@@ -1484,7 +1484,7 @@
     <string notr="true">Файл с общими настройками программы</string>
    </property>
    <property name="iconText">
-    <string notr="true">Файл с общими настройками программы</string>
+    <string notr="true"> </string>
    </property>
    <property name="statusTip">
     <string notr="true">Файл с общими настройками программы</string>
@@ -1746,9 +1746,6 @@
    <property name="shortcut">
     <string notr="true">Alt+F8</string>
    </property>
-   <property name="visible">
-    <bool>false</bool>
-   </property>
   </action>
   <action name="LoadFromDELMAndCreateReport">
    <property name="enabled">
@@ -1771,9 +1768,6 @@
    </property>
    <property name="shortcut">
     <string notr="true">Ctrl+F8</string>
-   </property>
-   <property name="visible">
-    <bool>false</bool>
    </property>
   </action>
   <action name="GetUserCode">

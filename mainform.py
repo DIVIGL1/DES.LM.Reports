@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# pyuic5 -x Qt5Project/Windows2.ui -o myQt_form.py
+# pyuic5 -x Qt5Project/Windows.ui -o myQt_form.py
 # pyuic5 -x Qt5Project/_tmp_QLV.ui -o _tmp_QLV_form.py
 
 import os
