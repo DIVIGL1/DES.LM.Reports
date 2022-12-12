@@ -54,6 +54,8 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
     exit_in_process = None
     parent = None
     model = None
+    text_info_year = None
+    text_info_period = None
 
     def setup_reports_list(self, reports_list=None):
         if reports_list is None:
@@ -280,33 +282,47 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             self.comboBoxSelectUsers.setCurrentIndex(index)
 
     def setup_icons_and_toolbar(self):
-        # Структура параметка:
+        # Структура параметра:
         #     1) action
         #     2) имя иконки
         #     3) признак: использовать иконку для меню
         #     4) признак: создать кнопку в toolbar с иконкой
+        #     5) признак: создать на правом toolbar кнопку
+
+        show_on_tool_bar = is_admin()
         actions_data = [
-            (self.Exit, "exit"),
+            (self.Exit, "exit", True, True),
             ("", "----------------------------"),
-            (self.CreateReport, "create_report"),
+            (self.CreateReport, "create_report", True, True),
             (self.LoadDataFromDESLM, "download", True, False),
+            ("", "----------------------------"),
+            (self.EditReportForm, "edit_report_template", True, show_on_tool_bar),
+            (self.EditRawFile, "edit_raw", True, show_on_tool_bar),
+            (self.MoveRawFile2Archive, "archive", True, True),
+            ("", "----------------------------"),
+            (self.Settings, "settings", True, show_on_tool_bar),
             (self.Parameters4DESLM, "parameters", True, False),
-            (self.Settings, "settings", True, False),
-            (self.GetUserCode, "key", True, False),
+            (self.LoadFromDELMAndCreateReport, "conveyor", True, show_on_tool_bar, True),
+            (self.GetUserCode, "key", True, show_on_tool_bar, True),
+            (self.OpenDownLoads, "download_folder", True, False),
+            (self.OpenUserFilesFolder, "user_folder", True, False),
+            (self.OpenSavedReportsFolder, "reports_folder", True, False),
+            (self.OpenRawDataFolder, "raw_folder", True, False),
         ]
 
         for one_action_data in actions_data:
             self.setup_one_action(*one_action_data)
 
-    def setup_one_action(self, action, pict, menu=True, toolbar=True):
+
+    def setup_one_action(self, action, pict, menu=True, toolbar=True, right_toolbar=False):
         if action:
             icon = QtGui.QIcon()
             icon.addPixmap(QtGui.QPixmap(get_resource_path(pict)), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 
             if menu: action.setIcon(icon)
-            if toolbar: self.toolBar.addAction(action)
+            if toolbar: (self.toolBarRocket if right_toolbar else self.toolBar).addAction(action)
         else:
-            self.toolBar.addSeparator()
+            (self.toolBarRocket if right_toolbar else self.toolBar).addSeparator()
 
 
     def setup_form(self, reports_list):
@@ -642,6 +658,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         if action_type == "SelectYearParameter":
             self.set_status_bar_text(f"Для загружаемых из DES.LM данных выбран год: {p1}")
             self.parent.parent.reporter.year_parameter = int(p1)
+            self.text_info_year.setText(f" Год: {p1}   ")
             save_param(myconstants.PARAMETER_SAVED_VALUE_LAST_SELECTED_YEAR, int(p1))
 
             self.DESLM_Year.setTitle("Выбран год: " + p1)
@@ -655,6 +672,24 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             self.set_status_bar_text(f"Для загружаемых из DES.LM данных выбран период: {p1[1][0]}")
             self.parent.parent.reporter.month1_parameter = p1[1][1]
             self.parent.parent.reporter.month2_parameter = p1[1][2]
+
+            month1 = self.parent.parent.reporter.month1_parameter
+            month2 = self.parent.parent.reporter.month2_parameter
+            this_month = datetime.datetime.now().month
+            prev_month = max(1, this_month - 1)
+            month1 = month1.replace("this-1", f"{prev_month:02}").replace("this", f"{this_month:02}")
+            month2 = month2.replace("this-1", f"{prev_month:02}").replace("this", f"{this_month:02}")
+
+            month1 = int(month1)
+            month2 = int(month2)
+
+            if month1 == month2:
+                period = f"{myconstants.MONTHS[month2]}"
+            else:
+                period = f"{myconstants.MONTHS[month1]}-{myconstants.MONTHS[month2]}"
+
+            self.text_info_period.setText(f"Период: {period} ")
+
             save_param(myconstants.PARAMETER_SAVED_VALUE_LAST_SELECTED_MONTHS_PARAMETERS_NUM, p1[0])
 
             for act in self.Parameters4DESLM.actions():
@@ -1015,7 +1050,18 @@ class MyWindow(QtWidgets.QMainWindow):
         self.app = QtWidgets.QApplication(sys.argv)
         QtWidgets.QMainWindow.__init__(self, None)
         self.ui = QtMainWindow()
+
+        # ----------------------------------------------------
         self.ui.setupUi(self)
+        self.ui.text_info_period = QtWidgets.QLabel()
+        self.ui.text_info_period.setText("Период: ")
+        self.ui.toolBarRocket.addWidget(self.ui.text_info_period)
+
+        self.ui.text_info_year = QtWidgets.QLabel()
+        self.ui.text_info_year.setText("Год: ")
+        self.ui.toolBarRocket.addWidget(self.ui.text_info_year)
+        # ----------------------------------------------------
+
         self.ui.parent = self
         self.ui.save_app_link(self.app)
         self.setWindowTitle(f"DES.LM.Reporter ({myconstants.APP_VERSION})")

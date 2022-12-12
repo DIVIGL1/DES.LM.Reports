@@ -385,7 +385,7 @@ def test_access_key(mainwindow):
     if data["ret_code"] == -2:
         # Получена не правильная ссылка
         mainwindow.ui.GetUserCode.setText(f"Проблема с доступом! Пользовательский код : [{get_secret_code()}]")
-        mainwindow.ui.GetUserCode.setToolTip("Проблема с доступом в данным в DES.LM через Интернет!")
+        mainwindow.ui.GetUserCode.setToolTip("Проблема с доступом к данным\nв DES.LM через Интернет!")
         pict = "cancel"
         mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
         return
@@ -393,7 +393,7 @@ def test_access_key(mainwindow):
     if data["ret_code"] == -3:
         # Нет локального файла ключа
         mainwindow.ui.GetUserCode.setText(f"Пользовательский код : [{get_secret_code()}]")
-        mainwindow.ui.GetUserCode.setToolTip("Отсутствует настройка для доступа к данным из DES.LM через Интернет.")
+        mainwindow.ui.GetUserCode.setToolTip("Отсутствует настройка\nдля доступа к данным из DES.LM\nчерез Интернет.")
         pict = "key"
         mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
         return
@@ -401,14 +401,14 @@ def test_access_key(mainwindow):
     if data["ret_code"] == -4:
         # Нет доступа в Интернет
         mainwindow.ui.GetUserCode.setText(f"Нет доступа в Интернет. Пользовательский код : [{get_secret_code()}]")
-        mainwindow.ui.GetUserCode.setToolTip("Отсутствует доступ в Интернет для получения данных данным DES.LM.")
+        mainwindow.ui.GetUserCode.setToolTip("Отсутствует доступ в Интернет,\nнеобходимый для получения\nданных из DES.LM.")
         pict = "cancel"
         mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
         return
 
     if data["ret_code"] == -5:
         # Не понятная проблема
-        mainwindow.ui.GetUserCode.setToolTip("не определённые проблемы с доступом к данным из DES.LM через Интернет.")
+        mainwindow.ui.GetUserCode.setToolTip("Возникли неопределённые проблемы\nс доступом к данным из DES.LM\nчерез Интернет.")
         action.setVisible(False)
         return
 
