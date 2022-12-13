@@ -401,7 +401,7 @@ class Ui_MainWindow(object):
         self.plainTextEdit.setMinimumSize(QtCore.QSize(300, 0))
         self.plainTextEdit.setToolTip("Окно для отображения информации о:\n"
 " - подготовке отчетов;\n"
-" - загрузки и копировании файлов;\n"
+" - загрузке и копировании файлов;\n"
 " - возникающих ошибках;\n"
 " - и т.п.")
         self.plainTextEdit.setStatusTip("")
