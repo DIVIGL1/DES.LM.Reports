@@ -217,6 +217,7 @@ REQUIRED_SYSTEM_SECTIONS = [
     (RAW_DATA_SECTION_NAME, "Исходные (сырые) данные"),
     (REPORTS_SECTION_NAME, "Отчёты"),
     (REPORTS_PREPARED_SECTION_NAME, "Сформированные отчёты"),
+    (USER_PARAMETERS_SECTION_NAME, "Таблицы с данными пользователя"),
 ]
 
 ROUND_FTE_SECTION_NAME = "RoundFTE"
@@ -409,4 +410,4 @@ EXCELWINDOWSTATE_MIN = -4140  # Минимизировано
 NUM_ROWS_FOR_HIDE = 300
 NUM_COLUMNS_FOR_HIDE = 150
 
-APP_VERSION = "v:8.015.131222.02"
+APP_VERSION = "v:8.02.141222.02"

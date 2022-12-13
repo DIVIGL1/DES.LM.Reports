@@ -40,31 +40,28 @@ class reportCreator(object):
             else:
                 raw_file_name = self.parent.mainwindow.ui.listViewRawData.currentIndex().data()
                 report_file_name = self.parent.mainwindow.ui.listViewReports.currentIndex().data()
-
-                # TODO: Разобраться нужна ли следующая строка
-                self.parent.mainwindow.ui.resize_text_and_button()
-
-                self.parent.report_parameters.update(raw_file_name, report_file_name)
-                myutils.save_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT,
-                                   self.reports_list.index(report_file_name) + 1)
-                myutils.save_param(myconstants.PARAMETER_SAVED_SELECTED_RAW_FILE, raw_file_name)
-
-                if self.parent.report_parameters.report_file_name is None:
+                if raw_file_name is None:
+                    # Не выбрана строка файлом с данными. Скорее всего список файлов пустой.
+                    myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
+                    self.parent.mainwindow.add_text_to_log_box("Необходимо выбрать файл, выгруженный из DES.LM для формирования отчёта.")
+                    ret_value = False
+                elif report_file_name is None:
+                    # Не выбрана строка шаблоном отчёта с данными. Скорее всего список отчётов пустой.
                     myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
                     self.parent.mainwindow.add_text_to_log_box("Необходимо выбрать отчётную форму.")
                     ret_value = False
                 else:
-                    if self.parent.report_parameters.raw_file_name is None:
-                        myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
-                        self.parent.mainwindow.add_text_to_log_box("Необходимо выбрать файл, выгруженный из DES.LM для формирования отчёта.")
-                        ret_value = False
-                    else:
-                        self.report_creation_in_process = True
-                        self.start_timer()
-                        if not p_dont_clear_log_box:
-                            self.parent.mainwindow.ui.clear_log_box()
+                    self.parent.report_parameters.update(raw_file_name, report_file_name)
+                    myutils.save_param(myconstants.PARAMETER_SAVED_SELECTED_REPORT,
+                                       self.reports_list.index(report_file_name) + 1)
+                    myutils.save_param(myconstants.PARAMETER_SAVED_SELECTED_RAW_FILE, raw_file_name)
 
-                        send_df_2_xls(self.parent.report_parameters)
+                    self.report_creation_in_process = True
+                    self.start_timer()
+                    if not p_dont_clear_log_box:
+                        self.parent.mainwindow.ui.clear_log_box()
+
+                    send_df_2_xls(self.parent.report_parameters)
 
         return ret_value
 

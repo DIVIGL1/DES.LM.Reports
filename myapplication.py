@@ -122,6 +122,13 @@ class MyApplication:
 
     def __init__(self):
         myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
+
+        # Проверим наличие необходимых папок и если их нет, то создадим
+        for one_section_name, _ in myconstants.REQUIRED_SYSTEM_SECTIONS:
+            section_path = mytablefuncs.get_parameter_value(one_section_name)
+            if not os.path.exists(section_path):
+                os.mkdir(section_path)
+
         self.report_parameters = MyReportParameters(self)
         self.reporter = reportCreator(self)
         self.mainwindow = mainform.MyWindow(self)

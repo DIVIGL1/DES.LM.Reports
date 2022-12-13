@@ -361,55 +361,80 @@ def get_data_using_url(mainwindow=None, year=None, month1=1, month2=None, create
 def test_access_key(mainwindow):
     mainwindow.ui.LoadDataFromDESLM.setVisible(False)
     mainwindow.ui.LoadFromDELMAndCreateReport.setVisible(False)
-    from iCodes import get_des_lm_url, get_secret_code
+    from iCodes import get_des_lm_url, get_user_code
     data = get_des_lm_url()
     menu = True
     toolbar = False
     action = mainwindow.ui.GetUserCode
     if data["ret_code"] == 1:
+        # Всё нормально.
         mainwindow.ui.LoadDataFromDESLM.setVisible(True)
         mainwindow.ui.LoadFromDELMAndCreateReport.setVisible(True)
         action.setVisible(False)
         return
 
-    mainwindow.ui.GetUserCode.setText(f"Пользовательский код : [{get_secret_code()}]")
+    mainwindow.ui.GetUserCode.setText(f"Пользовательский код : [{get_user_code()}]")
 
     if data["ret_code"] == -1:
         # Истёк срок действия ключа
-        mainwindow.ui.GetUserCode.setText(f"Истёк срок валидности. Пользовательский код : [{get_secret_code()}]")
-        mainwindow.ui.GetUserCode.setToolTip("Истёк срок валидности ключа доступа.")
+        action.setText(f"Истёк срок валидности. Пользовательский код : [{get_user_code()}]")
+        action.setToolTip("Истёк срок валидности ключа доступа.")
         pict = "locked"
         mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
         return
 
     if data["ret_code"] == -2:
         # Получена не правильная ссылка
-        mainwindow.ui.GetUserCode.setText(f"Проблема с доступом! Пользовательский код : [{get_secret_code()}]")
-        mainwindow.ui.GetUserCode.setToolTip("Проблема с доступом к данным\nв DES.LM через Интернет!")
+        action.setText(f"Проблема с доступом! Пользовательский код : [{get_user_code()}]")
+        action.setToolTip("Проблема с доступом к данным\nв DES.LM через Интернет!")
         pict = "cancel"
         mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
         return
 
     if data["ret_code"] == -3:
         # Нет локального файла ключа
-        mainwindow.ui.GetUserCode.setText(f"Пользовательский код : [{get_secret_code()}]")
-        mainwindow.ui.GetUserCode.setToolTip("Отсутствует настройка\nдля доступа к данным из DES.LM\nчерез Интернет.")
+        action.setText(f"Пользовательский код : [{get_user_code()}]")
+        action.setToolTip("Отсутствует настройка\nдля доступа к данным из DES.LM\nчерез Интернет.")
         pict = "key"
         mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
         return
 
     if data["ret_code"] == -4:
         # Нет доступа в Интернет
-        mainwindow.ui.GetUserCode.setText(f"Нет доступа в Интернет. Пользовательский код : [{get_secret_code()}]")
-        mainwindow.ui.GetUserCode.setToolTip("Отсутствует доступ в Интернет,\nнеобходимый для получения\nданных из DES.LM.")
+        action.setText(f"Нет доступа в Интернет. Пользовательский код : [{get_user_code()}]")
+        action.setToolTip("Отсутствует доступ в Интернет,\nнеобходимый для получения\nданных из DES.LM.")
         pict = "cancel"
         mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
         return
 
     if data["ret_code"] == -5:
         # Не понятная проблема
-        mainwindow.ui.GetUserCode.setToolTip("Возникли неопределённые проблемы\nс доступом к данным из DES.LM\nчерез Интернет.")
-        action.setVisible(False)
+        action.setToolTip("Возникли неопределённые проблемы\nс доступом в Интернет.")
+        # action.setVisible(False)
+        return
+
+    if data["ret_code"] == -6:
+        # Нет локального файла ключа
+        action.setText(f"Пользовательский код : [{get_user_code()}]")
+        action.setToolTip("Отсутствует настройка\nдля доступа к данным из DES.LM\nчерез Интернет\n(InvalidToken)")
+        pict = "key"
+        mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
+        return
+
+    if data["ret_code"] == -7:
+        # Нет серверного файла ключа
+        action.setText(f"Пользовательский код : [{get_user_code()}]")
+        action.setToolTip("Отсутствует настройка\nдля доступа к данным из DES.LM\nчерез Интернет\n(на сервере нет ключа)")
+        pict = "key"
+        mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
+        return
+
+    if data["ret_code"] == -8:
+        # Другая ошибка считывания серверного файла ключа
+        action.setText(f"Пользовательский код : [{get_user_code()}]")
+        action.setToolTip("Не удалось прочитать\nключ доступа для подключения\nк DES.LM через Интернет")
+        pict = "key"
+        mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
         return
 
 if __name__ == "__main__":
