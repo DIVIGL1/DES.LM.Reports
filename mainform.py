@@ -118,6 +118,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VIP, self.checkBoxDeleteVIP.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_CURRMONTHHALF, self.checkBoxCurrMonthAHalf.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, self.checkBoxDeleteNotProduct.isChecked())
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_USE_ALL_P_INLIST_WITH_ADD, self.checkBoxAddProjectsWithAdd.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT, self.checkBoxDeleteWithoutFact.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, self.checkBoxDelPDn.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, self.checkBoxDeleteVac.isChecked())
@@ -173,6 +174,8 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VIP, myconstants.PARAMETER_SAVED_VALUE_DELETE_VIP_DEFVALUE))
         self.checkBoxDeleteNotProduct.setChecked(
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD, myconstants.PARAMETER_SAVED_VALUE_DELETE_NONPROD_DEFVALUE))
+        self.checkBoxAddProjectsWithAdd.setChecked(
+            load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_USE_ALL_P_INLIST_WITH_ADD, myconstants.PARAMETER_SAVED_VALUE_USE_ALL_P_INLIST_WITH_ADD_DEFVALUE))
         self.checkBoxDeleteWithoutFact.setChecked(
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT, myconstants.PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT_DEFVALUE))
         self.checkBoxCurrMonthAHalf.setChecked(
@@ -339,6 +342,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         
         self.checkBoxDeleteVIP.clicked.connect(self.on_click_checkboxes)
         self.checkBoxDeleteNotProduct.clicked.connect(self.on_click_checkboxes)
+        self.checkBoxAddProjectsWithAdd.clicked.connect(self.on_click_checkboxes)
 
         self.checkBoxOnlyProjectsWithAdd.clicked.connect(self.onclick_checkbox_only_projects_with_add)
         self.checkBoxSelectUsers.clicked.connect(self.onclick_checkbox_select_users)
