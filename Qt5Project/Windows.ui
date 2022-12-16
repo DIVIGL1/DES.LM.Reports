@@ -65,6 +65,15 @@
     </property>
     <item row="0" column="0">
      <widget class="QSplitter" name="VerticalSplitter">
+      <property name="toolTip">
+       <string notr="true"/>
+      </property>
+      <property name="statusTip">
+       <string notr="true"/>
+      </property>
+      <property name="whatsThis">
+       <string notr="true"/>
+      </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -455,6 +464,19 @@
             </property>
             <property name="checked">
              <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBoxAddProjectsWithAdd">
+            <property name="toolTip">
+             <string notr="true"/>
+            </property>
+            <property name="statusTip">
+             <string notr="true"/>
+            </property>
+            <property name="text">
+             <string notr="true">Учесть все проекты из файла с доп.информацией</string>
             </property>
            </widget>
           </item>
