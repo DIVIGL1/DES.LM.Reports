@@ -452,6 +452,14 @@ def test_access_key(mainwindow):
         mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
         return
 
+    if data["ret_code"] == -9:
+        # Не удалось прочитать время в Интернет, чтобы определить "срок годности" ключа
+        action.setText(f"Пользовательский код: [{get_user_code()}]")
+        action.setToolTip("Не удалось прочитать\nвремя с сервера Интернет")
+        pict = "key"
+        mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
+        return
+
 
 if __name__ == "__main__":
     print(get_data_using_url(month2=datetime.datetime.now().month))
