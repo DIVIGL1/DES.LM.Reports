@@ -191,6 +191,7 @@ DELETE_SHEETS_LIST_IF_NO_FORMULAS = ["ИсходныеДанные", "Уника
 DONT_REPLACE_ENTER = ["Month"]
 COLUMNS_FILLNA = ["Division", "FN", "Portfolio"]
 FILLNA_STRING = "???"
+NOT_EXIST_ELEMENT = "< не существующий элемент >"
 
 BOOLEAN_VALUES_SUBST = {"ЛОЖЬ": False, "ИСТИНА": True}
 
@@ -244,8 +245,9 @@ PROJECTS_LIST_ADD_INFO = "ProjectsAddInfo.xlsx"
 YEARS_LIST_TABLE = "Years4Periods.xlsx"
 MONTHS_LIST_TABLE = "DataPeriods.xlsx"
 
+PROJECTS_LIST_ADD_INFO_RENAME_KEY_COLUMN = "Наименование проекта (только текст)"
 PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST = {
-    "Наименование проекта (только текст)": "Project4AddInfo",
+    PROJECTS_LIST_ADD_INFO_RENAME_KEY_COLUMN: "Project4AddInfo",
     "Выруч_Янв": "SumInCome01",
     "Выруч_Фев": "SumInCome02",
     "Выруч_Мар": "SumInCome03",
@@ -290,7 +292,7 @@ PARAMETERS_ALL_TABLES = {
     VIP_TABLE: ("Таблица списка VIP", "FIO_VIP"),
     PORTFEL_TABLE: ("Таблица списка портфелей проектов", "ID_DES.LM_project"),
     ISDOGNAME_TABLE: ("Таблица наименований ИС из контракта", "ID_DES.LM_project"),
-    PROJECTS_LIST_ADD_INFO: ("Таблица наименований ИС из контракта", "Наименование проекта (только текст)"),
+    PROJECTS_LIST_ADD_INFO: ("Таблица наименований ИС из контракта", PROJECTS_LIST_ADD_INFO_RENAME_KEY_COLUMN),
     YEARS_LIST_TABLE: ("Таблица годов, по которым можно формировать отчёт", "Years4Period"),
     MONTHS_LIST_TABLE: ("Таблица периодов (месяцев), по которым можно формировать отчёт", "DataPeriodName")
 }
@@ -412,4 +414,4 @@ EXCELWINDOWSTATE_MIN = -4140  # Минимизировано
 NUM_ROWS_FOR_HIDE = 300
 NUM_COLUMNS_FOR_HIDE = 150
 
-APP_VERSION = "v:8.02.141222.02"
+APP_VERSION = "v:8.05.171222.02"

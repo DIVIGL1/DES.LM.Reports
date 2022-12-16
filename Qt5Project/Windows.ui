@@ -279,6 +279,15 @@
           </item>
           <item>
            <widget class="QRadioButton" name="radioButtonDD1">
+            <property name="toolTip">
+             <string notr="true"/>
+            </property>
+            <property name="statusTip">
+             <string notr="true"/>
+            </property>
+            <property name="whatsThis">
+             <string notr="true"/>
+            </property>
             <property name="accessibleName">
              <string notr="true"/>
             </property>
@@ -446,6 +455,9 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string notr="true"/>
             </property>
             <property name="statusTip">
              <string notr="true"/>

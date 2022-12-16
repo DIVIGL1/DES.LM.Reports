@@ -77,6 +77,11 @@ def load_parameter_table(tablename):
     parameter_df = pd.read_excel(full_file_path, engine='openpyxl')
     parameter_df.dropna(how='all', inplace=True)
     unique_key_field = myconstants.PARAMETERS_ALL_TABLES[tablename][1]
+
+    # Уберём строки, у которых ключевое поле - пустая строка
+    parameter_df[unique_key_field].fillna("", inplace=True)
+    parameter_df = parameter_df[parameter_df[unique_key_field] != ""]
+
     if parameter_df.duplicated([unique_key_field]).sum() > 0:
         report_str = ""
         counter = 0
@@ -209,7 +214,7 @@ def calc_fact_fte(FactHours, Northern, CHour, NHour, Project, PlanFTE):
 
 def add_combine_columns(df):
     df["Project7Letters"] = df["Project"].str[:7]
-    
+
     df["FN_Proj"] = df["FN"] + "#" + df["Project7Letters"]
     df["FN_Proj_Month"] = df["FN"] + "#" + df["Project7Letters"] + "#" + df["Month"]
     
@@ -263,6 +268,7 @@ def prepare_data(
         raw_file_name,
         p_delete_vip,
         p_delete_not_prod_units,
+        p_add_all_projects_with_add_info,
         p_projects_with_add_info,
         p_delete_without_fact,
         p_curr_month_half,
@@ -328,7 +334,7 @@ def prepare_data(
         ui_handle.add_text_to_log_box(projects_list_add_info)
         return None
 
-    if ui_handle.checkBoxOnlyProjectsWithAdd.isChecked():
+    if p_projects_with_add_info:
         # Отмечено, что нужно выбрать только определённые проекты.
         # Наименование столбца содержащего признаки для фильтрации:
         # Найдём реальное название (с учетом регистра):
@@ -341,7 +347,6 @@ def prepare_data(
         group_value = ui_handle.comboBoxPGroups.currentText()
         if group_value == myconstants.TEXT_4_ALL_GROUPS:
             pass
-            #projects_list_add_info = projects_list_add_info[projects_list_add_info[grp_clmn_name] != ""]
         else:
             projects_list_add_info = projects_list_add_info[projects_list_add_info[grp_clmn_name] == group_value]
 
@@ -357,6 +362,37 @@ def prepare_data(
         ui_handle.add_text_to_log_box("Сформировать отчёт невозможно!")
         ui_handle.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
         return None
+
+    if p_add_all_projects_with_add_info:
+        # Мы должны добавить строку для каждого проекта,
+        # который есть в списке - один раз для каждого месяца
+        # 1. получим все уникальные месяцы:
+        months_list = data_df["FDate"].unique()
+        add_projects = projects_list_add_info[myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST[myconstants.PROJECTS_LIST_ADD_INFO_RENAME_KEY_COLUMN]].values
+
+        one_row = data_df.loc[0]
+        for idx, elm_type in enumerate(data_df.dtypes):
+            if elm_type in ["float64", "int64"]:
+                one_row[idx] = 0
+            elif elm_type in ["object"]:
+                one_row[idx] = ""
+            elif elm_type in ["bool"]:
+                one_row[idx] = False
+            else:
+                one_row[idx] = ""
+
+            one_row["FNRaw"] = ""
+            one_row["User"] = myconstants.NOT_EXIST_ELEMENT
+
+
+        for one_month in months_list:
+            for one_project in add_projects:
+                one_row["FDate"] = one_month
+                one_row["Project"] = one_project
+                one_row["ProjectType"] = "+"
+
+                data_df = data_df.append(one_row)
+
     for column_name in set(data_df.dtypes.keys()) - set(myconstants.DONT_REPLACE_ENTER):
         if data_df.dtypes[column_name] == type(str):
             data_df[column_name] = data_df[column_name].str.replace("\n", "")
@@ -435,7 +471,7 @@ def prepare_data(
 
     ui_handle.add_text_to_log_box(f"Добавлена доп информация по проектам.")
 
-    if ui_handle.checkBoxOnlyProjectsWithAdd.isChecked():
+    if p_projects_with_add_info:
         data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how="inner")
         if data_df.shape[0] == 0:
             ui_handle.add_text_to_log_box(
@@ -455,7 +491,7 @@ def prepare_data(
         data_df.loc[(data_df["FirstDate"] == sCurrMonth), ["FactFTE"]] = data_df[data_df["FirstDate"] == sCurrMonth]["FactFTE"] * 2
 
     if p_delete_without_fact:
-        data_df = data_df[data_df["FactFTE"] != 0]
+        data_df = data_df[((data_df["FactFTE"] != 0) | ((data_df["FactFTE"] == 0) & (data_df["ProjectType"] == "+")))]
         ui_handle.add_text_to_log_box("Удалены строки без данных о факте.")
         ui_handle.add_text_to_log_box(f"Пересчитано (всего строк обработанных данных: {data_df.shape[0]})")
 
@@ -555,6 +591,8 @@ def prepare_data(
         data_df.loc[data_df["ProjectType"] == one_type, "Portfolio"] = myconstants.NO_PORTFOLIO_TEXT
     
     data_df = data_df.merge(projects_sub_types_descr_df, left_on="ProjectSubType", right_on="ProjectSubTypeName", how="left")
+    data_df["ProjectSubTypeDescription"].fillna("", inplace=True)
+
     if p_delete_pers_data:
         data_df = data_df[data_df["ProjectSubTypePersData"] != 1]
 
@@ -577,7 +615,7 @@ def prepare_data(
         
         data_df = data_df[data_df["User"] != vacancy_text]
         ui_handle.add_text_to_log_box(f"Удалены вакансии (всего строк обработанных данных: {data_df.shape[0]})")
-    
+
     add_combine_columns(data_df)
 
     ui_handle.add_text_to_log_box(f"Добавлены производные столбцы (конкатенация) (всего строк данных: {data_df.shape[0]})")

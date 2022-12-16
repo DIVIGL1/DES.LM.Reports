@@ -90,6 +90,7 @@ def send_df_2_xls(report_parameters):
 
     p_delete_vip = report_parameters.p_delete_vip
     p_delete_not_prod_units = report_parameters.p_delete_not_prod_units
+    p_add_all_projects_with_add_info = report_parameters.p_add_all_projects_with_add_info
     p_projects_with_add_info = report_parameters.p_projects_with_add_info
     p_delete_without_fact = report_parameters.p_delete_without_fact
     p_curr_month_half = report_parameters.p_curr_month_half
@@ -119,6 +120,9 @@ def send_df_2_xls(report_parameters):
         num_poz += 1
     ui_handle.add_text_to_log_box(f"{num_poz}. {'В отчете включено только производство.' if p_delete_not_prod_units else 'В отчет включены производство и управленцы.'}")
     num_poz += 1
+    if p_add_all_projects_with_add_info:
+        ui_handle.add_text_to_log_box(f"{num_poz}. Добавлены все проекты из файла с доп информацией с суммами.")
+        num_poz += 1
     ui_handle.add_text_to_log_box(
         f"{num_poz}. Обрабатываются {'только проекты из списка с доп данными.' if p_projects_with_add_info else 'все проекты.'}")
     num_poz += 1
@@ -172,6 +176,7 @@ def send_df_2_xls(report_parameters):
             raw_file_name,
             p_delete_vip,
             p_delete_not_prod_units,
+            p_add_all_projects_with_add_info,
             p_projects_with_add_info,
             p_delete_without_fact,
             p_curr_month_half,
@@ -243,7 +248,9 @@ def send_df_2_xls(report_parameters):
                         ui_handle.add_text_to_log_box("")
                         unique_elements_list = None
                         for index, one_column in enumerate(columns_4_unique_list):
-                            unique_elements_list = sorted(report_df[one_column].unique())
+                            unique_elements_list = report_df[report_df[one_column].str.find(myconstants.NOT_EXIST_ELEMENT) == -1][one_column].unique()
+                            unique_elements_list = sorted(unique_elements_list)
+
                             ui_handle.change_last_log_box_text(f"{index + 1} из {len(columns_4_unique_list)} ({one_column}): {len(unique_elements_list)}")
 
                             data_array = [[one_uelement] for one_uelement in unique_elements_list]
