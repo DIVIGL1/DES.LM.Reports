@@ -9,6 +9,8 @@ import hashlib
 import subprocess
 import json
 import requests
+import socket
+import struct
 
 import myconstants
 
@@ -121,11 +123,13 @@ def open_user_files_dir():
     user_files_path = user_files_path.replace("/", "\\")
     open_dir_in_explore(user_files_path)
 
+
 def open_raw_files_dir():
     from mytablefuncs import get_parameter_value
     user_files_path = get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)
     user_files_path = user_files_path.replace("/", "\\")
     open_dir_in_explore(user_files_path)
+
 
 def open_dir_in_explore(dir_path):
     os.system(f"explorer.exe {dir_path}")
@@ -142,6 +146,17 @@ def test_create_dir(dir_path):
 
     return True
 
+
+def get_internet_time():
+    address = ('pool.ntp.org', 123)
+    msg = '\x1b' + '\0' * 47
+
+    client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    client.sendto(bytes(msg, encoding='utf-8'), address)
+    msg, _ = client.recvfrom(1024)
+
+    secs = struct.unpack("!12I", msg)[10] - 2208988800
+    return datetime.datetime.fromtimestamp(secs)
 
 @thread
 def copy_file_as_drop_process(mainwindow, xls_files, create_report=False):
@@ -373,7 +388,7 @@ def test_access_key(mainwindow):
         action.setVisible(False)
         return
 
-    mainwindow.ui.GetUserCode.setText(f"Пользовательский код : [{get_user_code()}]")
+    mainwindow.ui.GetUserCode.setText(f"Пользовательский код: [{get_user_code()}]")
 
     if data["ret_code"] == -1:
         # Истёк срок действия ключа
@@ -393,7 +408,7 @@ def test_access_key(mainwindow):
 
     if data["ret_code"] == -3:
         # Нет локального файла ключа
-        action.setText(f"Пользовательский код : [{get_user_code()}]")
+        action.setText(f"Пользовательский код: [{get_user_code()}]")
         action.setToolTip("Отсутствует настройка\nдля доступа к данным из DES.LM\nчерез Интернет.")
         pict = "key"
         mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
@@ -415,7 +430,7 @@ def test_access_key(mainwindow):
 
     if data["ret_code"] == -6:
         # Нет локального файла ключа
-        action.setText(f"Пользовательский код : [{get_user_code()}]")
+        action.setText(f"Пользовательский код: [{get_user_code()}]")
         action.setToolTip("Отсутствует настройка\nдля доступа к данным из DES.LM\nчерез Интернет\n(InvalidToken)")
         pict = "key"
         mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
@@ -423,7 +438,7 @@ def test_access_key(mainwindow):
 
     if data["ret_code"] == -7:
         # Нет серверного файла ключа
-        action.setText(f"Пользовательский код : [{get_user_code()}]")
+        action.setText(f"Пользовательский код: [{get_user_code()}]")
         action.setToolTip("Отсутствует настройка\nдля доступа к данным из DES.LM\nчерез Интернет\n(на сервере нет ключа)")
         pict = "key"
         mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
@@ -431,11 +446,12 @@ def test_access_key(mainwindow):
 
     if data["ret_code"] == -8:
         # Другая ошибка считывания серверного файла ключа
-        action.setText(f"Пользовательский код : [{get_user_code()}]")
+        action.setText(f"Пользовательский код: [{get_user_code()}]")
         action.setToolTip("Не удалось прочитать\nключ доступа для подключения\nк DES.LM через Интернет")
         pict = "key"
         mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
         return
+
 
 if __name__ == "__main__":
     print(get_data_using_url(month2=datetime.datetime.now().month))
