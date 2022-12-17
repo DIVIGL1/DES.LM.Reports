@@ -342,8 +342,6 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
         self.parent.refresh_raw_files_list(last_raw_file)
 
-        self.pushButtonDoIt.clicked.connect(self.on_click_do_it)
-        
         self.checkBoxDeleteVIP.clicked.connect(self.on_click_checkboxes)
         self.checkBoxDeleteNotProduct.clicked.connect(self.on_click_checkboxes)
         self.checkBoxAddProjectsWithAdd.clicked.connect(self.on_click_checkboxes)
@@ -866,7 +864,6 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 self.parent.ag_switcher("wait_file_ag")
 
             # В этом случае запрещено:
-            self.pushButtonDoIt.setEnabled(False)
             self.CreateReport.setEnabled(False)
 
             self.GetLastFileFromDownLoads.setEnabled(False)
@@ -912,8 +909,6 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 self.parent.ag_switcher("drag_and_drop_ag")
 
                 # В этом случае запрещено:
-                self.pushButtonDoIt.setEnabled(False)
-
                 self.CreateReport.setEnabled(False)
                 self.Exit.setEnabled(False)
                 self.GetLastFileFromDownLoads.setEnabled(False)
@@ -949,7 +944,6 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 self.parent.ag_switcher("report_preparation_ag")
 
                 # В этом случае запрещено:
-                self.pushButtonDoIt.setEnabled(False)
                 self.pushButtonOpenLastReport.setEnabled(False)
 
                 self.CreateReport.setEnabled(False)
@@ -986,8 +980,6 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                     self.parent.ag_switcher("waiting_user_action_ag")
 
                 # В этом случае разрешено всё:
-                self.pushButtonDoIt.setEnabled(True)
-
                 self.CreateReport.setEnabled(True)
                 self.OpenLastReport.setEnabled(self.pushButtonOpenLastReport.isEnabled() and self.pushButtonOpenLastReport.isVisible())
                 self.Exit.setEnabled(True)
