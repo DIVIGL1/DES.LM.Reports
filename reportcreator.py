@@ -91,7 +91,7 @@ def send_df_2_xls(report_parameters):
     p_delete_vip = report_parameters.p_delete_vip
     p_delete_not_prod_units = report_parameters.p_delete_not_prod_units
     p_add_all_projects_with_add_info = report_parameters.p_add_all_projects_with_add_info
-    p_projects_with_add_info = report_parameters.p_projects_with_add_info
+    p_only_projects_with_add_info = report_parameters.p_only_projects_with_add_info
     p_delete_without_fact = report_parameters.p_delete_without_fact
     p_curr_month_half = report_parameters.p_curr_month_half
     p_delete_pers_data = report_parameters.p_delete_pers_data
@@ -121,10 +121,10 @@ def send_df_2_xls(report_parameters):
     ui_handle.add_text_to_log_box(f"{num_poz}. {'В отчете включено только производство.' if p_delete_not_prod_units else 'В отчет включены производство и управленцы.'}")
     num_poz += 1
     if p_add_all_projects_with_add_info:
-        ui_handle.add_text_to_log_box(f"{num_poz}. Добавлены все проекты из файла с доп информацией с суммами.")
+        ui_handle.add_text_to_log_box(f"{num_poz}. Добавлены все суммы по выбранным строкам из файла с доп информацией.")
         num_poz += 1
     ui_handle.add_text_to_log_box(
-        f"{num_poz}. Обрабатываются {'только проекты из списка с доп данными.' if p_projects_with_add_info else 'все проекты.'}")
+        f"{num_poz}. Обрабатываются {'только проекты из списка с доп данными.' if p_only_projects_with_add_info else 'все проекты.'}")
     num_poz += 1
     ui_handle.add_text_to_log_box(f"{num_poz}. Персональные данные (больничные листы): {'исключены из отчета.' if p_delete_pers_data else 'оставлены в отчете.'}")
     num_poz += 1
@@ -177,7 +177,7 @@ def send_df_2_xls(report_parameters):
             p_delete_vip,
             p_delete_not_prod_units,
             p_add_all_projects_with_add_info,
-            p_projects_with_add_info,
+            p_only_projects_with_add_info,
             p_delete_without_fact,
             p_curr_month_half,
             p_delete_pers_data,

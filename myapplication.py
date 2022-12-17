@@ -196,7 +196,7 @@ class MyReportParameters:
         self.slasterror = ""
         self.p_delete_vip = None
         self.p_delete_not_prod_units = None
-        self.p_projects_with_add_info = None
+        self.p_only_projects_with_add_info = None
         self.p_delete_without_fact = None
         self.p_delete_without_fact = None
         self.p_curr_month_half = None
@@ -231,7 +231,7 @@ class MyReportParameters:
         self.p_delete_vip = self.parent.mainwindow.ui.checkBoxDeleteVIP.isChecked()
         self.p_delete_not_prod_units = self.parent.mainwindow.ui.checkBoxDeleteNotProduct.isChecked()
         self.p_add_all_projects_with_add_info = self.parent.mainwindow.ui.checkBoxAddProjectsWithAdd.isChecked()
-        self.p_projects_with_add_info = self.parent.mainwindow.ui.checkBoxOnlyProjectsWithAdd.isChecked()
+        self.p_only_projects_with_add_info = self.parent.mainwindow.ui.checkBoxOnlyProjectsWithAdd.isChecked()
         self.p_delete_without_fact = self.parent.mainwindow.ui.checkBoxDeleteWithoutFact.isChecked()
         self.p_curr_month_half = self.parent.mainwindow.ui.checkBoxCurrMonthAHalf.isChecked()
         self.p_delete_pers_data = self.parent.mainwindow.ui.checkBoxDelPDn.isChecked()

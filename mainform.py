@@ -203,6 +203,8 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         if saved_value:
             self.setup_combobox_pgroups()
 
+        self.checkBoxAddProjectsWithAdd.setVisible(saved_value)
+
     def onclick_checkbox_only_projects_with_add(self):
         # Обработка клика по чекбоксу включения/выключения дополнительных параметров проектов
         s_preff = self.get_preff()
@@ -211,6 +213,8 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         if p_selected:
             self.setup_combobox_pgroups()
         self.comboBoxPGroups.setVisible(p_selected)
+
+        self.checkBoxAddProjectsWithAdd.setVisible(p_selected)
 
     def setup_checkbox_select_users(self):
         s_preff = self.get_preff()

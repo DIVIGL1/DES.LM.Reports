@@ -269,7 +269,7 @@ def prepare_data(
         p_delete_vip,
         p_delete_not_prod_units,
         p_add_all_projects_with_add_info,
-        p_projects_with_add_info,
+        p_only_projects_with_add_info,
         p_delete_without_fact,
         p_curr_month_half,
         p_delete_pers_data,
@@ -334,7 +334,7 @@ def prepare_data(
         ui_handle.add_text_to_log_box(projects_list_add_info)
         return None
 
-    if p_projects_with_add_info:
+    if p_only_projects_with_add_info:
         # Отмечено, что нужно выбрать только определённые проекты.
         # Наименование столбца содержащего признаки для фильтрации:
         # Найдём реальное название (с учетом регистра):
@@ -363,13 +363,15 @@ def prepare_data(
         ui_handle.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
         return None
 
-    if p_add_all_projects_with_add_info:
+    if p_add_all_projects_with_add_info and p_delete_without_fact:
+        # Эта обработка осуществляется только в случае если "чекнуты" оба checkboxes!
         # Мы должны добавить строку для каждого проекта,
         # который есть в списке - один раз для каждого месяца
         # 1. получим все уникальные месяцы:
         months_list = data_df["FDate"].unique()
+        # 2. получим все уникальные проекты:
         add_projects = projects_list_add_info[myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST[myconstants.PROJECTS_LIST_ADD_INFO_RENAME_KEY_COLUMN]].values
-
+        # 3. возьмём одну строчку из данных и заполним её "пустыми" значениями:
         one_row = data_df.loc[0]
         for idx, elm_type in enumerate(data_df.dtypes):
             if elm_type in ["float64", "int64"]:
@@ -383,8 +385,7 @@ def prepare_data(
 
             one_row["FNRaw"] = ""
             one_row["User"] = myconstants.NOT_EXIST_ELEMENT
-
-
+        # 4. добавим строку по каждому проекту для каждого месяца:
         for one_month in months_list:
             for one_project in add_projects:
                 one_row["FDate"] = one_month
@@ -471,7 +472,7 @@ def prepare_data(
 
     ui_handle.add_text_to_log_box(f"Добавлена доп информация по проектам.")
 
-    if p_projects_with_add_info:
+    if p_only_projects_with_add_info:
         data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how="inner")
         if data_df.shape[0] == 0:
             ui_handle.add_text_to_log_box(
