@@ -138,7 +138,9 @@ class Ui_MainWindow(object):
         self.label_4.setObjectName("label_4")
         self.verticalLayout.addWidget(self.label_4)
         self.radioButtonDD1 = QtWidgets.QRadioButton(self.layoutWidget)
-        self.radioButtonDD1.setToolTip("")
+        self.radioButtonDD1.setToolTip("В случае Drag&Drop файла с данными\n"
+"на форму он будет только скопирован\n"
+"без переименования")
         self.radioButtonDD1.setStatusTip("")
         self.radioButtonDD1.setWhatsThis("")
         self.radioButtonDD1.setAccessibleName("")
@@ -148,18 +150,38 @@ class Ui_MainWindow(object):
         self.radioButtonDD1.setObjectName("radioButtonDD1")
         self.verticalLayout.addWidget(self.radioButtonDD1)
         self.radioButtonDD2 = QtWidgets.QRadioButton(self.layoutWidget)
+        self.radioButtonDD2.setToolTip("В случае Drag&Drop файла с данными\n"
+"на форму он будет скопирован\n"
+"и у него будет проверена структура")
+        self.radioButtonDD2.setStatusTip("")
+        self.radioButtonDD2.setWhatsThis("")
         self.radioButtonDD2.setAccessibleName("")
         self.radioButtonDD2.setAccessibleDescription("")
         self.radioButtonDD2.setText("... и проверять структуру данных")
         self.radioButtonDD2.setObjectName("radioButtonDD2")
         self.verticalLayout.addWidget(self.radioButtonDD2)
         self.radioButtonDD3 = QtWidgets.QRadioButton(self.layoutWidget)
+        self.radioButtonDD3.setToolTip("В случае Drag&Drop файла с данными на форму:\n"
+" - он будет скопирован\n"
+" - у него будет проверена структура\n"
+" - файл будет переименован в соответствии с\n"
+"его датой создания и его содержимым")
+        self.radioButtonDD3.setStatusTip("")
+        self.radioButtonDD3.setWhatsThis("")
         self.radioButtonDD3.setAccessibleName("")
         self.radioButtonDD3.setAccessibleDescription("")
         self.radioButtonDD3.setText("... и переименовывать результат")
         self.radioButtonDD3.setObjectName("radioButtonDD3")
         self.verticalLayout.addWidget(self.radioButtonDD3)
         self.radioButtonDD4 = QtWidgets.QRadioButton(self.layoutWidget)
+        self.radioButtonDD4.setToolTip("В случае Drag&Drop файла с данными на форму:\n"
+" - он будет скопирован\n"
+" - у него будет проверена структура\n"
+" - файл будет переименован в соответствии с\n"
+"его датой создания и его содержимым\n"
+" -исходный файл будет переименован также")
+        self.radioButtonDD4.setStatusTip("")
+        self.radioButtonDD4.setWhatsThis("")
         self.radioButtonDD4.setAccessibleName("")
         self.radioButtonDD4.setAccessibleDescription("")
         self.radioButtonDD4.setText("... и переименовывать источник")
@@ -199,6 +221,14 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.checkBoxDeleteVIP.sizePolicy().hasHeightForWidth())
         self.checkBoxDeleteVIP.setSizePolicy(sizePolicy)
         self.checkBoxDeleteVIP.setMaximumSize(QtCore.QSize(100, 16777215))
+        self.checkBoxDeleteVIP.setToolTip("Ряд сотрудников Обществ не ведут учет трудозатрат в DES.LM,\n"
+"но могут быть по ряду причин зарегистрированы в DES.LM\n"
+"в качестве пользователей. Это, например, сотрудники кадровой\n"
+"службы или бухгалтерии. Если установлен параметр «Убрать VIP»,\n"
+"то ФИО сотрудников, указанных в соответствующем файле настройки,\n"
+"будут исключены из отчета.")
+        self.checkBoxDeleteVIP.setStatusTip("")
+        self.checkBoxDeleteVIP.setWhatsThis("")
         self.checkBoxDeleteVIP.setText("Убрать VIP")
         self.checkBoxDeleteVIP.setChecked(True)
         self.checkBoxDeleteVIP.setObjectName("checkBoxDeleteVIP")
@@ -210,6 +240,10 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.checkBoxCurrMonthAHalf.sizePolicy().hasHeightForWidth())
         self.checkBoxCurrMonthAHalf.setSizePolicy(sizePolicy)
+        self.checkBoxCurrMonthAHalf.setToolTip("Уменьшает месячную норму рабочих часов в два раза.\n"
+"Используется для расчётов при формировании\n"
+"отчета в середине месяца, это позволяет\n"
+"приводить FTE к единице за полмесяца.")
         self.checkBoxCurrMonthAHalf.setStatusTip("")
         self.checkBoxCurrMonthAHalf.setWhatsThis("")
         self.checkBoxCurrMonthAHalf.setAccessibleName("")
@@ -226,7 +260,9 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.checkBoxDeleteNotProduct.sizePolicy().hasHeightForWidth())
         self.checkBoxDeleteNotProduct.setSizePolicy(sizePolicy)
-        self.checkBoxDeleteNotProduct.setToolTip("")
+        self.checkBoxDeleteNotProduct.setToolTip("При установке данного параметра из отчета будут\n"
+"исключены подразделения, которые не имеют признака\n"
+"«Производство» - централизованные службы.")
         self.checkBoxDeleteNotProduct.setStatusTip("")
         self.checkBoxDeleteNotProduct.setWhatsThis("")
         self.checkBoxDeleteNotProduct.setAccessibleName("")
@@ -236,6 +272,11 @@ class Ui_MainWindow(object):
         self.checkBoxDeleteNotProduct.setObjectName("checkBoxDeleteNotProduct")
         self.verticalLayout.addWidget(self.checkBoxDeleteNotProduct)
         self.checkBoxOnlyProjectsWithAdd = QtWidgets.QCheckBox(self.layoutWidget)
+        self.checkBoxOnlyProjectsWithAdd.setToolTip("Исключает из отчёта проекты, которые отсутствуют\n"
+"в файле настройке \"Дополнительная информация\n"
+"о контрактах\". В случае если этот параметр\n"
+"установлен, тогда можно указать дополнительный\n"
+"параметр (группу из списка), ещё более сужая фильтр.")
         self.checkBoxOnlyProjectsWithAdd.setStatusTip("")
         self.checkBoxOnlyProjectsWithAdd.setWhatsThis("")
         self.checkBoxOnlyProjectsWithAdd.setAccessibleName("")
@@ -245,10 +286,18 @@ class Ui_MainWindow(object):
         self.checkBoxOnlyProjectsWithAdd.setObjectName("checkBoxOnlyProjectsWithAdd")
         self.verticalLayout.addWidget(self.checkBoxOnlyProjectsWithAdd)
         self.comboBoxPGroups = QtWidgets.QComboBox(self.layoutWidget)
+        self.comboBoxPGroups.setToolTip("Список групп указанных, в дополнительных\n"
+"параметрах для проектов (меню \"Редактирование\",\n"
+"подменю \"Дополнительная информация о контрактах\")")
+        self.comboBoxPGroups.setStatusTip("")
+        self.comboBoxPGroups.setWhatsThis("")
         self.comboBoxPGroups.setObjectName("comboBoxPGroups")
         self.verticalLayout.addWidget(self.comboBoxPGroups)
         self.checkBoxAddProjectsWithAdd = QtWidgets.QCheckBox(self.layoutWidget)
-        self.checkBoxAddProjectsWithAdd.setToolTip("")
+        self.checkBoxAddProjectsWithAdd.setToolTip("Если в файле с данными нет ни одной строки с проектом,\n"
+"который указан в файле с дополнительными параметрами,\n"
+"то это проект попадаёт в отчёт только если установлен этот параметр\n"
+"(используется не во всех отчётах)")
         self.checkBoxAddProjectsWithAdd.setStatusTip("")
         self.checkBoxAddProjectsWithAdd.setText("... и включить все строки из файла в отчёт")
         self.checkBoxAddProjectsWithAdd.setObjectName("checkBoxAddProjectsWithAdd")
@@ -262,6 +311,11 @@ class Ui_MainWindow(object):
         self.checkBoxSelectUsers.setObjectName("checkBoxSelectUsers")
         self.verticalLayout.addWidget(self.checkBoxSelectUsers)
         self.comboBoxSelectUsers = QtWidgets.QComboBox(self.layoutWidget)
+        self.comboBoxSelectUsers.setToolTip("Список групп сотрудников, указываемый\n"
+"через меню: \"Редактирование\", подменю:\n"
+"\"Сотрудники и их часовые ставки\"")
+        self.comboBoxSelectUsers.setStatusTip("")
+        self.comboBoxSelectUsers.setWhatsThis("")
         self.comboBoxSelectUsers.setObjectName("comboBoxSelectUsers")
         self.verticalLayout.addWidget(self.comboBoxSelectUsers)
         self.checkBoxDeleteWithoutFact = QtWidgets.QCheckBox(self.layoutWidget)
@@ -271,6 +325,13 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.checkBoxDeleteWithoutFact.sizePolicy().hasHeightForWidth())
         self.checkBoxDeleteWithoutFact.setSizePolicy(sizePolicy)
+        self.checkBoxDeleteWithoutFact.setToolTip("Так как в отчёт попадают данные содержащие\n"
+"либо ненулевой план, либо ненулевой факт,\n"
+"то для отчётов в которых контролируется\n"
+"фактическое списание, строки с нулевым фактом\n"
+"(но с НЕнулевым планом) могут оказаться лишними.\n"
+"Устатновив это параметр их можно исключить\n"
+"из отчёта.")
         self.checkBoxDeleteWithoutFact.setStatusTip("")
         self.checkBoxDeleteWithoutFact.setWhatsThis("")
         self.checkBoxDeleteWithoutFact.setAccessibleName("")
@@ -286,6 +347,8 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.checkBoxDelPDn.sizePolicy().hasHeightForWidth())
         self.checkBoxDelPDn.setSizePolicy(sizePolicy)
+        self.checkBoxDelPDn.setToolTip("Удаляет из отчёта информацию\n"
+"о больничных листах")
         self.checkBoxDelPDn.setStatusTip("")
         self.checkBoxDelPDn.setWhatsThis("")
         self.checkBoxDelPDn.setAccessibleName("")
@@ -301,6 +364,8 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.checkBoxDeleteVac.sizePolicy().hasHeightForWidth())
         self.checkBoxDeleteVac.setSizePolicy(sizePolicy)
+        self.checkBoxDeleteVac.setToolTip("Удаляет из отчёта информацию о \"пользователях\"\n"
+"чьё \"имя\" начинается с \"Вакансия\"")
         self.checkBoxDeleteVac.setStatusTip("")
         self.checkBoxDeleteVac.setWhatsThis("")
         self.checkBoxDeleteVac.setAccessibleName("")
@@ -316,6 +381,9 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.checkBoxAddVFTE.sizePolicy().hasHeightForWidth())
         self.checkBoxAddVFTE.setSizePolicy(sizePolicy)
+        self.checkBoxAddVFTE.setToolTip("Добавляет в отчет дополнительные строки из\n"
+"специального файла (требуется в некоторых случаях).\n"
+"Не требуется в обычной работе")
         self.checkBoxAddVFTE.setStatusTip("")
         self.checkBoxAddVFTE.setWhatsThis("")
         self.checkBoxAddVFTE.setAccessibleName("")
@@ -331,6 +399,12 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.checkBoxSaveWithOutFotmulas.sizePolicy().hasHeightForWidth())
         self.checkBoxSaveWithOutFotmulas.setSizePolicy(sizePolicy)
+        self.checkBoxSaveWithOutFotmulas.setToolTip("После сборки и обработки (расчета) данных\n"
+"с использованием формул в Excel, производится\n"
+"перезаписывание формул фактическими значениями,\n"
+"отображаемыми в ячейках. Позволяет уменьшить\n"
+"размер полученного файла с отчётом и упростить\n"
+"работу с файлом. Рекомендуется к использованию.")
         self.checkBoxSaveWithOutFotmulas.setStatusTip("")
         self.checkBoxSaveWithOutFotmulas.setWhatsThis("")
         self.checkBoxSaveWithOutFotmulas.setAccessibleName("")
@@ -346,6 +420,13 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.checkBoxDelRawData.sizePolicy().hasHeightForWidth())
         self.checkBoxDelRawData.setSizePolicy(sizePolicy)
+        self.checkBoxDelRawData.setToolTip("При формировании отчета в файле Excel создаётся\n"
+"специальный лист, в который копируются выгруженные\n"
+"и обработанные данные из DES.LM. В случае установки\n"
+"данного параметра после формирования отчёта,\n"
+"данный лист будет удалён, что позволяет уменьшить\n"
+"размер полученного файла с отчётом.\n"
+"Рекомендуется к использованию.")
         self.checkBoxDelRawData.setStatusTip("")
         self.checkBoxDelRawData.setWhatsThis("")
         self.checkBoxDelRawData.setAccessibleName("")
@@ -361,6 +442,13 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.checkBoxOpenExcel.sizePolicy().hasHeightForWidth())
         self.checkBoxOpenExcel.setSizePolicy(sizePolicy)
+        self.checkBoxOpenExcel.setToolTip("После формирования отчёта он не будет закрыт,\n"
+"а отобразится на экране пользователя.\n"
+"Если параметр не установлен, то файл можно\n"
+"будет открыть самостоятельно, нажав появившуюся\n"
+"кнопку с надписью «Открыть последний сформированный\n"
+"отчет в Excel» или найти его в папке через меню\n"
+"\"Папки\" в подменю \"Сохранённые отчёты\".")
         self.checkBoxOpenExcel.setStatusTip("")
         self.checkBoxOpenExcel.setWhatsThis("")
         self.checkBoxOpenExcel.setAccessibleName("")
@@ -902,7 +990,16 @@ class Ui_MainWindow(object):
         MainWindow.setTabOrder(self.checkBoxOpenExcel, self.pushButtonOpenLastReport)
 
     def retranslateUi(self, MainWindow):
-        pass
+        _translate = QtCore.QCoreApplication.translate
+        self.checkBoxSelectUsers.setToolTip(_translate("MainWindow", "В случае если этот параметр установлен,\n"
+"тогда потребуется установить дополнительный фильтр,\n"
+"ещё более сужающий список, указав какую группу\n"
+"сотрудников нужно выбрать. Группы сотрудников\n"
+"указываются через меню: \"Редактирование\",\n"
+"подменю: \"Сотрудники и их часовые ставки\"\n"
+"\n"
+"С помощью этого параметра можно исключить\n"
+"из отчёта всех «лишних» сотрудников."))
 
 
 if __name__ == "__main__":

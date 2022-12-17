@@ -280,7 +280,9 @@
           <item>
            <widget class="QRadioButton" name="radioButtonDD1">
             <property name="toolTip">
-             <string notr="true"/>
+             <string notr="true">В случае Drag&amp;Drop файла с данными
+на форму он будет только скопирован
+без переименования</string>
             </property>
             <property name="statusTip">
              <string notr="true"/>
@@ -304,6 +306,17 @@
           </item>
           <item>
            <widget class="QRadioButton" name="radioButtonDD2">
+            <property name="toolTip">
+             <string notr="true">В случае Drag&amp;Drop файла с данными
+на форму он будет скопирован
+и у него будет проверена структура</string>
+            </property>
+            <property name="statusTip">
+             <string notr="true"/>
+            </property>
+            <property name="whatsThis">
+             <string notr="true"/>
+            </property>
             <property name="accessibleName">
              <string notr="true"/>
             </property>
@@ -317,6 +330,19 @@
           </item>
           <item>
            <widget class="QRadioButton" name="radioButtonDD3">
+            <property name="toolTip">
+             <string notr="true">В случае Drag&amp;Drop файла с данными на форму:
+ - он будет скопирован
+ - у него будет проверена структура
+ - файл будет переименован в соответствии с
+его датой создания и его содержимым</string>
+            </property>
+            <property name="statusTip">
+             <string notr="true"/>
+            </property>
+            <property name="whatsThis">
+             <string notr="true"/>
+            </property>
             <property name="accessibleName">
              <string notr="true"/>
             </property>
@@ -330,6 +356,20 @@
           </item>
           <item>
            <widget class="QRadioButton" name="radioButtonDD4">
+            <property name="toolTip">
+             <string notr="true">В случае Drag&amp;Drop файла с данными на форму:
+ - он будет скопирован
+ - у него будет проверена структура
+ - файл будет переименован в соответствии с
+его датой создания и его содержимым
+ -исходный файл будет переименован также</string>
+            </property>
+            <property name="statusTip">
+             <string notr="true"/>
+            </property>
+            <property name="whatsThis">
+             <string notr="true"/>
+            </property>
             <property name="accessibleName">
              <string notr="true"/>
             </property>
@@ -404,6 +444,20 @@
                 <height>16777215</height>
                </size>
               </property>
+              <property name="toolTip">
+               <string notr="true">Ряд сотрудников Обществ не ведут учет трудозатрат в DES.LM,
+но могут быть по ряду причин зарегистрированы в DES.LM
+в качестве пользователей. Это, например, сотрудники кадровой
+службы или бухгалтерии. Если установлен параметр «Убрать VIP»,
+то ФИО сотрудников, указанных в соответствующем файле настройки,
+будут исключены из отчета.</string>
+              </property>
+              <property name="statusTip">
+               <string notr="true"/>
+              </property>
+              <property name="whatsThis">
+               <string notr="true"/>
+              </property>
               <property name="text">
                <string notr="true">Убрать VIP</string>
               </property>
@@ -422,6 +476,12 @@
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="toolTip">
+               <string notr="true">Уменьшает месячную норму рабочих часов в два раза.
+Используется для расчётов при формировании
+отчета в середине месяца, это позволяет
+приводить FTE к единице за полмесяца.</string>
               </property>
               <property name="statusTip">
                <string notr="true"/>
@@ -457,7 +517,9 @@
              </sizepolicy>
             </property>
             <property name="toolTip">
-             <string notr="true"/>
+             <string notr="true">При установке данного параметра из отчета будут
+исключены подразделения, которые не имеют признака
+«Производство» - централизованные службы.</string>
             </property>
             <property name="statusTip">
              <string notr="true"/>
@@ -481,6 +543,13 @@
           </item>
           <item>
            <widget class="QCheckBox" name="checkBoxOnlyProjectsWithAdd">
+            <property name="toolTip">
+             <string notr="true">Исключает из отчёта проекты, которые отсутствуют
+в файле настройке &quot;Дополнительная информация
+о контрактах&quot;. В случае если этот параметр
+установлен, тогда можно указать дополнительный
+параметр (группу из списка), ещё более сужая фильтр.</string>
+            </property>
             <property name="statusTip">
              <string notr="true"/>
             </property>
@@ -502,12 +571,27 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBoxPGroups"/>
+           <widget class="QComboBox" name="comboBoxPGroups">
+            <property name="toolTip">
+             <string notr="true">Список групп указанных, в дополнительных
+параметрах для проектов (меню &quot;Редактирование&quot;,
+подменю &quot;Дополнительная информация о контрактах&quot;)</string>
+            </property>
+            <property name="statusTip">
+             <string notr="true"/>
+            </property>
+            <property name="whatsThis">
+             <string notr="true"/>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="checkBoxAddProjectsWithAdd">
             <property name="toolTip">
-             <string notr="true"/>
+             <string notr="true">Если в файле с данными нет ни одной строки с проектом,
+который указан в файле с дополнительными параметрами,
+то это проект попадаёт в отчёт только если установлен этот параметр
+(используется не во всех отчётах)</string>
             </property>
             <property name="statusTip">
              <string notr="true"/>
@@ -519,6 +603,17 @@
           </item>
           <item>
            <widget class="QCheckBox" name="checkBoxSelectUsers">
+            <property name="toolTip">
+             <string>В случае если этот параметр установлен,
+тогда потребуется установить дополнительный фильтр,
+ещё более сужающий список, указав какую группу
+сотрудников нужно выбрать. Группы сотрудников
+указываются через меню: &quot;Редактирование&quot;,
+подменю: &quot;Сотрудники и их часовые ставки&quot;
+
+С помощью этого параметра можно исключить
+из отчёта всех «лишних» сотрудников.</string>
+            </property>
             <property name="statusTip">
              <string notr="true"/>
             </property>
@@ -537,7 +632,19 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBoxSelectUsers"/>
+           <widget class="QComboBox" name="comboBoxSelectUsers">
+            <property name="toolTip">
+             <string notr="true">Список групп сотрудников, указываемый
+через меню: &quot;Редактирование&quot;, подменю:
+&quot;Сотрудники и их часовые ставки&quot;</string>
+            </property>
+            <property name="statusTip">
+             <string notr="true"/>
+            </property>
+            <property name="whatsThis">
+             <string notr="true"/>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="checkBoxDeleteWithoutFact">
@@ -549,6 +656,15 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string notr="true">Так как в отчёт попадают данные содержащие
+либо ненулевой план, либо ненулевой факт,
+то для отчётов в которых контролируется
+фактическое списание, строки с нулевым фактом
+(но с НЕнулевым планом) могут оказаться лишними.
+Устатновив это параметр их можно исключить
+из отчёта.</string>
             </property>
             <property name="statusTip">
              <string notr="true"/>
@@ -581,6 +697,10 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="toolTip">
+             <string notr="true">Удаляет из отчёта информацию
+о больничных листах</string>
+            </property>
             <property name="statusTip">
              <string notr="true"/>
             </property>
@@ -611,6 +731,10 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string notr="true">Удаляет из отчёта информацию о &quot;пользователях&quot;
+чьё &quot;имя&quot; начинается с &quot;Вакансия&quot;</string>
             </property>
             <property name="statusTip">
              <string notr="true"/>
@@ -643,6 +767,11 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="toolTip">
+             <string notr="true">Добавляет в отчет дополнительные строки из
+специального файла (требуется в некоторых случаях).
+Не требуется в обычной работе</string>
+            </property>
             <property name="statusTip">
              <string notr="true"/>
             </property>
@@ -673,6 +802,14 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string notr="true">После сборки и обработки (расчета) данных
+с использованием формул в Excel, производится
+перезаписывание формул фактическими значениями,
+отображаемыми в ячейках. Позволяет уменьшить
+размер полученного файла с отчётом и упростить
+работу с файлом. Рекомендуется к использованию.</string>
             </property>
             <property name="statusTip">
              <string notr="true"/>
@@ -705,6 +842,15 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="toolTip">
+             <string notr="true">При формировании отчета в файле Excel создаётся
+специальный лист, в который копируются выгруженные
+и обработанные данные из DES.LM. В случае установки
+данного параметра после формирования отчёта,
+данный лист будет удалён, что позволяет уменьшить
+размер полученного файла с отчётом.
+Рекомендуется к использованию.</string>
+            </property>
             <property name="statusTip">
              <string notr="true"/>
             </property>
@@ -735,6 +881,15 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string notr="true">После формирования отчёта он не будет закрыт,
+а отобразится на экране пользователя.
+Если параметр не установлен, то файл можно
+будет открыть самостоятельно, нажав появившуюся
+кнопку с надписью «Открыть последний сформированный
+отчет в Excel» или найти его в папке через меню
+&quot;Папки&quot; в подменю &quot;Сохранённые отчёты&quot;.</string>
             </property>
             <property name="statusTip">
              <string notr="true"/>
