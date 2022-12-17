@@ -84,8 +84,8 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.set_status_bar_text("Начато формирование отчёта...")
         self.parent.parent.reporter.create_report(p_dont_clear_log_box=p_dont_clear_log_box)
 
-    def on_click_open_last_report(self):
-        if self.pushButtonOpenLastReport.isEnabled() and self.pushButtonOpenLastReport.isVisible():
+    def open_last_report(self):
+        if load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "") != "":
             # Открываем последний сгенерированный отчёт.
             last_report_filename = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT)
             if last_report_filename:
@@ -534,7 +534,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.listViewReports.doubleClicked.connect(self.on_dblclick_reports_list)
         self.listViewRawData.doubleClicked.connect(self.on_dblclick_raw_data)
 
-        self.pushButtonOpenLastReport.clicked.connect(self.on_click_open_last_report)
+        # self.pushButtonOpenLastReport.clicked.connect(self.open_last_report)
 
         self.status_text = ""
         self.previous_status_text = ""
@@ -608,7 +608,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             return
         if action_type == "OpenLastReport":
             self.set_status_bar_text("Выбрана функция открытия последнего сформированного отчёта")
-            self.on_click_open_last_report()
+            self.open_last_report()
             return
         if action_type == "OpenSavedReportsFolder":
             self.set_status_bar_text("Выбрана функция директории с сохранёнными отчётами")
@@ -880,6 +880,8 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             for one_pad in self.edit_pads_dict["Parameters4user"]:
                 one_pad.setEnabled(False)
 
+            self.OpenLastReport.setEnabled(False)
+
             # В этом случае разрешено:
             self.OpenSavedReportsFolder.setEnabled(True)
             self.OpenDownLoads.setEnabled(True)
@@ -891,10 +893,6 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 self.StopWaitingFile.setEnabled(False)
             else:
                 self.StopWaitingFile.setEnabled(True)
-
-            # Кнопка не доступна, но видна если есть последний отчёт
-            self.pushButtonOpenLastReport.setEnabled(False)
-            self.pushButtonOpenLastReport.setVisible(last_report_exists)
 
         else:
             if not processing_report and processing_drag_and_drop:
@@ -926,9 +924,8 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 for one_pad in self.edit_pads_dict["Parameters4user"]:
                     one_pad.setEnabled(True)
 
-                # Кнопка доступна только если есть отчёт
-                self.pushButtonOpenLastReport.setEnabled(last_report_exists)
-                self.pushButtonOpenLastReport.setVisible(last_report_exists)
+                # Меню доступно только если есть отчёт
+                self.OpenLastReport.setEnabled(last_report_exists)
 
             elif processing_report and not processing_drag_and_drop:
                 self.parent.setAcceptDrops(False)
@@ -943,9 +940,6 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
                 self.parent.ag_switcher("report_preparation_ag")
 
-                # В этом случае запрещено:
-                self.pushButtonOpenLastReport.setEnabled(False)
-
                 self.CreateReport.setEnabled(False)
                 self.OpenLastReport.setEnabled(False)
                 self.GetLastFileFromDownLoads.setEnabled(False)
@@ -958,14 +952,12 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 for one_pad in self.edit_pads_dict["Parameters4user"]:
                     one_pad.setEnabled(False)
 
+                self.OpenLastReport.setEnabled(False)
+
                 # В этом случае разрешено:
                 self.Exit.setEnabled(True)
                 self.OpenDownLoads.setEnabled(True)
                 self.OpenSavedReportsFolder.setEnabled(True)
-
-                # Кнопка не доступна, но видна если есть последний отчёт
-                self.pushButtonOpenLastReport.setEnabled(False)
-                self.pushButtonOpenLastReport.setVisible(last_report_exists)
 
             elif not processing_report and not processing_drag_and_drop:
                 self.parent.setAcceptDrops(True)
@@ -981,7 +973,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
                 # В этом случае разрешено всё:
                 self.CreateReport.setEnabled(True)
-                self.OpenLastReport.setEnabled(self.pushButtonOpenLastReport.isEnabled() and self.pushButtonOpenLastReport.isVisible())
+                # self.OpenLastReport.setEnabled(self.pushButtonOpenLastReport.isEnabled() and self.pushButtonOpenLastReport.isVisible())
                 self.Exit.setEnabled(True)
                 self.OpenDownLoads.setEnabled(True)
                 self.OpenSavedReportsFolder.setEnabled(True)
@@ -1000,9 +992,8 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 for one_pad in self.edit_pads_dict["Parameters4user"]:
                     one_pad.setEnabled(True)
 
-                # Кнопка доступна и видна только если есть отчёт
-                self.pushButtonOpenLastReport.setEnabled(last_report_exists)
-                self.pushButtonOpenLastReport.setVisible(last_report_exists)
+                # Меню доступно только если есть отчёт
+                self.OpenLastReport.setEnabled(last_report_exists)
 
     def set_status_bar_text(self, text, sec=5):
         self.statusBar.showMessage(text, sec * 1000)
@@ -1025,13 +1016,6 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.status_text = ""
         self.previous_status_text = ""
         self.parent.communicate.commander.emit("update_log_box_text")
-        
-    def resize_text_and_button(self):
-        last_report_filename = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT)
-        if last_report_filename == "":
-            self.pushButtonOpenLastReport.setVisible(False)
-        else:
-            self.pushButtonOpenLastReport.setVisible(True)
         
     def save_app_link(self, app):
         self.app = app

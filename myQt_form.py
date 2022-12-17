@@ -500,18 +500,6 @@ class Ui_MainWindow(object):
         self.plainTextEdit.setPlainText("> Ожидание выбора пользователя.")
         self.plainTextEdit.setObjectName("plainTextEdit")
         self.rightBox.addWidget(self.plainTextEdit)
-        self.pushButtonOpenLastReport = QtWidgets.QPushButton(self.layoutWidget3)
-        self.pushButtonOpenLastReport.setMinimumSize(QtCore.QSize(191, 30))
-        self.pushButtonOpenLastReport.setStatusTip("")
-        self.pushButtonOpenLastReport.setWhatsThis("")
-        self.pushButtonOpenLastReport.setAccessibleName("")
-        self.pushButtonOpenLastReport.setAccessibleDescription("")
-        self.pushButtonOpenLastReport.setText("Открыть последний сформированный отчет в Excel (F4)")
-        self.pushButtonOpenLastReport.setCheckable(False)
-        self.pushButtonOpenLastReport.setAutoDefault(False)
-        self.pushButtonOpenLastReport.setFlat(False)
-        self.pushButtonOpenLastReport.setObjectName("pushButtonOpenLastReport")
-        self.rightBox.addWidget(self.pushButtonOpenLastReport)
         self.gridLayout.addWidget(self.VerticalSplitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QtWidgets.QMenuBar(MainWindow)
@@ -974,7 +962,6 @@ class Ui_MainWindow(object):
         MainWindow.setTabOrder(self.checkBoxAddVFTE, self.plainTextEdit)
         MainWindow.setTabOrder(self.plainTextEdit, self.checkBoxDelRawData)
         MainWindow.setTabOrder(self.checkBoxDelRawData, self.checkBoxOpenExcel)
-        MainWindow.setTabOrder(self.checkBoxOpenExcel, self.pushButtonOpenLastReport)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
