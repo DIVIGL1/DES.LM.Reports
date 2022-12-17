@@ -480,19 +480,6 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="checkBoxAddProjectsWithAdd">
-            <property name="toolTip">
-             <string notr="true"/>
-            </property>
-            <property name="statusTip">
-             <string notr="true"/>
-            </property>
-            <property name="text">
-             <string notr="true">Учесть все проекты из файла с доп.информацией</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QCheckBox" name="checkBoxOnlyProjectsWithAdd">
             <property name="statusTip">
              <string notr="true"/>
@@ -516,6 +503,19 @@
           </item>
           <item>
            <widget class="QComboBox" name="comboBoxPGroups"/>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBoxAddProjectsWithAdd">
+            <property name="toolTip">
+             <string notr="true"/>
+            </property>
+            <property name="statusTip">
+             <string notr="true"/>
+            </property>
+            <property name="text">
+             <string notr="true">... и включить все строки из файла в отчёт</string>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="checkBoxSelectUsers">
