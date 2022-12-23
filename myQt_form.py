@@ -374,6 +374,9 @@ class Ui_MainWindow(object):
         self.checkBoxDeleteVac.setChecked(True)
         self.checkBoxDeleteVac.setObjectName("checkBoxDeleteVac")
         self.verticalLayout.addWidget(self.checkBoxDeleteVac)
+        self.checkBoxDistributeABH = QtWidgets.QCheckBox(self.layoutWidget)
+        self.checkBoxDistributeABH.setObjectName("checkBoxDistributeABH")
+        self.verticalLayout.addWidget(self.checkBoxDistributeABH)
         self.checkBoxAddVFTE = QtWidgets.QCheckBox(self.layoutWidget)
         self.checkBoxAddVFTE.setEnabled(True)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
@@ -974,6 +977,7 @@ class Ui_MainWindow(object):
 "\n"
 "С помощью этого параметра можно исключить\n"
 "из отчёта всех «лишних» сотрудников."))
+        self.checkBoxDistributeABH.setText(_translate("MainWindow", "Распределить АВН на ТСДП"))
 
 
 if __name__ == "__main__":

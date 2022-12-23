@@ -757,6 +757,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QCheckBox" name="checkBoxDistributeABH">
+            <property name="text">
+             <string>Распределить АВН на ТСДП</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QCheckBox" name="checkBoxAddVFTE">
             <property name="enabled">
              <bool>true</bool>
