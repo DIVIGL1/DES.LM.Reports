@@ -334,7 +334,7 @@ def get_data_using_url(mainwindow=None, year=None, month1=1, month2=None, create
         if not mainwindow is None:
             # Надо остановить процессы и вывести сообщение на экран
             mainwindow.parent.internet_downloading_in_process = False
-            mainwindow.parent.report_automation_in_process
+            # mainwindow.parent.report_automation_in_process
             mainwindow.add_text_to_log_box(f"Не удалось получить доступ к DES.LM.")
             mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
             mainwindow.ui.lock_unlock_interface_items()

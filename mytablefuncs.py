@@ -106,7 +106,6 @@ def load_parameter_table(tablename):
 def load_raw_data(raw_file, p_virtual_FTE, ui_handle):
     # Загружаем сырые данные
     ui_handle.add_text_to_log_box("Начинаем загрузку и обработку исходных данных.")
-    df = None
     df_raw = open_and_test_raw_struct(raw_file)
     if type(df_raw) == str:
         return(df_raw)

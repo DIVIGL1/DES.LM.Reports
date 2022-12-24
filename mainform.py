@@ -1130,7 +1130,7 @@ class MyWindow(QtWidgets.QMainWindow):
             self.ui.plainTextEdit.setPlainText(self.ui.status_text)
 
     def set_status_bar_text(self, text, sec=5):
-        self.ui.set_status_bar_text(text, sec=5)
+        self.ui.set_status_bar_text(text, sec=sec)
 
     def add_text_to_log_box(self, text):
         self.ui.add_text_to_log_box(text)
