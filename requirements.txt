@@ -1,8 +1,13 @@
 altgraph==0.17.2
+certifi==2022.9.24
+cffi==1.15.1
+charset-normalizer==2.1.1
 click==7.1.2
+cryptography==38.0.4
 et-xmlfile==1.1.0
 flake8==5.0.4
 future==0.18.2
+idna==3.4
 importlib-metadata==4.2.0
 mccabe==0.6.1
 mysqlclient==2.1.1
@@ -11,6 +16,7 @@ openpyxl==3.0.9
 pandas==1.5.0
 pefile==2022.5.30
 pycodestyle==2.9.1
+pycparser==2.21
 pyflakes==2.5.0
 pyinstaller==5.5
 pyinstaller-hooks-contrib==2021.5
@@ -23,10 +29,12 @@ python-dotenv==0.19.2
 pytz==2021.3
 pywin32==303
 pywin32-ctypes==0.2.0
+requests==2.28.1
 six==1.16.0
 spark-parser==1.8.9
 typing_extensions==4.0.1
 uncompyle6==3.8.0
+urllib3==1.26.13
 watchdog==2.1.9
 xdis==6.0.4
 zipp==3.6.0
