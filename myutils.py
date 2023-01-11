@@ -309,7 +309,8 @@ def get_des_lm_url_parameters(year=None, month1=1, month2=None):
         (myconstants.PARAMETER_STR_YEAR, year),
         (myconstants.PARAMETER_STR_MONTH1, month1),
         (myconstants.PARAMETER_STR_MONTH2, month2),
-        (myconstants.PARAMETER_STR_LASTDAYOFMONHT, last_day_of_month2),
+        (myconstants.PARAMETER_STR_FIRST_REPORT_DAY, "01"),
+        (myconstants.PARAMETER_STR_LAST_REPORT_DAY, last_day_of_month2),
     ]
 
     parameter_data = [myconstants.PARAMETERS_FOR_GETTING_DATA_FOR_URL.copy()]
@@ -318,7 +319,7 @@ def get_des_lm_url_parameters(year=None, month1=1, month2=None):
         parameter_str = parameter_str.replace(one_parameter[0], one_parameter[1])
 
     parameter_data[0][myconstants.PARAMETER_STR_KEY_WITH_PERIOD] = parameter_str
-    return(parameter_data)
+    return parameter_data
 
 
 @thread
