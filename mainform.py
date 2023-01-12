@@ -56,6 +56,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
     model = None
     text_info_year = None
     text_info_period = None
+    status_text = ""
 
     def setup_reports_list(self, reports_list=None):
         if reports_list is None:
@@ -240,7 +241,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             myconstants.TEXT_4_ALL_GROUPS,
         ]
         if type(df) == str:
-            pass
+            self.add_text_to_log_box(df)
         else:
             all_columns = [clmn.upper() for clmn in df.columns]
             if myconstants.GROUP_COLUMN_FOR_FILTER in all_columns:
@@ -272,6 +273,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.comboBoxSelectUsers.clear()
         df = load_parameter_table(myconstants.COSTS_TABLE)
         if type(df) == str:
+            self.add_text_to_log_box(df)
             return None
         else:
             all_grp_columns = [clmn[1:] for clmn in df.columns if clmn[0] == myconstants.GROUP_COLUMNS_STARTER]
