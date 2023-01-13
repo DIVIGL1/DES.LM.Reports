@@ -297,6 +297,9 @@ PARAMETERS_ALL_TABLES = {
     MONTHS_LIST_TABLE: ("Таблица периодов (месяцев), по которым можно формировать отчёт", "DataPeriodName")
 }
 
+LAST_INTERNET_PARAMS_NAME = "Скачанная версия справочников из Интернет"
+LAST_INTERNET_PARAMS_VERSION = 0
+
 EMAIL_INFO_COLUMNS = ["manager_email", "Personal_email", "user_email", "boss_email"]
 
 PARAMETER_STR_YEAR = "YEAR"

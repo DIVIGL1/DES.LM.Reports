@@ -461,6 +461,17 @@ def test_access_key(mainwindow):
         mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
         return
 
+@thread
+def internet_information():
+    url = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/info"
+    rs = requests.get(url)
+
+    if rs.ok:
+        params_on_internet_last_ver = load_param(LAST_INTERNET_PARAMS_NAME, LAST_INTERNET_PARAMS_VERSION)
+        if json.loads(rs.content)["params"]["version"] > params_on_internet_last_ver:
+            # Здесь должно быть обновление справочников
+            pass
+
 
 if __name__ == "__main__":
     print(get_data_using_url(month2=datetime.datetime.now().month))
