@@ -1069,6 +1069,7 @@
     <addaction name="MoveRawFile2Archive"/>
     <addaction name="separator"/>
     <addaction name="UpdateParametersFromInternet"/>
+    <addaction name="UpdateParameterEMails"/>
    </widget>
    <widget class="QMenu" name="EditSettingsFiles">
     <property name="statusTip">
@@ -2028,7 +2029,42 @@
   </action>
   <action name="UpdateParametersFromInternet">
    <property name="text">
-    <string>Обновить файлы параметров</string>
+    <string notr="true">Обновить файлы параметров</string>
+   </property>
+   <property name="iconText">
+    <string notr="true">Обновить файлы параметров</string>
+   </property>
+   <property name="toolTip">
+    <string notr="true">Обновить файлы параметров</string>
+   </property>
+   <property name="statusTip">
+    <string notr="true"/>
+   </property>
+   <property name="whatsThis">
+    <string notr="true"/>
+   </property>
+   <property name="shortcut">
+    <string notr="true"/>
+   </property>
+  </action>
+  <action name="UpdateParameterEMails">
+   <property name="text">
+    <string notr="true">Загрузить обновлённый список e-mails</string>
+   </property>
+   <property name="iconText">
+    <string notr="true">Загрузить обновлённый список e-mails</string>
+   </property>
+   <property name="toolTip">
+    <string notr="true">Загрузить обновлённый список e-mails</string>
+   </property>
+   <property name="statusTip">
+    <string notr="true"/>
+   </property>
+   <property name="whatsThis">
+    <string notr="true"/>
+   </property>
+   <property name="shortcut">
+    <string notr="true"/>
    </property>
   </action>
  </widget>

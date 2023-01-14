@@ -894,7 +894,21 @@ class Ui_MainWindow(object):
         self.OpenRawDataFolder.setShortcut("Ctrl+4")
         self.OpenRawDataFolder.setObjectName("OpenRawDataFolder")
         self.UpdateParametersFromInternet = QtWidgets.QAction(MainWindow)
+        self.UpdateParametersFromInternet.setText("Обновить файлы параметров")
+        self.UpdateParametersFromInternet.setIconText("Обновить файлы параметров")
+        self.UpdateParametersFromInternet.setToolTip("Обновить файлы параметров")
+        self.UpdateParametersFromInternet.setStatusTip("")
+        self.UpdateParametersFromInternet.setWhatsThis("")
+        self.UpdateParametersFromInternet.setShortcut("")
         self.UpdateParametersFromInternet.setObjectName("UpdateParametersFromInternet")
+        self.UpdateParameterEMails = QtWidgets.QAction(MainWindow)
+        self.UpdateParameterEMails.setText("Загрузить обновлённый список e-mails")
+        self.UpdateParameterEMails.setIconText("Загрузить обновлённый список e-mails")
+        self.UpdateParameterEMails.setToolTip("Загрузить обновлённый список e-mails")
+        self.UpdateParameterEMails.setStatusTip("")
+        self.UpdateParameterEMails.setWhatsThis("")
+        self.UpdateParameterEMails.setShortcut("")
+        self.UpdateParameterEMails.setObjectName("UpdateParameterEMails")
         self.ReportMenu.addAction(self.CreateReport)
         self.ReportMenu.addAction(self.OpenLastReport)
         self.ReportMenu.addSeparator()
@@ -904,6 +918,7 @@ class Ui_MainWindow(object):
         self.DataMenu.addAction(self.MoveRawFile2Archive)
         self.DataMenu.addSeparator()
         self.DataMenu.addAction(self.UpdateParametersFromInternet)
+        self.DataMenu.addAction(self.UpdateParameterEMails)
         self.UCostsSelector.addAction(self.SystemUCosts)
         self.UCostsSelector.addAction(self.UserUCosts)
         self.UCostsSelector.addSeparator()
@@ -982,7 +997,6 @@ class Ui_MainWindow(object):
 "С помощью этого параметра можно исключить\n"
 "из отчёта всех «лишних» сотрудников."))
         self.checkBoxDistributeABH.setText(_translate("MainWindow", "Распределить АВН на ТСДП"))
-        self.UpdateParametersFromInternet.setText(_translate("MainWindow", "Обновить файлы параметров"))
 
 
 if __name__ == "__main__":
