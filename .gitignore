@@ -7,8 +7,12 @@ _tmp_*.*
 _local_*.*
 _tmp_Picts
 __pycache__
+
 _tmp_UpLoadParameters
+_tmp_UpLoadEmails
 _tmp_DownLoadParameters
+_tmp_DownLoadEmails
+
 ReportsPrepared
 RawData
 build
