@@ -470,7 +470,8 @@ def test_internet_data_version(ui):
 
     if rs.ok:
         params_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_PARAMS_NAME, myconstants.LAST_INTERNET_PARAMS_VERSION)
-        if json.loads(rs.content)["params"]["version"] > params_on_internet_last_ver:
+        params_on_internet_curr_ver = json.loads(rs.content)["params"]["version"]
+        if params_on_internet_curr_ver > params_on_internet_last_ver:
             ui.UpdateParametersFromInternet.setVisible(True)
             return
 
@@ -482,7 +483,7 @@ def get_internet_data(ui):
     if rs.ok:
         params_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_PARAMS_NAME, myconstants.LAST_INTERNET_PARAMS_VERSION)
         params_on_internet_curr_ver = json.loads(rs.content)["params"]["version"]
-        if  params_on_internet_curr_ver > params_on_internet_last_ver:
+        if params_on_internet_curr_ver > params_on_internet_last_ver:
             url_data = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/data"
             rs = requests.get(url_data)
             if rs.ok:
@@ -502,8 +503,11 @@ def get_internet_data(ui):
                 ui.add_text_to_log_box("Обновляем фалы параметров:")
                 for filename in from_internet.keys():
                     new_df = pd.read_json(from_internet[filename], orient='table')
-                    new_df.to_excel(os.path.join(files_location_save_to, filename), index=False)
-                    ui.add_text_to_log_box(f"   {myconstants.PARAMETERS_ALL_TABLES[filename][0]}")
+                    if not os.path.isfile("_tmp_DUP.txt"):
+                        new_df.to_excel(os.path.join(files_location_save_to, filename), index=False)
+                        ui.add_text_to_log_box(f"   {myconstants.PARAMETERS_ALL_TABLES[filename][0]}")
+                    else:
+                        ui.add_text_to_log_box(f"   заблокировано: {myconstants.PARAMETERS_ALL_TABLES[filename][0]}")
                 ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
                 ui.UpdateParametersFromInternet.setVisible(False)
                 save_param(myconstants.LAST_INTERNET_PARAMS_NAME, params_on_internet_curr_ver)
