@@ -465,55 +465,102 @@ def test_access_key(mainwindow):
 @thread
 def test_internet_data_version(ui):
     ui.UpdateParametersFromInternet.setVisible(False)
-    url = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/info"
+    ui.UpdateParameterEMails.setVisible(False)
+
+    url = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/inform"
     rs = requests.get(url)
 
     if rs.ok:
+        versions_info = json.loads(rs.content)
+
         params_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_PARAMS_NAME, myconstants.LAST_INTERNET_PARAMS_VERSION)
-        params_on_internet_curr_ver = json.loads(rs.content)["params"]["version"]
+        params_on_internet_curr_ver = versions_info.get("params", {"version": float("-inf")})["version"]
+
+        emails_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_EMAILS_NAME, myconstants.LAST_INTERNET_EMAILS_VERSION)
+        emails_on_internet_curr_ver = versions_info.get("emails", {"version": float("-inf")})["version"]
+
         if params_on_internet_curr_ver > params_on_internet_last_ver:
             ui.UpdateParametersFromInternet.setVisible(True)
-            return
+
+        if emails_on_internet_curr_ver > emails_on_internet_last_ver:
+            ui.UpdateParameterEMails.setVisible(True)
 
 @thread
-def get_internet_data(ui):
-    url = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/info"
+def get_internet_data(ui, stype):
+    url = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/inform"
     rs = requests.get(url)
 
     if rs.ok:
-        params_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_PARAMS_NAME, myconstants.LAST_INTERNET_PARAMS_VERSION)
-        params_on_internet_curr_ver = json.loads(rs.content)["params"]["version"]
-        if params_on_internet_curr_ver > params_on_internet_last_ver:
-            url_data = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/data"
-            rs = requests.get(url_data)
-            if rs.ok:
-                # Прочитаем ключ
-                from cryptography.fernet import Fernet
-                with open("common.key", 'rb') as file:
-                    key = file.read()
-                crypter = Fernet(key)
+        import pandas as pd
+        from mytablefuncs import get_parameter_value
+        from cryptography.fernet import Fernet
+        # Прочитаем ключ
+        with open("common.key", 'rb') as file:
+            key = file.read()
+        crypter = Fernet(key)
 
-                # Обработаем строку полученную из Интернета
-                from_internet = json.loads(crypter.decrypt(rs.content).decode())
-                import pandas as pd
-                from mytablefuncs import get_parameter_value
-                files_location_save_to = get_parameter_value(myconstants.PARAMETERS_SECTION_NAME)
+        versions_info = json.loads(rs.content)
+        if stype == "params":
+            params_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_PARAMS_NAME, myconstants.LAST_INTERNET_PARAMS_VERSION)
+            params_on_internet_curr_ver = versions_info.get("params", {"version": float("inf")})["version"]
 
-                ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
-                ui.add_text_to_log_box("Обновляем фалы параметров:")
-                for filename in from_internet.keys():
-                    new_df = pd.read_json(from_internet[filename], orient='table')
+            if params_on_internet_curr_ver > params_on_internet_last_ver:
+                url_data = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/data1"
+                rs = requests.get(url_data)
+                if rs.ok:
+                    # Обработаем строку полученную из Интернета
+                    from_internet = json.loads(crypter.decrypt(rs.content).decode())
+                    files_location_save_to = get_parameter_value(myconstants.PARAMETERS_SECTION_NAME)
+
+                    ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+                    ui.add_text_to_log_box("Обновляем файлы параметров:")
+                    for filename in from_internet.keys():
+                        new_df = pd.read_json(from_internet[filename], orient='table')
+                        if not os.path.isfile("_tmp_DUP.txt"):
+                            new_df.to_excel(os.path.join(files_location_save_to, filename), index=False)
+                            ui.add_text_to_log_box(f"   {myconstants.PARAMETERS_ALL_TABLES[filename][0]}")
+                        else:
+                            ui.add_text_to_log_box(f"   заблокировано: {myconstants.PARAMETERS_ALL_TABLES[filename][0]}")
+                    ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+                    ui.UpdateParametersFromInternet.setVisible(False)
+                    save_param(myconstants.LAST_INTERNET_PARAMS_NAME, params_on_internet_curr_ver)
+
+        elif stype == "emails":
+            emails_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_EMAILS_NAME, myconstants.LAST_INTERNET_EMAILS_VERSION)
+            emails_on_internet_curr_ver = versions_info.get("params", {"version": float("inf")})["version"]
+
+            if emails_on_internet_curr_ver > emails_on_internet_last_ver:
+                url_data = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/data2"
+                rs = requests.get(url_data)
+                if rs.ok:
+                    # Обработаем строку полученную из Интернета
+                    from_internet = json.loads(crypter.decrypt(rs.content).decode())
+                    files_location_save_to = get_parameter_value(myconstants.USER_PARAMETERS_SECTION_NAME)
+
+                    ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+                    ui.add_text_to_log_box("Обновлён файл:")
+                    new_df = pd.read_json(from_internet["EMails.xlsx"], orient='table')
+
+                    if os.path.isfile(os.path.join(files_location_save_to, "EMails.xlsx")):
+                        filename = "EMails.xlsx"
+                    else:
+                        filename = "excluded__EMails.xlsx"
+
                     if not os.path.isfile("_tmp_DUP.txt"):
                         new_df.to_excel(os.path.join(files_location_save_to, filename), index=False)
-                        ui.add_text_to_log_box(f"   {myconstants.PARAMETERS_ALL_TABLES[filename][0]}")
+                        ui.add_text_to_log_box(f"   {myconstants.PARAMETERS_ALL_TABLES['EMails.xlsx'][0]}")
                     else:
-                        ui.add_text_to_log_box(f"   заблокировано: {myconstants.PARAMETERS_ALL_TABLES[filename][0]}")
-                ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
-                ui.UpdateParametersFromInternet.setVisible(False)
-                save_param(myconstants.LAST_INTERNET_PARAMS_NAME, params_on_internet_curr_ver)
+                        ui.add_text_to_log_box(
+                            f"   заблокировано: {myconstants.PARAMETERS_ALL_TABLES[myconstants.EMAILS_TABLE][0]}")
+                    ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+                    ui.UpdateParameterEMails.setVisible(False)
+                    save_param(myconstants.LAST_INTERNET_EMAILS_NAME, emails_on_internet_curr_ver)
     else:
         ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
-        ui.add_text_to_log_box("Не удалось обновить параметры.")
+        if stype == "params":
+            ui.add_text_to_log_box("Не удалось обновить параметры.")
+        if stype == "emails":
+            ui.add_text_to_log_box("Не удалось обновить адреса электронной почты.")
         ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
 
 

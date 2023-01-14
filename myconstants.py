@@ -300,6 +300,9 @@ PARAMETERS_ALL_TABLES = {
 LAST_INTERNET_PARAMS_NAME = "Скачанная версия справочников из Интернет"
 LAST_INTERNET_PARAMS_VERSION = 0
 
+LAST_INTERNET_EMAILS_NAME = "Скачанная версия электронных адресов из Интернет"
+LAST_INTERNET_EMAILS_VERSION = 0
+
 EMAIL_INFO_COLUMNS = ["manager_email", "Personal_email", "user_email", "boss_email"]
 
 PARAMETER_STR_YEAR = "YEAR"

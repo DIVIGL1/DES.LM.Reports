@@ -377,6 +377,8 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.GetLastFileFromDownLoads.triggered.connect(lambda: self.menu_action("GetLastFileFromDownLoads"))
         self.MoveRawFile2Archive.triggered.connect(lambda: self.menu_action("MoveRawFile2Archive"))
         self.UpdateParametersFromInternet.triggered.connect(lambda: self.menu_action("UpdateParametersFromInternet"))
+        self.UpdateParameterEMails.triggered.connect(lambda: self.menu_action("UpdateParameterEMails"))
+
         self.WaitFileAndCreateReport.triggered.connect(lambda: self.menu_action("WaitFileAndCreateReport"))
 
         self.LoadDataFromDESLM.triggered.connect(lambda: self.menu_action("LoadDataFromDESLM"))
@@ -627,7 +629,12 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
         if action_type == "UpdateParametersFromInternet":
             self.set_status_bar_text("Выбрана функция обновления файлов параметров")
-            get_internet_data(self)
+            get_internet_data(self, "params")
+            return
+
+        if action_type == "UpdateParameterEMails":
+            self.set_status_bar_text("Выбрана функция обновления адресов электронной почты")
+            get_internet_data(self, "emails")
             return
 
         if action_type == "WaitFileAndCreateReport":
