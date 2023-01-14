@@ -21,8 +21,10 @@ from myutils import (
     open_file_in_application, test_create_dir,
     open_user_files_dir, get_resource_path,
     get_data_using_url, test_access_key,
-    open_raw_files_dir
+    open_raw_files_dir,
+    get_internet_data, test_internet_data_version,
 )
+
 
 class animatedGifLabel(QtWidgets.QLabel):
     def __init__(self, pict_name):
@@ -374,6 +376,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
         self.GetLastFileFromDownLoads.triggered.connect(lambda: self.menu_action("GetLastFileFromDownLoads"))
         self.MoveRawFile2Archive.triggered.connect(lambda: self.menu_action("MoveRawFile2Archive"))
+        self.UpdateParametersFromInternet.triggered.connect(lambda: self.menu_action("UpdateParametersFromInternet"))
         self.WaitFileAndCreateReport.triggered.connect(lambda: self.menu_action("WaitFileAndCreateReport"))
 
         self.LoadDataFromDESLM.triggered.connect(lambda: self.menu_action("LoadDataFromDESLM"))
@@ -620,6 +623,11 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         if action_type == "MoveRawFile2Archive":
             self.set_status_bar_text("Выбрана функция переноса выделенного файла в архив")
             self.move_selected_raw_file_2_archive()
+            return
+
+        if action_type == "UpdateParametersFromInternet":
+            self.set_status_bar_text("Выбрана функция обновления файлов параметров")
+            get_internet_data(self)
             return
 
         if action_type == "WaitFileAndCreateReport":
@@ -1085,6 +1093,7 @@ class MyWindow(QtWidgets.QMainWindow):
 
         self.communicate = Communicate()
         self.communicate.commander.connect(lambda command: self.communication_handler(command))
+        test_internet_data_version(self.ui)
 
 
     def ag_switcher(self, ag_name):
