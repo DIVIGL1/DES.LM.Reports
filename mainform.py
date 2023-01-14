@@ -21,7 +21,8 @@ from myutils import (
     open_file_in_application, test_create_dir,
     open_user_files_dir, get_resource_path,
     get_data_using_url, test_access_key,
-    open_raw_files_dir, get_internet_data
+    open_raw_files_dir,
+    get_internet_data, test_internet_data_version,
 )
 
 
@@ -1092,6 +1093,7 @@ class MyWindow(QtWidgets.QMainWindow):
 
         self.communicate = Communicate()
         self.communicate.commander.connect(lambda command: self.communication_handler(command))
+        test_internet_data_version(self.ui)
 
 
     def ag_switcher(self, ag_name):
