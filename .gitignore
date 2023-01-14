@@ -8,6 +8,7 @@ _local_*.*
 _tmp_Picts
 __pycache__
 _tmp_UpLoadParameters
+_tmp_DownLoadParameters
 ReportsPrepared
 RawData
 build

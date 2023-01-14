@@ -1067,6 +1067,8 @@
     <addaction name="GetLastFileFromDownLoads"/>
     <addaction name="separator"/>
     <addaction name="MoveRawFile2Archive"/>
+    <addaction name="separator"/>
+    <addaction name="UpdateParametersFromInternet"/>
    </widget>
    <widget class="QMenu" name="EditSettingsFiles">
     <property name="statusTip">
@@ -2022,6 +2024,11 @@
    </property>
    <property name="shortcut">
     <string notr="true">Ctrl+4</string>
+   </property>
+  </action>
+  <action name="UpdateParametersFromInternet">
+   <property name="text">
+    <string>Обновить файлы параметров</string>
    </property>
   </action>
  </widget>

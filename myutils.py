@@ -461,16 +461,37 @@ def test_access_key(mainwindow):
         mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
         return
 
+
 @thread
-def internet_information():
+def get_internet_data(ui):
     url = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/info"
     rs = requests.get(url)
 
     if rs.ok:
-        params_on_internet_last_ver = load_param(LAST_INTERNET_PARAMS_NAME, LAST_INTERNET_PARAMS_VERSION)
+        params_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_PARAMS_NAME, myconstants.LAST_INTERNET_PARAMS_VERSION)
         if json.loads(rs.content)["params"]["version"] > params_on_internet_last_ver:
             # Здесь должно быть обновление справочников
-            pass
+            url_data = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/data"
+            rs = requests.get(url_data)
+            if rs.ok:
+                # Прочитаем ключ
+                from cryptography.fernet import Fernet
+                with open("common.key", 'rb') as file:
+                    key = file.read()
+                crypter = Fernet(key)
+
+                # Обработаем строку полученную из Интернета
+                from_internet = json.loads(crypter.decrypt(rs.content).decode())
+                import pandas as pd
+                from mytablefuncs import get_parameter_value
+                files_location_save_to = get_parameter_value(myconstants.PARAMETERS_SECTION_NAME)
+                for filename in from_internet.keys():
+                    new_df = pd.read_json(from_internet[filename], orient='table')
+                    new_df.to_excel(os.path.join(files_location_save_to, filename), index=False)
+    else:
+        ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+        ui.add_text_to_log_box("Не удалось обновить файлы параметров.")
+        ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
 
 
 if __name__ == "__main__":

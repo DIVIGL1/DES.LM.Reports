@@ -893,6 +893,8 @@ class Ui_MainWindow(object):
         self.OpenRawDataFolder.setWhatsThis("")
         self.OpenRawDataFolder.setShortcut("Ctrl+4")
         self.OpenRawDataFolder.setObjectName("OpenRawDataFolder")
+        self.UpdateParametersFromInternet = QtWidgets.QAction(MainWindow)
+        self.UpdateParametersFromInternet.setObjectName("UpdateParametersFromInternet")
         self.ReportMenu.addAction(self.CreateReport)
         self.ReportMenu.addAction(self.OpenLastReport)
         self.ReportMenu.addSeparator()
@@ -900,6 +902,8 @@ class Ui_MainWindow(object):
         self.DataMenu.addAction(self.GetLastFileFromDownLoads)
         self.DataMenu.addSeparator()
         self.DataMenu.addAction(self.MoveRawFile2Archive)
+        self.DataMenu.addSeparator()
+        self.DataMenu.addAction(self.UpdateParametersFromInternet)
         self.UCostsSelector.addAction(self.SystemUCosts)
         self.UCostsSelector.addAction(self.UserUCosts)
         self.UCostsSelector.addSeparator()
@@ -978,6 +982,7 @@ class Ui_MainWindow(object):
 "С помощью этого параметра можно исключить\n"
 "из отчёта всех «лишних» сотрудников."))
         self.checkBoxDistributeABH.setText(_translate("MainWindow", "Распределить АВН на ТСДП"))
+        self.UpdateParametersFromInternet.setText(_translate("MainWindow", "Обновить файлы параметров"))
 
 
 if __name__ == "__main__":
