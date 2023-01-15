@@ -300,6 +300,9 @@ PARAMETERS_ALL_TABLES = {
 LAST_INTERNET_PARAMS_NAME = "Скачанная версия справочников из Интернет"
 LAST_INTERNET_PARAMS_VERSION = 0
 
+LAST_INTERNET_REPORTS_NAME = "Скачанная версия ФОРМ отчётов из Интернет"
+LAST_INTERNET_REPORTS_VERSION = 0
+
 LAST_INTERNET_EMAILS_NAME = "Скачанная версия электронных адресов из Интернет"
 LAST_INTERNET_EMAILS_VERSION = 0
 
@@ -423,4 +426,4 @@ NUM_COLUMNS_FOR_HIDE = 150
 
 RES_FOLDER = "Res"
 
-APP_VERSION = "v:8.06.150123.12"
+APP_VERSION = "v:8.061.150123.15"

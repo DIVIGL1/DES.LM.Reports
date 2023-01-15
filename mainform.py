@@ -314,6 +314,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             (self.Settings, "settings", True, show_on_tool_bar),
             ("", "----------------------------"),
             (self.UpdateParametersFromInternet, "UpDateSettings", True, True),
+            (self.UpdateReportsFromInternet, "UpDateReports", True, True),
             (self.UpdateParameterEMails, "UpDateMail", True, True),
             (self.Parameters4DESLM, "parameters", True, False),
             (self.LoadFromDELMAndCreateReport, "conveyor", True, True, True),
@@ -378,6 +379,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.GetLastFileFromDownLoads.triggered.connect(lambda: self.menu_action("GetLastFileFromDownLoads"))
         self.MoveRawFile2Archive.triggered.connect(lambda: self.menu_action("MoveRawFile2Archive"))
         self.UpdateParametersFromInternet.triggered.connect(lambda: self.menu_action("UpdateParametersFromInternet"))
+        self.UpdateReportsFromInternet.triggered.connect(lambda: self.menu_action("UpdateReportsFromInternet"))
         self.UpdateParameterEMails.triggered.connect(lambda: self.menu_action("UpdateParameterEMails"))
 
         self.WaitFileAndCreateReport.triggered.connect(lambda: self.menu_action("WaitFileAndCreateReport"))
@@ -631,6 +633,11 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         if action_type == "UpdateParametersFromInternet":
             self.set_status_bar_text("Выбрана функция обновления файлов параметров")
             get_internet_data(self, "params")
+            return
+
+        if action_type == "UpdateReportsFromInternet":
+            self.set_status_bar_text("Выбрана функция обновления шаблонов отчётных форм")
+            get_internet_data(self, "reports")
             return
 
         if action_type == "UpdateParameterEMails":

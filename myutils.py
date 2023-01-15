@@ -11,6 +11,7 @@ import json
 import requests
 import socket
 import struct
+import base64
 from cryptography.fernet import Fernet
 
 import myconstants
@@ -481,6 +482,7 @@ def get_common_crypter(ui):
 @thread
 def test_internet_data_version(ui):
     ui.UpdateParametersFromInternet.setVisible(False)
+    ui.UpdateReportsFromInternet.setVisible(False)
     ui.UpdateParameterEMails.setVisible(False)
 
     # Прочитаем ключ, если он не доступен, то и скачивать ничего нельзя
@@ -494,13 +496,23 @@ def test_internet_data_version(ui):
     if rs.ok:
         versions_info = json.loads(rs.content)
 
+        # Проверим версию параметров
         params_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_PARAMS_NAME, myconstants.LAST_INTERNET_PARAMS_VERSION)
         params_on_internet_curr_ver = versions_info.get("params", {"version": float("-inf")})["version"]
 
         if params_on_internet_curr_ver > params_on_internet_last_ver:
             ui.UpdateParametersFromInternet.setVisible(True)
 
+        # Проверим версию отчётных форм
+        reports_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_REPORTS_NAME, myconstants.LAST_INTERNET_REPORTS_VERSION)
+        reports_on_internet_curr_ver = versions_info.get("reports", {"version": float("-inf")})["version"]
+
+        if reports_on_internet_curr_ver > reports_on_internet_last_ver:
+            ui.UpdateReportsFromInternet.setVisible(True)
+
+        # Проверим возможность обновлять почтовые адреса для данного пользователя
         if test_user_access_2_download_emails(ui):
+            # Проверим версию списка почтовых адресов
             emails_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_EMAILS_NAME, myconstants.LAST_INTERNET_EMAILS_VERSION)
             emails_on_internet_curr_ver = versions_info.get("emails", {"version": float("-inf")})["version"]
 
@@ -509,7 +521,7 @@ def test_internet_data_version(ui):
 
 
 def test_user_access_2_download_emails(ui):
-    url_user_4_emails = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/data3"
+    url_user_4_emails = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/data4"
     rs = requests.get(url_user_4_emails)
     if rs.ok:
         # Прочитаем ключ
@@ -545,24 +557,63 @@ def get_internet_data(ui, stype):
 
             if params_on_internet_curr_ver > params_on_internet_last_ver:
                 url_data = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/data1"
+                ui.UpdateParametersFromInternet.setEnabled(False)
+                ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+                ui.add_text_to_log_box("Начата загрузка параметров...")
                 rs = requests.get(url_data)
                 if rs.ok:
                     # Обработаем строку полученную из Интернета
                     from_internet = json.loads(crypter.decrypt(rs.content).decode())
                     files_location_save_to = get_parameter_value(myconstants.PARAMETERS_SECTION_NAME)
 
-                    ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
-                    ui.add_text_to_log_box("Обновляем файлы параметров:")
+                    ui.change_last_log_box_text("Обновляем файлы параметров:")
                     for filename in from_internet.keys():
-                        new_df = pd.read_json(from_internet[filename], orient='table')
+                        from_internet[filename] = base64.b64decode(from_internet[filename].encode())
                         if not os.path.isfile("_tmp_DUP.txt"):
-                            new_df.to_excel(os.path.join(files_location_save_to, filename), index=False)
+                            with open(os.path.join(files_location_save_to, filename), 'wb') as hfile:
+                                hfile.write(from_internet[filename])
                             ui.add_text_to_log_box(f"   {myconstants.PARAMETERS_ALL_TABLES[filename][0]}")
                         else:
                             ui.add_text_to_log_box(f"   заблокировано: {myconstants.PARAMETERS_ALL_TABLES[filename][0]}")
-                    ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
                     ui.UpdateParametersFromInternet.setVisible(False)
                     save_param(myconstants.LAST_INTERNET_PARAMS_NAME, params_on_internet_curr_ver)
+                else:
+                    ui.UpdateParametersFromInternet.setEnabled(True)
+                    ui.change_last_log_box_text("... загрузка не удалась.")
+                ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+
+        elif stype == "reports":
+            reports_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_REPORTS_NAME, myconstants.LAST_INTERNET_REPORTS_VERSION)
+            reports_on_internet_curr_ver = versions_info.get("reports", {"version": float("inf")})["version"]
+
+            if reports_on_internet_curr_ver > reports_on_internet_last_ver:
+                url_data = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/data2"
+                ui.UpdateReportsFromInternet.setEnabled(False)
+                ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+                ui.add_text_to_log_box("Начата загрузка шаблонов отчётов...")
+                rs = requests.get(url_data)
+                if rs.ok:
+                    # Обработаем строку полученную из Интернета
+                    from_internet = json.loads(crypter.decrypt(rs.content).decode())
+                    files_location_save_to = get_parameter_value(myconstants.REPORTS_SECTION_NAME)
+
+                    ui.change_last_log_box_text("Обновляем шаблоны отчётов:")
+                    for filename in from_internet.keys():
+                        from_internet[filename] = base64.b64decode(from_internet[filename].encode())
+                        if not os.path.isfile("_tmp_DUP.txt"):
+                            # Обновляем только в случае если такой отчёт уже был
+                            if os.path.isfile(os.path.join(files_location_save_to, filename)):
+                                with open(os.path.join(files_location_save_to, filename), 'wb') as hfile:
+                                    hfile.write(from_internet[filename])
+                                ui.add_text_to_log_box(f"   {filename}")
+                        else:
+                            ui.add_text_to_log_box(f"   заблокировано: {filename}")
+                    ui.UpdateReportsFromInternet.setVisible(False)
+                    save_param(myconstants.LAST_INTERNET_REPORTS_NAME, reports_on_internet_curr_ver)
+                else:
+                    ui.UpdateReportsFromInternet.setEnabled(True)
+                    ui.change_last_log_box_text("... загрузка не удалась.")
+                ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
 
         elif stype == "emails":
             if not test_user_access_2_download_emails(ui):
@@ -570,38 +621,44 @@ def get_internet_data(ui, stype):
                 return
 
             emails_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_EMAILS_NAME, myconstants.LAST_INTERNET_EMAILS_VERSION)
-            emails_on_internet_curr_ver = versions_info.get("params", {"version": float("inf")})["version"]
+            emails_on_internet_curr_ver = versions_info.get("emails", {"version": float("inf")})["version"]
 
             if emails_on_internet_curr_ver > emails_on_internet_last_ver:
-                url_data = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/data2"
+                url_data = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/data3"
+                ui.UpdateParameterEMails.setEnabled(False)
+                ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+                ui.add_text_to_log_box("Начата загрузка электронных адресов...")
                 rs = requests.get(url_data)
                 if rs.ok:
                     # Обработаем строку полученную из Интернета
                     from_internet = json.loads(crypter.decrypt(rs.content).decode())
                     files_location_save_to = get_parameter_value(myconstants.USER_PARAMETERS_SECTION_NAME)
+                    filename = myconstants.EMAILS_TABLE
+                    from_internet[filename] = base64.b64decode(from_internet[filename].encode())
+                    ui.change_last_log_box_text("Обновлён файл:")
 
-                    ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
-                    ui.add_text_to_log_box("Обновлён файл:")
-                    new_df = pd.read_json(from_internet["EMails.xlsx"], orient='table')
-
-                    if os.path.isfile(os.path.join(files_location_save_to, "EMails.xlsx")):
-                        filename = "EMails.xlsx"
-                    else:
-                        filename = "excluded__EMails.xlsx"
+                    if not os.path.isfile(os.path.join(files_location_save_to, filename)):
+                        filename = "excluded__" + myconstants.EMAILS_TABLE
 
                     if not os.path.isfile("_tmp_DUP.txt"):
-                        new_df.to_excel(os.path.join(files_location_save_to, filename), index=False)
-                        ui.add_text_to_log_box(f"   {myconstants.PARAMETERS_ALL_TABLES['EMails.xlsx'][0]}")
+                        with open(os.path.join(files_location_save_to, filename), 'wb') as hfile:
+                            hfile.write(from_internet[myconstants.EMAILS_TABLE])
+                        ui.add_text_to_log_box(f"   {myconstants.PARAMETERS_ALL_TABLES[myconstants.EMAILS_TABLE][0]}")
                     else:
                         ui.add_text_to_log_box(
                             f"   заблокировано: {myconstants.PARAMETERS_ALL_TABLES[myconstants.EMAILS_TABLE][0]}")
-                    ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
                     ui.UpdateParameterEMails.setVisible(False)
                     save_param(myconstants.LAST_INTERNET_EMAILS_NAME, emails_on_internet_curr_ver)
+                else:
+                    ui.UpdateReportsFromInternet.setEnabled(True)
+                    ui.change_last_log_box_text("... загрузка не удалась.")
+                ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
     else:
         ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
         if stype == "params":
             ui.add_text_to_log_box("Не удалось обновить параметры.")
+        if stype == "reports":
+            ui.add_text_to_log_box("Не удалось обновить шаблоны отчётов.")
         if stype == "emails":
             ui.add_text_to_log_box("Не удалось обновить адреса электронной почты.")
         ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
