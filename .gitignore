@@ -10,8 +10,10 @@ __pycache__
 
 _tmp_UpLoadParameters
 _tmp_UpLoadEmails
+_tmp_UpLoadReports
 _tmp_DownLoadParameters
 _tmp_DownLoadEmails
+_tmp_DownLoadReports
 
 ReportsPrepared
 RawData
