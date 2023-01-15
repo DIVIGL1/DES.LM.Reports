@@ -476,14 +476,35 @@ def test_internet_data_version(ui):
         params_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_PARAMS_NAME, myconstants.LAST_INTERNET_PARAMS_VERSION)
         params_on_internet_curr_ver = versions_info.get("params", {"version": float("-inf")})["version"]
 
-        emails_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_EMAILS_NAME, myconstants.LAST_INTERNET_EMAILS_VERSION)
-        emails_on_internet_curr_ver = versions_info.get("emails", {"version": float("-inf")})["version"]
-
         if params_on_internet_curr_ver > params_on_internet_last_ver:
             ui.UpdateParametersFromInternet.setVisible(True)
 
-        if emails_on_internet_curr_ver > emails_on_internet_last_ver:
-            ui.UpdateParameterEMails.setVisible(True)
+        if test_user_access_2_download_emails():
+            emails_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_EMAILS_NAME, myconstants.LAST_INTERNET_EMAILS_VERSION)
+            emails_on_internet_curr_ver = versions_info.get("emails", {"version": float("-inf")})["version"]
+
+            if emails_on_internet_curr_ver > emails_on_internet_last_ver:
+                ui.UpdateParameterEMails.setVisible(True)
+
+
+def test_user_access_2_download_emails():
+    url_user_4_emails = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/data3"
+    rs = requests.get(url_user_4_emails)
+    if rs.ok:
+        from cryptography.fernet import Fernet
+        # Прочитаем ключ
+        with open("common.key", 'rb') as file:
+            key = file.read()
+        crypter = Fernet(key)
+
+        users_list = json.loads(crypter.decrypt(rs.content).decode())
+        users_list = users_list.get("users", [])
+
+        from iCodes import get_user_code
+        return get_user_code() in users_list
+
+    return False
+
 
 @thread
 def get_internet_data(ui, stype):
@@ -526,6 +547,10 @@ def get_internet_data(ui, stype):
                     save_param(myconstants.LAST_INTERNET_PARAMS_NAME, params_on_internet_curr_ver)
 
         elif stype == "emails":
+            if not test_user_access_2_download_emails():
+                ui.UpdateParameterEMails.setVisible(False)
+                return
+
             emails_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_EMAILS_NAME, myconstants.LAST_INTERNET_EMAILS_VERSION)
             emails_on_internet_curr_ver = versions_info.get("params", {"version": float("inf")})["version"]
 
