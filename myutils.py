@@ -11,6 +11,7 @@ import json
 import requests
 import socket
 import struct
+from cryptography.fernet import Fernet
 
 import myconstants
 
@@ -282,8 +283,8 @@ def get_resource_path(relative):
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS, relative)
     else:
-        if os.path.isdir("Picts"):
-            return os.path.join(os.path.abspath("."), "Picts", relative)
+        if os.path.isdir(myconstants.RES_FOLDER):
+            return os.path.join(os.path.abspath("."), myconstants.RES_FOLDER, relative)
         else:
             return os.path.join(os.path.abspath("."), relative)
 
@@ -462,10 +463,30 @@ def test_access_key(mainwindow):
         return
 
 
+def get_common_crypter(ui):
+    # Прочитаем ключ
+    key_path = get_resource_path("common.key")
+    if not os.path.isfile(key_path):
+        if ui is not None:
+            ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+            ui.add_text_to_log_box("Не удалось найти общий ключ шифрования.")
+            ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+        return ""
+    else:
+        with open(get_resource_path("common.key"), 'rb') as file:
+            key = file.read()
+    return Fernet(key)
+
+
 @thread
 def test_internet_data_version(ui):
     ui.UpdateParametersFromInternet.setVisible(False)
     ui.UpdateParameterEMails.setVisible(False)
+
+    # Прочитаем ключ, если он не доступен, то и скачивать ничего нельзя
+    crypter = get_common_crypter(ui)
+    if not crypter:
+        return
 
     url = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/inform"
     rs = requests.get(url)
@@ -479,7 +500,7 @@ def test_internet_data_version(ui):
         if params_on_internet_curr_ver > params_on_internet_last_ver:
             ui.UpdateParametersFromInternet.setVisible(True)
 
-        if test_user_access_2_download_emails():
+        if test_user_access_2_download_emails(ui):
             emails_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_EMAILS_NAME, myconstants.LAST_INTERNET_EMAILS_VERSION)
             emails_on_internet_curr_ver = versions_info.get("emails", {"version": float("-inf")})["version"]
 
@@ -487,17 +508,17 @@ def test_internet_data_version(ui):
                 ui.UpdateParameterEMails.setVisible(True)
 
 
-def test_user_access_2_download_emails():
+def test_user_access_2_download_emails(ui):
     url_user_4_emails = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/data3"
     rs = requests.get(url_user_4_emails)
     if rs.ok:
-        from cryptography.fernet import Fernet
         # Прочитаем ключ
-        with open("common.key", 'rb') as file:
-            key = file.read()
-        crypter = Fernet(key)
+        crypter = get_common_crypter(ui)
 
-        users_list = json.loads(crypter.decrypt(rs.content).decode())
+        try:
+            users_list = json.loads(crypter.decrypt(rs.content).decode())
+        except:
+            users_list = {}
         users_list = users_list.get("users", [])
 
         from iCodes import get_user_code
@@ -514,11 +535,8 @@ def get_internet_data(ui, stype):
     if rs.ok:
         import pandas as pd
         from mytablefuncs import get_parameter_value
-        from cryptography.fernet import Fernet
         # Прочитаем ключ
-        with open("common.key", 'rb') as file:
-            key = file.read()
-        crypter = Fernet(key)
+        crypter = get_common_crypter(ui)
 
         versions_info = json.loads(rs.content)
         if stype == "params":
@@ -547,7 +565,7 @@ def get_internet_data(ui, stype):
                     save_param(myconstants.LAST_INTERNET_PARAMS_NAME, params_on_internet_curr_ver)
 
         elif stype == "emails":
-            if not test_user_access_2_download_emails():
+            if not test_user_access_2_download_emails(ui):
                 ui.UpdateParameterEMails.setVisible(False)
                 return
 

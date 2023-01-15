@@ -327,7 +327,6 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         for one_action_data in actions_data:
             self.setup_one_action(*one_action_data)
 
-
     def setup_one_action(self, action, pict, menu=True, toolbar=True, right_toolbar=False):
         if action:
             icon = QtGui.QIcon()
@@ -337,7 +336,6 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             if toolbar: (self.toolBarRocket if right_toolbar else self.toolBar).addAction(action)
         else:
             (self.toolBarRocket if right_toolbar else self.toolBar).addSeparator()
-
 
     def setup_form(self, reports_list):
         self.setup_icons_and_toolbar()
