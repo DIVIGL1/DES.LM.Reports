@@ -570,9 +570,16 @@ def get_internet_data(ui, stype):
                     for filename in from_internet.keys():
                         from_internet[filename] = base64.b64decode(from_internet[filename].encode())
                         if not os.path.isfile("_tmp_DUP.txt"):
-                            with open(os.path.join(files_location_save_to, filename), 'wb') as hfile:
-                                hfile.write(from_internet[filename])
-                            ui.add_text_to_log_box(f"   {myconstants.PARAMETERS_ALL_TABLES[filename][0]}")
+                            if myconstants.VIRTUAL_FTE_FILE_NAME.lower().split("(")[0] in filename.lower():
+                                # Если это файл с виртуальными FTE, то его надо скопировать в пользовательскую папку
+                                with open(os.path.join(get_parameter_value(myconstants.USER_PARAMETERS_SECTION_NAME), filename), 'wb') as hfile:
+                                    hfile.write(from_internet[filename])
+                                vff_year = filename.split("(")[1].split(")")[0]
+                                ui.add_text_to_log_box(f"   Таблица с искусственными FTE за {vff_year} год")
+                            else:
+                                with open(os.path.join(files_location_save_to, filename), 'wb') as hfile:
+                                    hfile.write(from_internet[filename])
+                                ui.add_text_to_log_box(f"   {myconstants.PARAMETERS_ALL_TABLES[filename][0]}")
                         else:
                             ui.add_text_to_log_box(f"   заблокировано: {myconstants.PARAMETERS_ALL_TABLES[filename][0]}")
                     ui.UpdateParametersFromInternet.setVisible(False)
