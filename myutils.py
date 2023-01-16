@@ -495,6 +495,9 @@ def test_internet_data_version(ui):
 
     if rs.ok:
         versions_info = json.loads(rs.content)
+        # Проверим необходимость обновления программы
+        if versions_info.get("common version", {"version": float("-inf")})["version"] > myconstants.COMMON_VERSION:
+            ui.parent.setWindowTitle(f"DES.LM.Reporter ({myconstants.APP_VERSION}) - НЕОБХОДИМО ОБНОВИТЬ ПРОГРАММУ")
 
         # Проверим версию параметров
         params_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_PARAMS_NAME, myconstants.LAST_INTERNET_PARAMS_VERSION)
