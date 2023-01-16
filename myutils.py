@@ -584,7 +584,12 @@ def get_internet_data(ui, stype):
                                     hfile.write(from_internet[filename])
                                 ui.add_text_to_log_box(f"   {myconstants.PARAMETERS_ALL_TABLES[filename][0]}")
                         else:
-                            ui.add_text_to_log_box(f"   заблокировано: {myconstants.PARAMETERS_ALL_TABLES[filename][0]}")
+                            if myconstants.VIRTUAL_FTE_FILE_NAME.lower().split("(")[0] in filename.lower():
+                                # Если это файл с виртуальными FTE, то его надо скопировать в пользовательскую папку
+                                vff_year = filename.split("(")[1].split(")")[0]
+                                ui.add_text_to_log_box(f"   заблокировано: Таблица с искусственными FTE за {vff_year} год")
+                            else:
+                                ui.add_text_to_log_box(f"   заблокировано: {myconstants.PARAMETERS_ALL_TABLES[filename][0]}")
                     ui.UpdateParametersFromInternet.setVisible(False)
                     save_param(myconstants.LAST_INTERNET_PARAMS_NAME, params_on_internet_curr_ver)
                 else:
