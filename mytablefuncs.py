@@ -108,18 +108,22 @@ def load_raw_data(raw_file, p_virtual_FTE, ui_handle):
     ui_handle.add_text_to_log_box("Начинаем загрузку и обработку исходных данных.")
     df_raw = open_and_test_raw_struct(raw_file)
     if type(df_raw) == str:
-        return(df_raw)
+        return df_raw
 
     if p_virtual_FTE:
+        # Определим год данных в отчёте
+        data_year = str(df_raw["Дата"][0]).split(".")[1]
+        ui_handle.add_text_to_log_box(f"Проверяем наличие файла с искусственными FTE за {data_year} год.")
         # Проверим наличие файла:
+        vff_name = myconstants.VIRTUAL_FTE_FILE_NAME.replace("YEAR", data_year)
         virtual_fte_file = \
             os.path.join(
-                os.path.join(os.getcwd(), get_parameter_value(myconstants.RAW_DATA_SECTION_NAME)),
-                myconstants.VIRTUAL_FTE_FILE_NAME)
+                os.path.join(os.getcwd(), get_parameter_value(myconstants.USER_PARAMETERS_SECTION_NAME)),
+                vff_name)
         if not os.path.isfile(virtual_fte_file):
             ui_handle.add_text_to_log_box("")
             ui_handle.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
-            ui_handle.add_text_to_log_box("Не обнаружен файл с искусственными FTE.")
+            ui_handle.add_text_to_log_box(f"Не обнаружен файл с искусственными FTE за {data_year} год.")
             ui_handle.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
             ui_handle.add_text_to_log_box("")
             df = df_raw
