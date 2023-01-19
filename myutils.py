@@ -375,6 +375,7 @@ def get_one_url_data(url, data, ptype, mainwindow):
 
 @thread
 def get_data_using_url(mainwindow=None, year=None, month1=1, month2=None, create_report=None):
+    timer = displayTimer(mainwindow, "Загрузка данных длилась")
     if mainwindow is not None:
         mainwindow.parent.internet_downloading_in_process = True
         mainwindow.ui.lock_unlock_interface_items()
@@ -433,6 +434,8 @@ def get_data_using_url(mainwindow=None, year=None, month1=1, month2=None, create
         if mainwindow is not None:
             mainwindow.add_text_to_log_box(f"\nЗавершена загрузка данных из DES.LM через Интернет.")
             mainwindow.add_text_to_log_box(f"Файл: {only_filename} размещён в папке 'Загрузки'.")
+
+            timer.display()
 
             if not mainwindow.parent.report_automation_in_process:
                 mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
