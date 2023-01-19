@@ -1,3 +1,6 @@
+RAW_FACT_COLUMN_NAME = "Фактические трудозатраты (час.) (Сумма)"
+RAW_PLAN_COLUMN_NAME = "План, FTE"
+
 RAW_DATA_COLUMNS = {
     "Дата": "FDate",
     "Функциональное направление": "FNRaw",
@@ -11,12 +14,28 @@ RAW_DATA_COLUMNS = {
     "Менеджер проекта": "ProjectManager",
     "Вид проекта": "ProjectType",
     "Кол-во штатных единиц": "KoBo",
-    "План, FTE": "PlanFTE",
+    RAW_PLAN_COLUMN_NAME: "PlanFTE",
     "Договор": "Contract",
-    "Фактические трудозатраты (час.) (Сумма)": "FactHours",
+    RAW_FACT_COLUMN_NAME: "FactHours",
     "Unnamed: 15": "Unnamed15",
     "Unnamed: 16": "Unnamed16"
 }
+
+GROUP_COLUMNS_LIST = [
+    "Дата",
+    "Функциональное направление",
+    "МВЗ",
+    "Направление",
+    "Подразделение",
+    "Пользователь",
+    "Северный работник",
+    "Проект",
+    "Статус проекта",
+    "Менеджер проекта",
+    "Вид проекта",
+    "Кол-во штатных единиц",
+    "Договор",
+]
 
 RESULT_DATA_COLUMNS = [
     "FDate",
@@ -193,7 +212,7 @@ COLUMNS_FILLNA = ["Division", "FN", "Portfolio"]
 FILLNA_STRING = "???"
 NOT_EXIST_ELEMENT = "< не существующий элемент >"
 
-BOOLEAN_VALUES_SUBST = {"ЛОЖЬ": False, "ИСТИНА": True}
+BOOLEAN_VALUES_SUBST = {"ЛОЖЬ": False, "Ложь": False, "ИСТИНА": True, "Истина": True}
 
 PARAMETERS_SECTION_NAME = "Parameters"
 RAW_DATA_SECTION_NAME = "RawDataPath"
@@ -427,4 +446,4 @@ NUM_COLUMNS_FOR_HIDE = 150
 RES_FOLDER = "Res"
 
 COMMON_VERSION = 1.01
-APP_VERSION = "v:8.072.170123.02"
+APP_VERSION = "v:9.001.190123.06"

@@ -740,7 +740,9 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             year = int(self.parent.parent.reporter.year_parameter)
 
             self.clear_log_box()
+            self.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
             self.add_text_to_log_box("Запущена загрузка данных из DES.LM.")
+            self.add_text_to_log_box("Загрузка длится до 2-х минут.\n")
             if month1 == month2:
                 self.add_text_to_log_box(f"Параметры: год: {year}, месяц: {month2}")
             else:

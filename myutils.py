@@ -1,3 +1,4 @@
+import pandas as pd
 import datetime
 import time
 import os
@@ -17,6 +18,10 @@ from cryptography.fernet import Fernet
 
 import myconstants
 
+dfs = {
+    "plan": "",
+    "fact": "",
+}
 
 def thread(my_func):
     # Запускает функцию в отдельным процессом.
@@ -325,9 +330,37 @@ def get_des_lm_url_parameters(year=None, month1=1, month2=None):
     return parameter_data
 
 
+def get_one_url_data(url, data, ptype, mainwindow):
+    if ptype == "plan":
+        text_2_main_window(mainwindow, "Ждём завершения загрузки плановых трудозатрат...")
+        zero_col = myconstants.RAW_FACT_COLUMN_NAME
+        not_zero_col = myconstants.RAW_PLAN_COLUMN_NAME
+    else:
+        text_2_main_window(mainwindow, "Ждём завершения загрузки фактических трудозатрат...")
+        zero_col = myconstants.RAW_PLAN_COLUMN_NAME
+        not_zero_col = myconstants.RAW_FACT_COLUMN_NAME
+
+    rs = requests.post(url, data=json.dumps(data), headers={"Content-Type": "application/json"})
+
+    if ptype == "plan":
+        text_2_main_window(mainwindow, "   Плановые данные получены. Обрабатываем ...")
+    else:
+        text_2_main_window(mainwindow, "   Фактические данные получены. Обрабатываем ...")
+
+    df = pd.read_excel(rs.content, engine='openpyxl')
+    df[zero_col] = 0
+    df = df[df[not_zero_col] != 0]
+
+    dfs[ptype] = df
+    if ptype == "plan":
+        text_2_main_window(mainwindow, "      Плановые трудозатраты обработаны.")
+    else:
+        text_2_main_window(mainwindow, "      Фактические трудозатраты обработаны.")
+
+
 @thread
 def get_data_using_url(mainwindow=None, year=None, month1=1, month2=None, create_report=None):
-    if not mainwindow is None:
+    if mainwindow is not None:
         mainwindow.parent.internet_downloading_in_process = True
         mainwindow.ui.lock_unlock_interface_items()
 
@@ -335,7 +368,7 @@ def get_data_using_url(mainwindow=None, year=None, month1=1, month2=None, create
     data = get_des_lm_url()
     if data["ret_code"] != 1:
         # Либо код устарел, либо что-то с Интернетом:
-        if not mainwindow is None:
+        if mainwindow is not None:
             # Надо остановить процессы и вывести сообщение на экран
             mainwindow.parent.internet_downloading_in_process = False
             # mainwindow.parent.report_automation_in_process
@@ -343,11 +376,28 @@ def get_data_using_url(mainwindow=None, year=None, month1=1, month2=None, create
             mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
             mainwindow.ui.lock_unlock_interface_items()
     else:
-        url = data["url"]
-
+        url_plan = data["url"]
+        url_fact_per_month = data["url_fact_per_month"]
         data = get_des_lm_url_parameters(year=year, month1=month1, month2=month2)
 
-        rs = requests.post(url, data=json.dumps(data), headers={"Content-Type": "application/json"})
+        thread1 = threading.Thread(target=get_one_url_data, args=(url_plan, data, "plan", mainwindow))
+        thread2 = threading.Thread(target=get_one_url_data, args=(url_fact_per_month, data, "fact", mainwindow))
+        threads = [thread1, thread2]
+
+        for one_thread in threads:
+            one_thread.start()
+
+        for one_thread in threads:
+            one_thread.join()
+
+        text_2_main_window(mainwindow, "         Объединяем данные в один файл...")
+        df = dfs["plan"].append(dfs["fact"])
+        df.drop_duplicates(inplace=True)
+
+        df.fillna("", inplace=True)
+        df.replace(myconstants.BOOLEAN_VALUES_SUBST, inplace=True)
+
+        df = df.groupby(by=myconstants.GROUP_COLUMNS_LIST)[[myconstants.RAW_FACT_COLUMN_NAME, myconstants.RAW_PLAN_COLUMN_NAME]].sum().reset_index()
 
         cdt = datetime.datetime.now()
 
@@ -359,11 +409,14 @@ def get_data_using_url(mainwindow=None, year=None, month1=1, month2=None, create
         only_filename = f"{cdt.year:04}-{cdt.month:02}-{cdt.day:02} {cdt.hour:02}-{cdt.minute:02}-{cdt.second:02}  DES.LM.Reports ({data_in_file_period})" + myconstants.EXCEL_FILES_ENDS
         filename = os.path.join(get_download_dir(), only_filename)
 
-        with open(filename, "wb") as file:
-            file.write(rs.content)
+        # with open(filename, "wb") as file:
+        #     file.write(rs.content)
 
-        if not mainwindow is None:
-            mainwindow.add_text_to_log_box(f"Завершена загрузка данных из DES.LM через Интернет.")
+        text_2_main_window(mainwindow, "         Сохраняем загруженные данные...")
+        df.to_excel(filename, engine='openpyxl', index=False)
+
+        if mainwindow is not None:
+            mainwindow.add_text_to_log_box(f"\nЗавершена загрузка данных из DES.LM через Интернет.")
             mainwindow.add_text_to_log_box(f"Файл: {only_filename} размещён в папке 'Загрузки'.")
 
             if not mainwindow.parent.report_automation_in_process:
@@ -374,6 +427,11 @@ def get_data_using_url(mainwindow=None, year=None, month1=1, month2=None, create
 
             if mainwindow.parent.report_automation_in_process:
                 copy_file_as_drop_process(mainwindow, [filename], create_report=create_report)
+
+
+def text_2_main_window(mainwindow, text):
+    if mainwindow is not None:
+        mainwindow.add_text_to_log_box(text)
 
 
 @thread
