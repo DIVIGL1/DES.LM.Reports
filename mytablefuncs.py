@@ -337,7 +337,11 @@ def prepare_data(
         ui_handle.add_text_to_log_box(projects_list_add_info)
         return None
 
-    if p_only_projects_with_add_info:
+    if not p_only_projects_with_add_info:
+        # Если нет отметки, что нужно выбрать только определённые проекты
+        # тогда сделаем из таблицы пустую. Это нужно чтобы исключить из неё возможные дубли.
+        projects_list_add_info = projects_list_add_info[projects_list_add_info.index == -1]
+    else:
         # Отмечено, что нужно выбрать только определённые проекты.
         # Наименование столбца содержащего признаки для фильтрации:
         # Найдём реальное название (с учетом регистра):
@@ -348,10 +352,7 @@ def prepare_data(
 
         # Из таблицы с дополнительными данными о проектах удалим всё лишне:
         group_value = ui_handle.comboBoxPGroups.currentText()
-        if group_value == myconstants.TEXT_4_ALL_GROUPS:
-            pass
-        else:
-            projects_list_add_info = projects_list_add_info[projects_list_add_info[grp_clmn_name] == group_value]
+        projects_list_add_info = projects_list_add_info[projects_list_add_info[grp_clmn_name] == group_value]
 
     projects_list_add_info.rename(columns = myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST, inplace = True)
     projects_list_add_info.fillna(0.00, inplace=True)

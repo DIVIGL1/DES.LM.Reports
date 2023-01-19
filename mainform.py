@@ -240,7 +240,6 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.comboBoxPGroups.clear()
         df = load_parameter_table(myconstants.PROJECTS_LIST_ADD_INFO)
         groups_list = [
-            myconstants.TEXT_4_ALL_GROUPS,
         ]
         if type(df) == str:
             self.add_text_to_log_box(df)
