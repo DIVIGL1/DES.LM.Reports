@@ -120,8 +120,9 @@ class MyExcel:
                     self.currwindow.WindowState = myconstants.EXCELWINDOWSTATE_MAX
                 else:
                     self.work_book.Close()
-                
-                self.report_parameters.parent.reporter.show_timer()
+
+                self.report_parameters.parent.reporter.start_prog_time.display()
+                self.report_parameters.parent.mainwindow.set_status_bar_text("Отчёт сформирован и сохранён")
 
         self.oexcel.DisplayAlerts = self.save_DisplayAlerts
 

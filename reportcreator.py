@@ -57,7 +57,7 @@ class reportCreator(object):
                     myutils.save_param(myconstants.PARAMETER_SAVED_SELECTED_RAW_FILE, raw_file_name)
 
                     self.report_creation_in_process = True
-                    self.start_timer()
+                    self.start_prog_time = myutils.displayTimer(self.parent.mainwindow.ui, "Время выполнения")
                     if not p_dont_clear_log_box:
                         self.parent.mainwindow.ui.clear_log_box()
 
@@ -65,13 +65,8 @@ class reportCreator(object):
 
         return ret_value
 
-    def start_timer(self):
-        self.start_prog_time = time.time()
-
     def show_timer(self):
-        end_prog_time = time.time()
-        duration_in_seconds = int(end_prog_time - self.start_prog_time)
-        self.parent.mainwindow.add_text_to_log_box("Время выполнения: {0:0>2}:{1:0>2}".format(duration_in_seconds // 60, duration_in_seconds % 60))
+        self.start_prog_time.display()
         self.parent.mainwindow.set_status_bar_text("Отчёт сформирован и сохранён")
 
 

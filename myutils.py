@@ -18,6 +18,21 @@ from cryptography.fernet import Fernet
 
 import myconstants
 
+
+class displayTimer:
+    def __init__(self, ui, text):
+        self.end_time = None
+        self.ui = ui
+        self.text = text
+        self.start_time = time.time()
+
+    def display(self):
+        self.end_time = time.time()
+        duration_in_seconds = int(self.end_time - self.start_time)
+        if self.ui is not None:
+            self.ui.add_text_to_log_box(self.text + ": {0:0>2}:{1:0>2}".format(duration_in_seconds // 60, duration_in_seconds % 60))
+
+
 dfs = {
     "plan": "",
     "fact": "",
@@ -619,6 +634,7 @@ def get_internet_data(ui, stype):
         from mytablefuncs import get_parameter_value
         # Прочитаем ключ
         crypter = get_common_crypter(ui)
+        timer = displayTimer(ui, "Затраченное время")
 
         versions_info = json.loads(rs.content)
         if stype == "params":
@@ -735,6 +751,8 @@ def get_internet_data(ui, stype):
                     ui.UpdateReportsFromInternet.setEnabled(True)
                     ui.change_last_log_box_text("... загрузка не удалась.")
                 ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+        timer.display()
+
     else:
         ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
         if stype == "params":
