@@ -1304,9 +1304,7 @@ class MyWindow(QtWidgets.QMainWindow):
         result = None
         if not self.ctrl_is_pressed:
             result = QtWidgets.QMessageBox.question(self, "Подтверждение закрытия окна",
-                                                    "Вы действительно хотите закрыть программу?\n\n" +
-                                                    "Если у Вас формируется отчёт,\n" +
-                                                    "то скорее всего, его формирование не прекратится.",
+                                                    "Вы действительно хотите закрыть программу?",
                                                     QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
                                                     QtWidgets.QMessageBox.No)
         if self.ctrl_is_pressed or result == QtWidgets.QMessageBox.Yes:
