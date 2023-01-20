@@ -57,7 +57,7 @@ class reportCreator(object):
                     myutils.save_param(myconstants.PARAMETER_SAVED_SELECTED_RAW_FILE, raw_file_name)
 
                     self.report_creation_in_process = True
-                    self.start_prog_time = myutils.displayTimer(self.parent.mainwindow.ui, "Время выполнения")
+                    self.start_prog_time = myutils.displayTimer(self.parent.mainwindow.ui, "Время формирования отчёта")
                     if not p_dont_clear_log_box:
                         self.parent.mainwindow.ui.clear_log_box()
 

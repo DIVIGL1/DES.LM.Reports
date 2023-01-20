@@ -727,6 +727,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
             p2.setChecked(True)
             return
+        
         if action_type == "LoadDataFromDESLM":
 
             self.set_status_bar_text("Выбрана функция загрузки данных из DES.LM")
@@ -766,6 +767,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             self.open_report_form()
 
             return
+
         if action_type == "EditRawFile":
             self.set_status_bar_text("Выбрана функция редактирования выделенного файла с данными")
             self.open_raw_file()
@@ -1074,7 +1076,7 @@ class MyWindow(QtWidgets.QMainWindow):
 
         self.ui.parent = self
         self.ui.save_app_link(self.app)
-        self.setWindowTitle(f"DES.LM.Reporter ({myconstants.APP_VERSION})")
+        self.setWindowTitle(f"DES.LM.Reporter ({myconstants.APP_VERSION} [{myconstants.COMMON_VERSION}])")
         self.ui.plainTextEdit.setWordWrapMode(QtGui.QTextOption.NoWrap)
         # Установим исходные (сохранённые) координаты и размеры:
         data = load_param(myconstants.PARAMETER_SAVED_MAIN_WINDOW_POZ, "")

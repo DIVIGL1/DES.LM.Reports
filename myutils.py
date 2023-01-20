@@ -41,7 +41,7 @@ dfs = {
 def thread(my_func):
     # Запускает функцию в отдельным процессом.
     def wrapper(*args, **kwargs):
-        my_thread = threading.Thread(target=my_func, args=args, kwargs=kwargs)
+        my_thread = threading.Thread(target=my_func, args=args, kwargs=kwargs, daemon=True)
         my_thread.start()
     return wrapper
 
@@ -396,8 +396,8 @@ def get_data_using_url(mainwindow=None, year=None, month1=1, month2=None, create
         url_fact_per_month = data["url_fact_per_month"]
         data = get_des_lm_url_parameters(year=year, month1=month1, month2=month2)
 
-        thread1 = threading.Thread(target=get_one_url_data, args=(url_plan, data, "plan", mainwindow))
-        thread2 = threading.Thread(target=get_one_url_data, args=(url_fact_per_month, data, "fact", mainwindow))
+        thread1 = threading.Thread(target=get_one_url_data, args=(url_plan, data, "plan", mainwindow), daemon=True)
+        thread2 = threading.Thread(target=get_one_url_data, args=(url_fact_per_month, data, "fact", mainwindow), daemon=True)
         threads = [thread1, thread2]
 
         for one_thread in threads:
@@ -575,13 +575,13 @@ def test_internet_data_version(ui):
         # Проверим необходимость обновления программы
         if versions_info.get("common version", {"version": float("-inf")})["version"] > myconstants.COMMON_VERSION:
             time.sleep(2)
-            ui.parent.setWindowTitle(f"DES.LM.Reporter ({myconstants.APP_VERSION}) - НЕОБХОДИМО ОБНОВИТЬ ПРОГРАММУ")
+            ui.parent.setWindowTitle(f"DES.LM.Reporter ({myconstants.APP_VERSION} [{myconstants.COMMON_VERSION}]) - НЕОБХОДИМО ОБНОВИТЬ ПРОГРАММУ")
             ui.add_text_to_log_box("")
             ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
             ui.add_text_to_log_box("Уважаемый пользователь!")
             ui.add_text_to_log_box("В программе произошли значительные изменения,")
             ui.add_text_to_log_box("в связи с чем Вам рекомендуется обновить программу.")
-            ui.add_text_to_log_box("Скорее всего, Вам достаточно обновить только exe-файл.")
+            ui.add_text_to_log_box("Скорее всего, достаточно будет обновить только exe-файл.")
             ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
 
         # Проверим версию параметров
