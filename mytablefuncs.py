@@ -597,19 +597,21 @@ def prepare_data(
     
     data_df = data_df.merge(projects_sub_types_descr_df, left_on="ProjectSubType", right_on="ProjectSubTypeName", how="left")
     data_df["ProjectSubTypeDescription"].fillna("", inplace=True)
+    ui_handle.add_text_to_log_box(f"... и типы ПОДпроектов (всего строк обработанных данных: {data_df.shape[0]})")
 
     if p_delete_pers_data:
         data_df = data_df[data_df["ProjectSubTypePersData"] != 1]
+        ui_handle.add_text_to_log_box(f"Исключены персональные данные (всего строк обработанных данных: {data_df.shape[0]})")
 
     if p_delete_vip:
         vip_list = vip_df["FIO_VIP"].to_list()
         for one_vip in vip_list:
             data_df = data_df[data_df["JustUserName"] != one_vip]
+        ui_handle.add_text_to_log_box(f"Исключены VIP (всего строк обработанных данных: {data_df.shape[0]})")
 
     if p_delete_not_prod_units:
         data_df = data_df[data_df["pNotProductUnit"] != 1]
-
-    ui_handle.add_text_to_log_box(f"... и типы ПОДпроектов (всего строк обработанных данных: {data_df.shape[0]})")
+        ui_handle.add_text_to_log_box(f"Исключены не производственные подразделения (всего строк обработанных данных: {data_df.shape[0]})")
 
     if p_delete_vacation:
         vacancy_text = myconstants.VACANCY_NAME_TEXT
@@ -622,7 +624,6 @@ def prepare_data(
         ui_handle.add_text_to_log_box(f"Удалены вакансии (всего строк обработанных данных: {data_df.shape[0]})")
 
     add_combine_columns(data_df)
-
-    ui_handle.add_text_to_log_box(f"Добавлены производные столбцы (конкатенация) (всего строк данных: {data_df.shape[0]})")
+    ui_handle.add_text_to_log_box(f"Добавлены необходимые производные столбцы (конкатенация) (всего строк данных: {data_df.shape[0]})")
     
     return data_df[myconstants.RESULT_DATA_COLUMNS]
