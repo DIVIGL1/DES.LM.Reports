@@ -167,13 +167,11 @@ def open_and_test_raw_struct(xls_raw_file, short_text=False):
             f"Такой формат файлов не поддерживается."
     else:
         # Необходимо проверить файл на соответствие структуре, на случай если в папку скопировали не тот файл:
-        set1 = (set(myconstants.RAW_DATA_COLUMNS.keys()) ^ {"Unnamed: 15"}) ^ {"Unnamed: 16"}
-        set1 = set1 ^ {"Unnamed: 15"}
-        set1 = set1 ^ {"Unnamed: 16"}
-        set2 = set(df.columns)
-        set2 = set2 ^ {"Unnamed: 15"}
-        set2 = set2 ^ {"Unnamed: 16"}
-        if not (set1 == set2):
+        good_struct = True
+        for one_column in myconstants.RAW_DATA_COLUMNS.keys():
+            if one_column not in df.columns:
+                good_struct = False
+        if not good_struct:
             # Структура файла не правильная!
             ret_error_value = \
                 f"Выбранный файл имеет не правильную структуру!"
