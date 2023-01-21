@@ -72,7 +72,7 @@ class handlerDownLoadFolder(FileSystemEventHandler):
             return
 
         new_filename = os.path.splitext(os.path.basename(event.src_path))[0] + myconstants.EXCEL_FILES_ENDS
-        if new_filename[0] != "~":
+        if new_filename[0] == "~":
             # Это временный файл - не обрабатываем
             self.parent.report_automation_in_process = False
             return
