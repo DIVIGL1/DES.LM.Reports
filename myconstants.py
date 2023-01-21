@@ -1,8 +1,9 @@
+RAW_DATE_COLUMN_NAME = "Дата"
 RAW_FACT_COLUMN_NAME = "Фактические трудозатраты (час.) (Сумма)"
 RAW_PLAN_COLUMN_NAME = "План, FTE"
 
 RAW_DATA_COLUMNS = {
-    "Дата": "FDate",
+    RAW_DATE_COLUMN_NAME: "FDate",
     "Функциональное направление": "FNRaw",
     "МВЗ": "MVZ",
     "Направление": "DivisionRaw",
@@ -17,8 +18,8 @@ RAW_DATA_COLUMNS = {
     RAW_PLAN_COLUMN_NAME: "PlanFTE",
     "Договор": "Contract",
     RAW_FACT_COLUMN_NAME: "FactHours",
-    "Unnamed: 15": "Unnamed15",
-    "Unnamed: 16": "Unnamed16"
+    # "Unnamed: 15": "Unnamed15",
+    # "Unnamed: 16": "Unnamed16"
 }
 
 GROUP_COLUMNS_LIST = [

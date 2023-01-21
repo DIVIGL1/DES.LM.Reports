@@ -181,6 +181,7 @@ def get_internet_time():
     secs = struct.unpack("!12I", msg)[10] - 2208988800
     return datetime.datetime.fromtimestamp(secs)
 
+
 @thread
 def copy_file_as_drop_process(mainwindow, xls_files, create_report=False):
     from mytablefuncs import open_and_test_raw_struct, get_parameter_value
@@ -212,8 +213,8 @@ def copy_file_as_drop_process(mainwindow, xls_files, create_report=False):
 
         if drug_and_drop_type >= 2:
             # Проверим структуру файла:
-            ret_value = open_and_test_raw_struct(one_file_path, short_text=True)
-            if type(ret_value) == str:
+            df_value = open_and_test_raw_struct(one_file_path, short_text=True)
+            if type(df_value) == str:
                 mainwindow.add_text_to_log_box("   Структура файла не соответствует требованиям.")
                 mainwindow.add_text_to_log_box("   Копирование отклонено.")
                 continue
@@ -223,13 +224,12 @@ def copy_file_as_drop_process(mainwindow, xls_files, create_report=False):
             # Сначала определим дату файла:
             file_dt = datetime.datetime.fromtimestamp(os.path.getmtime(one_file_path))
             creation_str = f"{file_dt:%Y-%m-%d %H-%M}"
-            # Определим данные за какой период присутствуют:
-            month_column = list(myconstants.RAW_DATA_COLUMNS.keys())[0]
 
-            start_month = ret_value[month_column].min()
+            # Определим данные за какой период присутствуют:
+            start_month = df_value[myconstants.RAW_DATE_COLUMN_NAME].min()
             report_year = int(start_month * 10000 - int(start_month) * 10000)
             start_month = int(start_month)
-            end_month = int(ret_value[month_column].max())
+            end_month = int(df_value[myconstants.RAW_DATE_COLUMN_NAME].max())
 
             if start_month == end_month:
                 data_in_file_period = f"{myconstants.MONTHS[end_month]} {report_year}"
@@ -275,16 +275,12 @@ def copy_file_as_drop_process(mainwindow, xls_files, create_report=False):
 
     mainwindow.parent.drag_and_prop_in_process = False
 
-    and_create_report(mainwindow=mainwindow, create_report=create_report)
-    return
-
-
-def and_create_report(mainwindow, create_report=False):
     if create_report:
         mainwindow.set_status_bar_text("... начинаем формировать отчёт на основании скопированного файла", 3)
         mainwindow.parent.reporter.create_report(p_dont_clear_log_box=True)
     else:
         mainwindow.ui.lock_unlock_interface_items()
+    return
 
 
 def is_admin():
