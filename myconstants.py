@@ -136,6 +136,9 @@ RESULT_DATA_COLUMNS = [
     "SumPodr11",
     "SumPodr12",
     "manager_email",
+    "UCateg4ThisFN",
+    "CommonCateg",
+    "CombinedUCateg4ThisFN",
 ]
 
 COLUMNS_TO_SET_ZERO_IF_NULL = [
@@ -264,6 +267,7 @@ PROJECTS_SUB_TYPES_DESCR = "ProjectsSubTypesDescriptions.xlsx"
 PROJECTS_LIST_ADD_INFO = "ProjectsAddInfo.xlsx"
 YEARS_LIST_TABLE = "Years4Periods.xlsx"
 MONTHS_LIST_TABLE = "DataPeriods.xlsx"
+USERS_CATEGS_LIST = "UCategories.xlsx"
 
 PROJECTS_LIST_ADD_INFO_RENAME_KEY_COLUMN = "Наименование проекта (только текст)"
 PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST = {
@@ -314,7 +318,8 @@ PARAMETERS_ALL_TABLES = {
     ISDOGNAME_TABLE: ("Таблица наименований ИС из контракта", "ID_DES.LM_project"),
     PROJECTS_LIST_ADD_INFO: ("Таблица наименований ИС из контракта", PROJECTS_LIST_ADD_INFO_RENAME_KEY_COLUMN),
     YEARS_LIST_TABLE: ("Таблица годов, по которым можно формировать отчёт", "Years4Period"),
-    MONTHS_LIST_TABLE: ("Таблица периодов (месяцев), по которым можно формировать отчёт", "DataPeriodName")
+    MONTHS_LIST_TABLE: ("Таблица периодов (месяцев), по которым можно формировать отчёт", "DataPeriodName"),
+    USERS_CATEGS_LIST: ("Таблица с перечнем категорий сотрудников", "CategUserName"),
 }
 
 LAST_INTERNET_PARAMS_NAME = "Скачанная версия справочников из Интернет"
@@ -446,5 +451,10 @@ NUM_COLUMNS_FOR_HIDE = 150
 
 RES_FOLDER = "Res"
 
-COMMON_VERSION = 1.02
-APP_VERSION = "v:9.004.210123.02"
+SERVICE_TYPES = "ТСД"
+PROJECT_TYPES = "П"
+
+UNKNOWN_CATEGORY = " - категория не указана - "
+
+COMMON_VERSION = 2.01
+APP_VERSION = "v:10.001.250123.01"

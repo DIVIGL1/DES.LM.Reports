@@ -9,6 +9,22 @@ from myutils import(
 )
 
 
+def append_categories(row):
+    if row.ProjectType in myconstants.SERVICE_TYPES:
+        service_or_project = "SC_"
+    elif row.ProjectType in myconstants.PROJECT_TYPES:
+        service_or_project = "PC_"
+    else:
+        service_or_project = "XXXXX?_"
+
+    column_name = service_or_project + row.FN
+
+    if (service_or_project + row.FN) in row.index:
+        return row[service_or_project + row.FN]
+    else:
+        return row["CommonCateg"]
+
+
 def get_parameter_value(param_name, default_value=None):
     # Подготовим значение для возврата на случай если потребуется значение по умолчанию:
     ret_value = myconstants.SECTIONS_DEFAULT_VALUES.get(
@@ -167,11 +183,7 @@ def open_and_test_raw_struct(xls_raw_file, short_text=False):
             f"Такой формат файлов не поддерживается."
     else:
         # Необходимо проверить файл на соответствие структуре, на случай если в папку скопировали не тот файл:
-        good_struct = True
-        for one_column in myconstants.RAW_DATA_COLUMNS.keys():
-            if one_column not in df.columns:
-                good_struct = False
-        if not good_struct:
+        if not set(df.columns) <= set(myconstants.RAW_DATA_COLUMNS.keys()):
             # Структура файла не правильная!
             ret_error_value = \
                 f"Выбранный файл имеет не правильную структуру!"
@@ -334,10 +346,14 @@ def prepare_data(
     if type(projects_list_add_info) == str:
         ui_handle.add_text_to_log_box(projects_list_add_info)
         return None
+    users_categs_list = load_parameter_table(myconstants.USERS_CATEGS_LIST)
+    if type(users_categs_list) == str:
+        ui_handle.add_text_to_log_box(users_categs_list)
+        return None
 
     if not p_only_projects_with_add_info:
         # Если нет отметки, что нужно выбрать только определённые проекты
-        # тогда сделаем из таблицы пустую. Это нужно чтобы исключить из неё возможные дубли.
+        # тогда сделаем из таблицы пустую. Это нужно, чтобы исключить из неё возможные дубли.
         projects_list_add_info = projects_list_add_info[projects_list_add_info.index == -1]
     else:
         # Отмечено, что нужно выбрать только определённые проекты.
@@ -596,6 +612,16 @@ def prepare_data(
     data_df = data_df.merge(projects_sub_types_descr_df, left_on="ProjectSubType", right_on="ProjectSubTypeName", how="left")
     data_df["ProjectSubTypeDescription"].fillna("", inplace=True)
     ui_handle.add_text_to_log_box(f"... и типы ПОДпроектов (всего строк обработанных данных: {data_df.shape[0]})")
+
+    # Добавляем категории пользователей
+    data_df = data_df.merge(users_categs_list, left_on="JustUserName", right_on="CategUserName", how="left")
+    data_df["UCateg4ThisFN"] = data_df.apply(lambda data: append_categories(data), axis=1)
+    data_df["UCateg4ThisFN"].fillna(myconstants.UNKNOWN_CATEGORY, inplace=True)
+    data_df["CommonCateg"].fillna(myconstants.UNKNOWN_CATEGORY, inplace=True)
+    data_df["CombinedUCateg4ThisFN"] = data_df[["UCateg4ThisFN", "CommonCateg"]].apply(
+        lambda data: data.CommonCateg if data.UCateg4ThisFN == "" else data.UCateg4ThisFN, axis=1
+    )
+    ui_handle.add_text_to_log_box(f"Добавлены категории пользователей (всего строк обработанных данных: {data_df.shape[0]})")
 
     if p_delete_pers_data:
         data_df = data_df[data_df["ProjectSubTypePersData"] != 1]
