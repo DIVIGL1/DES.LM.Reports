@@ -137,8 +137,11 @@ RESULT_DATA_COLUMNS = [
     "SumPodr12",
     "manager_email",
     "UCateg4ThisFN",
-    "CommonCateg",
+    "UCateg4ThisFN_WasFound",
+    "CommonCateg_SAP",
+    "CommonCateg_notSAP",
     "CombinedUCateg4ThisFN",
+    "IS_Product_type_SAP",
 ]
 
 COLUMNS_TO_SET_ZERO_IF_NULL = [
@@ -211,12 +214,19 @@ COSTS_DATA_COLUMNS = [
 RAW_DATA_DROP_COLUMNS = ["MVZ", "KoBo", "Unnamed15", "Unnamed16"]
 SHEETS_DONT_DELETE_FORMULAS = ["ИсходныеДанные", "УникальныеСписки", "Настройки"]
 DELETE_SHEETS_LIST_IF_NO_FORMULAS = ["ИсходныеДанные", "УникальныеСписки"]
-DONT_REPLACE_ENTER = ["Month"]
+DONT_REPLACE_ENTER = ["Month", "Northern", "FDate", "KoBo", "PlanFTE"]
 COLUMNS_FILLNA = ["Division", "FN", "Portfolio"]
 FILLNA_STRING = "???"
 NOT_EXIST_ELEMENT = "< не существующий элемент >"
 
-BOOLEAN_VALUES_SUBST = {"ЛОЖЬ": False, "Ложь": False, "ИСТИНА": True, "Истина": True}
+BOOLEAN_VALUES_SUBST = {
+    "ЛОЖЬ": False,
+    "Ложь": False,
+    False: False,
+    "ИСТИНА": True,
+    "Истина": True,
+    True: True,
+}
 
 PARAMETERS_SECTION_NAME = "Parameters"
 RAW_DATA_SECTION_NAME = "RawDataPath"
@@ -268,6 +278,9 @@ PROJECTS_LIST_ADD_INFO = "ProjectsAddInfo.xlsx"
 YEARS_LIST_TABLE = "Years4Periods.xlsx"
 MONTHS_LIST_TABLE = "DataPeriods.xlsx"
 USERS_CATEGS_LIST = "UCategories.xlsx"
+CATEGORIES_TYPES = "CategoriesTypes.xlsx"
+CATEGORIES_COSTS = "CCosts.xlsx"
+
 
 PROJECTS_LIST_ADD_INFO_RENAME_KEY_COLUMN = "Наименование проекта (только текст)"
 PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST = {
@@ -320,6 +333,8 @@ PARAMETERS_ALL_TABLES = {
     YEARS_LIST_TABLE: ("Таблица годов, по которым можно формировать отчёт", "Years4Period"),
     MONTHS_LIST_TABLE: ("Таблица периодов (месяцев), по которым можно формировать отчёт", "DataPeriodName"),
     USERS_CATEGS_LIST: ("Таблица с перечнем категорий сотрудников", "CategUserName"),
+    CATEGORIES_TYPES: ("Таблица с перечнем типов категорий сотрудников", "CategName4Type"),
+    CATEGORIES_COSTS: ("Таблица со списком ставок для каждой категории сотрудников", "CategKey"),
 }
 
 LAST_INTERNET_PARAMS_NAME = "Скачанная версия справочников из Интернет"
@@ -454,7 +469,20 @@ RES_FOLDER = "Res"
 SERVICE_TYPES = "ТСД"
 PROJECT_TYPES = "П"
 
-UNKNOWN_CATEGORY = " - категория не указана - "
+SAP_IS_TYPE_NAME = "SAP"
+NOT_SAP_IS_TYPE_NAME = "notSAP"
 
-COMMON_VERSION = 2.01
+SERVICE_SAP_CATEGORY_BEGINNING = "SC_SAP_"
+SERVICE_NOT_SAP_CATEGORY_BEGINNING = "SC_notSAP_"
+
+PROJECT_SAP_CATEGORY_BEGINNING = "PC_SAP_"
+PROJECT_NOT_SAP_CATEGORY_BEGINNING = "PC_notSAP_"
+
+UNKNOWN_CATEGORY_BEGINNING = "XXXXX?_"
+
+UNKNOWN_CATEGORY_NAME = " - категория не указана - "
+CATEGORY_WAS_NOT_FOUND = "-"
+CATEGORY_WAS_FOUND = "+"
+
+COMMON_VERSION = 2.02
 APP_VERSION = "v:10.001.250123.01"

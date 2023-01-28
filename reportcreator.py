@@ -152,13 +152,21 @@ def send_df_2_xls(report_parameters):
     else:
         ui_handle.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
 
-    ui_handle.add_text_to_log_box("Проверим структуру файла, содержащего форму отчёта.")
+    ui_handle.add_text_to_log_box("Подготовим шаблон со структурой отчёта.")
 
     try:
         shutil.copyfile(report_file_name, report_prepared_name)
     except (OSError, shutil.Error):
         ui_handle.add_text_to_log_box("Не удалось скопировать файл с формой отчёта.")
-        ui_handle.add_text_to_log_box(f"проверьте, пожалуйста, не открыт ли у Вас файл:")
+        ui_handle.add_text_to_log_box("")
+        ui_handle.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+        ui_handle.add_text_to_log_box(f"Проверьте, пожалуйста, не открыт ли у Вас Excel-файл с шаблоном отчёта или с самим отчётом.")
+        if myutils.is_admin():
+            ui_handle.add_text_to_log_box(f"{report_file_name}")
+            ui_handle.add_text_to_log_box(f"или")
+            ui_handle.add_text_to_log_box(f"{report_prepared_name}")
+        ui_handle.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+        ui_handle.add_text_to_log_box("")
         ui_handle.add_text_to_log_box(f"{myutils.rel_path(report_prepared_name)}")
         ui_handle.add_text_to_log_box("Формирование отчёта невозможно.")
         myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")

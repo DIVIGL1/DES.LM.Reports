@@ -9,20 +9,27 @@ from myutils import(
 )
 
 
-def append_categories(row):
+def append_categories(row, p_is_found=False):
     if row.ProjectType in myconstants.SERVICE_TYPES:
-        service_or_project = "SC_"
+        if row.IS_Product_type_SAP == myconstants.SAP_IS_TYPE_NAME:
+            service_or_project = myconstants.SERVICE_SAP_CATEGORY_BEGINNING
+        else:
+            service_or_project = myconstants.SERVICE_NOT_SAP_CATEGORY_BEGINNING
     elif row.ProjectType in myconstants.PROJECT_TYPES:
-        service_or_project = "PC_"
+        if row.IS_Product_type_SAP == myconstants.SAP_IS_TYPE_NAME:
+            service_or_project = myconstants.PROJECT_SAP_CATEGORY_BEGINNING
+        else:
+            service_or_project = myconstants.PROJECT_NOT_SAP_CATEGORY_BEGINNING
     else:
-        service_or_project = "XXXXX?_"
-
-    column_name = service_or_project + row.FN
+        service_or_project = myconstants.UNKNOWN_CATEGORY_BEGINNING
 
     if (service_or_project + row.FN) in row.index:
-        return row[service_or_project + row.FN]
+        if row[service_or_project + row.FN] == "":
+            return myconstants.UNKNOWN_CATEGORY_NAME if not p_is_found else myconstants.CATEGORY_WAS_NOT_FOUND
+        else:
+            return row[service_or_project + row.FN] if not p_is_found else myconstants.CATEGORY_WAS_FOUND
     else:
-        return row["CommonCateg"]
+        return myconstants.UNKNOWN_CATEGORY_NAME if not p_is_found else myconstants.CATEGORY_WAS_NOT_FOUND
 
 
 def get_parameter_value(param_name, default_value=None):
@@ -350,6 +357,14 @@ def prepare_data(
     if type(users_categs_list) == str:
         ui_handle.add_text_to_log_box(users_categs_list)
         return None
+    categories_types = load_parameter_table(myconstants.CATEGORIES_TYPES)
+    if type(categories_types) == str:
+        ui_handle.add_text_to_log_box(categories_types)
+        return None
+    categories_costs = load_parameter_table(myconstants.CATEGORIES_COSTS)
+    if type(categories_costs) == str:
+        ui_handle.add_text_to_log_box(categories_costs)
+        return None
 
     if not p_only_projects_with_add_info:
         # Если нет отметки, что нужно выбрать только определённые проекты
@@ -418,13 +433,20 @@ def prepare_data(
             data_df[column_name] = data_df[column_name].str.strip()
     ui_handle.add_text_to_log_box(f"Удалены переносы строк (всего строк обработанных данных: {data_df.shape[0]})")
 
+    if data_df['Northern'].isna().sum().sum():
+        ui_handle.add_text_to_log_box(f"Найдены строки без признака 'Женщина с условиями работы на Крайнем Севере'.")
+        ui_handle.add_text_to_log_box(f"В этих строчках принудительно подставлено значение 'Нет'.")
+        ui_handle.add_text_to_log_box(f"")
+
+        data_df['Northern'] = data_df['Northern'].fillna(False)
+
     data_df["ShortProject"] = data_df["Project"].str[:5]
     projects_list_add_info["Project4AddInfo"] = projects_list_add_info["Project4AddInfo"].str[:5]
 
     data_df["FDate"] = data_df["FDate"].apply(lambda param: udata_2_date(param))
     ui_handle.add_text_to_log_box(f"Обновлён формат данных даты первого дня месяца (всего строк обработанных данных: {data_df.shape[0]})")
 
-    data_df['Northern'].replace(myconstants.BOOLEAN_VALUES_SUBST, inplace=True)
+    data_df['Northern'] = data_df['Northern'].apply(lambda x: myconstants.BOOLEAN_VALUES_SUBST[x])
     data_df = data_df.merge(month_hours_df, left_on="FDate", right_on="FirstDate", how="inner")
     ui_handle.add_text_to_log_box(f"Проведено объединение с таблицей с рабочими часами (всего строк обработанных данных: {data_df.shape[0]})")
     if data_df.shape[0] == 0:
@@ -597,7 +619,8 @@ def prepare_data(
     data_df["Contract"] = data_df["Contract"].fillna("")
     data_df["IS_Service_type"] = data_df["IS_Service_type"].fillna("")
     data_df["IS_Product_type"] = data_df["IS_Product_type"].fillna("")
-    
+    data_df["IS_Product_type_SAP"] = data_df["IS_Product_type"].apply(lambda x: "SAP" if x == "SAP" else "notSAP")
+
     # Возможны пропуски в некоторых колонках. Поставим там признак, чтобы бросался в глаза в отчёте:
     data_df[myconstants.COLUMNS_FILLNA] = data_df[myconstants.COLUMNS_FILLNA].fillna(myconstants.FILLNA_STRING)
 
@@ -614,11 +637,17 @@ def prepare_data(
     ui_handle.add_text_to_log_box(f"... и типы ПОДпроектов (всего строк обработанных данных: {data_df.shape[0]})")
 
     # Добавляем категории пользователей
+    users_categs_list.fillna("", inplace=True)
     data_df = data_df.merge(users_categs_list, left_on="JustUserName", right_on="CategUserName", how="left")
     data_df["UCateg4ThisFN"] = data_df.apply(lambda data: append_categories(data), axis=1)
-    data_df["UCateg4ThisFN"].fillna(myconstants.UNKNOWN_CATEGORY, inplace=True)
-    data_df["CommonCateg"].fillna(myconstants.UNKNOWN_CATEGORY, inplace=True)
-    data_df["CombinedUCateg4ThisFN"] = data_df[["UCateg4ThisFN", "CommonCateg"]].apply(
+    data_df["UCateg4ThisFN_WasFound"] = data_df.apply(lambda data: append_categories(data, True), axis=1)
+
+    data_df["UCateg4ThisFN"].fillna(myconstants.UNKNOWN_CATEGORY_NAME, inplace=True)
+    data_df["UCateg4ThisFN_WasFound"].fillna(myconstants.CATEGORY_WAS_NOT_FOUND, inplace=True)
+    data_df["CommonCateg_SAP"].fillna(myconstants.UNKNOWN_CATEGORY_NAME, inplace=True)
+    data_df["CommonCateg_notSAP"].fillna(myconstants.UNKNOWN_CATEGORY_NAME, inplace=True)
+
+    data_df["CombinedUCateg4ThisFN"] = data_df[["UCateg4ThisFN", "CommonCateg_SAP", "CommonCateg_notSAP"]].apply(
         lambda data: data.CommonCateg if data.UCateg4ThisFN == "" else data.UCateg4ThisFN, axis=1
     )
     ui_handle.add_text_to_log_box(f"Добавлены категории пользователей (всего строк обработанных данных: {data_df.shape[0]})")
