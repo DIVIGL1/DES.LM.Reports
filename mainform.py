@@ -59,6 +59,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
     text_info_year = None
     text_info_period = None
     status_text = ""
+    previous_status_text = ""
 
     def setup_reports_list(self, reports_list=None):
         if reports_list is None:
@@ -529,7 +530,6 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             saved_action_fnc()
         # ------------------------------------------------------------
 
-
         self.setup_check_boxes()
         self.setup_checkbox_only_projects_with_add()
         self.setup_checkbox_select_users()
@@ -547,12 +547,16 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
         self.status_text = ""
         self.previous_status_text = ""
+
+        if os.path.isfile(myconstants.START_PARAMETERS_FILE_4_DEVELOPER):
+            self.add_text_to_log_box("[ используются настройки разработчика ]")
+            self.add_text_to_log_box("")
+
         self.add_text_to_log_box("> " + myconstants.PARAMETER_WAITING_USER_ACTION)
         self.statusBar.showMessage(myconstants.PARAMETER_WAITING_USER_ACTION)
         self.lock_unlock_interface_items()
 
         test_access_key(self.parent)
-
 
     def update_user_files_menus(self):
         # Расположение пользовательских файлов:
@@ -655,6 +659,11 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         if action_type == "StopWaitingFile":
             self.set_status_bar_text("Прекращено ожидание файла с данными в папке 'Загрузка'")
             self.clear_log_box()
+
+            if os.path.isfile(myconstants.START_PARAMETERS_FILE_4_DEVELOPER):
+                self.add_text_to_log_box("[ используются настройки разработчика ]")
+            self.add_text_to_log_box("")
+
             self.add_text_to_log_box("> " + myconstants.PARAMETER_WAITING_USER_ACTION)
             self.parent.parent.waiting_file_4_report = False
             self.parent.parent.report_automation_in_process = False

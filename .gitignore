@@ -31,6 +31,7 @@ requirements.bat
 *.key
 Отчет - Подр-Сотрудник Кат.План.Лимиты.xlsx
 iCodes.py
+Settings4Developer.xlsx
 
 # Qt-es
 object_script.*.Release

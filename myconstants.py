@@ -197,6 +197,7 @@ MONTHS = {
 }
 
 START_PARAMETERS_FILE = "Settings.xlsx"
+START_PARAMETERS_FILE_4_DEVELOPER = "Settings4Developer.xlsx"
 
 COSTS_DATA_COLUMNS = [
     "UserHourCost",

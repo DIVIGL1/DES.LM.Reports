@@ -4,7 +4,7 @@ import os
 
 import myconstants
 import myutils
-from myutils import(
+from myutils import (
     iif
 )
 
@@ -38,15 +38,22 @@ def get_parameter_value(param_name, default_value=None):
                             param_name,
                             myconstants.SECTIONS_DEFAULT_VALUES[myconstants.ALL_OTHER_PARAMETERS_SECTION_NAME]
     )
+
+    # Определяем какой файл настроек используем:
+    if os.path.isfile(myconstants.START_PARAMETERS_FILE_4_DEVELOPER):
+        start_parameters_file_4_use = myconstants.START_PARAMETERS_FILE_4_DEVELOPER
+    else:
+        start_parameters_file_4_use = myconstants.START_PARAMETERS_FILE
+
     # Читаем настройки:
-    if not os.path.isfile(myconstants.START_PARAMETERS_FILE):
+    if not os.path.isfile(start_parameters_file_4_use):
         if default_value is None:
             # Возвращаемое значение вычислено в начале процедуры.
             pass
         else:
             ret_value = default_value
     else:
-        settings_df = pd.read_excel(myconstants.START_PARAMETERS_FILE, engine='openpyxl')
+        settings_df = pd.read_excel(start_parameters_file_4_use, engine='openpyxl')
         settings_df.dropna(how='all', inplace=True)
         tmp_df = settings_df[settings_df["ParameterName"] == param_name]["ParameterValue"]
         if tmp_df.shape[0] == 0:
@@ -500,7 +507,7 @@ def prepare_data(
     # 1) Если человек отработал на двух проектах по 100 часов, то этот коэффициент приведёт эти часы к 176.
     # 2) Если человек отработал на двух проектах по 80 часов, то этот коэффициент приведёт эти часы так же к 176.
     data_df["HourTo1FTE"] = \
-        data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: iif(x[1]==0, x[1], x[1] / x[0]), axis=1)
+        data_df[["SumUserFactFTEUR", "FactHours"]].apply(lambda x: iif(x[1] == 0, x[1], x[1] / x[0]), axis=1)
 
     # Второй коэффициент: Если суммарно часы превышают 1FTE, то они приводятся к 1FTE, а если нет,
     # то суммарное количество часов сохраняется. То есть, не приводится к 1FTE, а сохраняется меньше.
@@ -561,7 +568,7 @@ def prepare_data(
     ui_handle.add_text_to_log_box(f"Данные объединены с таблицей с ФН (всего строк обработанных данных: {data_df.shape[0]})")
 
     data_df["JustUserName"] = data_df["User"].apply(lambda param: param.replace(myconstants.FIRED_NAME_TEXT, ""))
-    if ui_handle.checkBoxSelectUsers.isChecked() and ui_handle.comboBoxSelectUsers.currentText() !="":
+    if ui_handle.checkBoxSelectUsers.isChecked() and ui_handle.comboBoxSelectUsers.currentText() != "":
         # Отмечено, что нужно выбрать только определённые группы пользователей.
         # Наименование столбца содержащего признаки для фильтрации:
         group_field_name = myconstants.GROUP_COLUMNS_STARTER + ui_handle.comboBoxSelectUsers.currentText()
