@@ -136,12 +136,13 @@ RESULT_DATA_COLUMNS = [
     "SumPodr11",
     "SumPodr12",
     "manager_email",
+    "ISys_SAP",
     "UCateg4ThisFN",
     "UCateg4ThisFN_WasFound",
     "CommonCateg_SAP",
     "CommonCateg_notSAP",
-    "CombinedUCateg4ThisFN",
-    "IS_Product_type_SAP",
+    "CategHCost",
+    "CategMCost",
 ]
 
 COLUMNS_TO_SET_ZERO_IF_NULL = [
@@ -195,6 +196,47 @@ MONTHS = {
     11: "Ноябрь",
     12: "Декабрь",
 }
+
+MONTHS2NUM = {
+    "янв": "01",
+    "фев": "02",
+    "мар": "03",
+    "апр": "04",
+    "май": "05",
+    "июн": "06",
+    "июл": "07",
+    "авг": "08",
+    "сен": "09",
+    "окт": "10",
+    "ноя": "11",
+    "дек": "12",
+}
+
+NUMS2MONTH = {
+    "01": "янв",
+    "02": "фев",
+    "03": "мар",
+    "04": "апр",
+    "05": "май",
+    "06": "июн",
+    "07": "июл",
+    "08": "авг",
+    "09": "сен",
+    "10": "окт",
+    "11": "ноя",
+    "12": "дек",
+}
+
+MONTHS_STR_NUMS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+
+CATEG_COLUMNS = [
+    "CategKey",
+    "CategName",
+    "FN4CategName",
+]
+
+CATEG_COLUMN_HOUR_COST = "ChC"
+CATEG_COLUMN_MONTH_COST = "CmC"
 
 START_PARAMETERS_FILE = "Settings.xlsx"
 START_PARAMETERS_FILE_4_DEVELOPER = "Settings4Developer.xlsx"
@@ -283,9 +325,9 @@ CATEGORIES_TYPES = "CategoriesTypes.xlsx"
 CATEGORIES_COSTS = "CCosts.xlsx"
 
 
-PROJECTS_LIST_ADD_INFO_RENAME_KEY_COLUMN = "Наименование проекта (только текст)"
+PROJECTS_LIST_ADD_INFO_RAW_KEY_COLUMN = "Наименование проекта (только текст)"
 PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST = {
-    PROJECTS_LIST_ADD_INFO_RENAME_KEY_COLUMN: "Project4AddInfo",
+    PROJECTS_LIST_ADD_INFO_RAW_KEY_COLUMN: "Project4AddInfo",
     "Выруч_Янв": "SumInCome01",
     "Выруч_Фев": "SumInCome02",
     "Выруч_Мар": "SumInCome03",
@@ -311,31 +353,41 @@ PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST = {
     "Подр_Ноя": "SumPodr11",
     "Подр_Дек": "SumPodr12",
 }
+
+PROJECTS_LIST_ADD_INFO_RAW_KEY_COLUMN = "Наименование проекта (только текст)"
 GROUP_COLUMN_FOR_FILTER = "Группа"
+PROJECTS_LIST_ADD_UNIQ_KEY_FIELD1 = GROUP_COLUMN_FOR_FILTER
+PROJECTS_LIST_ADD_UNIQ_KEY_FIELD2 = PROJECTS_LIST_ADD_INFO_RAW_KEY_COLUMN
 GROUP_COLUMN_FOR_FILTER = GROUP_COLUMN_FOR_FILTER.upper()
 TEXT_4_ALL_GROUPS = "< Любые проекты >"
 TEXT_4_ALL_USERS = "< Все пользователи >"
 GROUP_COLUMNS_STARTER = "#"
 
+# Словарь с описанием таблиц-параметров.
+# В качестве значений используется кортежи, содержащие:
+#  0. Описание
+#  1. Столбец с уникальным идентификатором
+#  2. Столбец с полным наименованием проекта (если он есть в таблице, если нет то указывается пустая строка)
+#  3. Столбец, в котором будет проставлен уникальный код проекта (со 2-го по 5 символ)
 PARAMETERS_ALL_TABLES = {
-    MONTH_WORKING_HOURS_TABLE: ("Таблица с количеством рабочих часов в месяцах", "FirstDate"),
-    DIVISIONS_NAMES_TABLE: ("Таблица с наименованиями подразделений", "FullDivisionName"),
-    FNS_NAMES_TABLE: ("Таблица с наименованиями функциональных направлений", "FullFNName"),
-    P_FN_SUBST_TABLE: ("Таблица подстановок названий функциональных направлений", "ProjectNum"),
-    PROJECTS_SUB_TYPES_TABLE: ("Таблица с наименованиями подтипов проектов", "ProjectName"),
-    PROJECTS_TYPES_DESCR: ("Таблица с расшифровкой типов (букв) проектов", "ProjectTypeName"),
-    PROJECTS_SUB_TYPES_DESCR: ("Таблица с расшифровок подтипов проектов", "ProjectSubTypeName"),
-    COSTS_TABLE: ("Таблица часовых ставок", "CostUserName"),
-    EMAILS_TABLE: ("Таблица адресов электронной почты", "FIO_4_email"),
-    VIP_TABLE: ("Таблица списка VIP", "FIO_VIP"),
-    PORTFEL_TABLE: ("Таблица списка портфелей проектов", "ID_DES.LM_project"),
-    ISDOGNAME_TABLE: ("Таблица наименований ИС из контракта", "ID_DES.LM_project"),
-    PROJECTS_LIST_ADD_INFO: ("Таблица наименований ИС из контракта", PROJECTS_LIST_ADD_INFO_RENAME_KEY_COLUMN),
-    YEARS_LIST_TABLE: ("Таблица годов, по которым можно формировать отчёт", "Years4Period"),
-    MONTHS_LIST_TABLE: ("Таблица периодов (месяцев), по которым можно формировать отчёт", "DataPeriodName"),
-    USERS_CATEGS_LIST: ("Таблица с перечнем категорий сотрудников", "CategUserName"),
-    CATEGORIES_TYPES: ("Таблица с перечнем типов категорий сотрудников", "CategName4Type"),
-    CATEGORIES_COSTS: ("Таблица со списком ставок для каждой категории сотрудников", "CategKey"),
+    MONTH_WORKING_HOURS_TABLE: ("Таблица с количеством рабочих часов в месяцах", "FirstDate", "", ""),
+    DIVISIONS_NAMES_TABLE: ("Таблица с наименованиями подразделений", "FullDivisionName", "", ""),
+    FNS_NAMES_TABLE: ("Таблица с наименованиями функциональных направлений", "FullFNName", "", ""),
+    P_FN_SUBST_TABLE: ("Таблица подстановок функциональных направлений для 'проектов'", "ID.ProjectNum", "ProjectNum", "ID.ProjectNum"),
+    PROJECTS_SUB_TYPES_TABLE: ("Таблица с наименованиями подтипов проектов", "ID.ProjectFromName", "ProjectName", "ID.ProjectFromName"),
+    PROJECTS_TYPES_DESCR: ("Таблица с расшифровкой типов (букв) проектов", "ProjectTypeName", "", ""),
+    PROJECTS_SUB_TYPES_DESCR: ("Таблица с расшифровок подтипов проектов", "ProjectSubTypeName", "", ""),
+    COSTS_TABLE: ("Таблица часовых ставок", "CostUserName", "", ""),
+    EMAILS_TABLE: ("Таблица адресов электронной почты", "FIO_4_email", "", ""),
+    VIP_TABLE: ("Таблица списка VIP", "FIO_VIP", "", ""),
+    PORTFEL_TABLE: ("Таблица списка портфелей проектов", "ID_DES.LM_project", "Full_Project_name", "ID_DES.LM_project"),
+    ISDOGNAME_TABLE: ("Таблица наименований ИС из контракта", "ID_DES.LM_project", "DESLM_Project", "ID_DES.LM_project"),
+    PROJECTS_LIST_ADD_INFO: ("Таблица наименований ИС из контракта", "P_AddInfo_U_Key", PROJECTS_LIST_ADD_INFO_RAW_KEY_COLUMN, "ID_P_AddInfo"),
+    YEARS_LIST_TABLE: ("Таблица годов, по которым можно формировать отчёт", "Years4Period", "", ""),
+    MONTHS_LIST_TABLE: ("Таблица периодов (месяцев), по которым можно формировать отчёт", "DataPeriodName", "", ""),
+    USERS_CATEGS_LIST: ("Таблица с перечнем категорий сотрудников", "CategUserName", "", ""),
+    CATEGORIES_TYPES: ("Таблица с перечнем типов категорий сотрудников", "CategName4Type", "", ""),
+    CATEGORIES_COSTS: ("Таблица со списком ставок для каждой категории сотрудников", "CategKey", "", ""),
 }
 
 LAST_INTERNET_PARAMS_NAME = "Скачанная версия справочников из Интернет"
@@ -485,5 +537,5 @@ UNKNOWN_CATEGORY_NAME = " - категория не указана - "
 CATEGORY_WAS_NOT_FOUND = "-"
 CATEGORY_WAS_FOUND = "+"
 
-COMMON_VERSION = 2.02
-APP_VERSION = "v:10.001.250123.01"
+COMMON_VERSION = 2.03
+APP_VERSION = "v:10.012.290123.03"

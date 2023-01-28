@@ -9,6 +9,29 @@ from myutils import (
 )
 
 
+def transform_categories_costs(df):
+    df_res = df[df.index == -1][myconstants.CATEG_COLUMNS]
+    df_res["CategMonth"] = ""
+    df_res["CategHCost"] = 0
+    df_res["CategMCost"] = 0
+
+    for one_month_num in myconstants.MONTHS_STR_NUMS:
+        hour_cost_column = myconstants.CATEG_COLUMN_HOUR_COST + "M" + one_month_num
+        month_cost_column = myconstants.CATEG_COLUMN_MONTH_COST + "M" + one_month_num
+        append_columns = myconstants.CATEG_COLUMNS + [hour_cost_column]
+        append_columns = append_columns + [month_cost_column]
+        df_help = df[append_columns]
+        df_help = df_help.rename(columns={hour_cost_column: "CategHCost", month_cost_column: "CategMCost"})
+        df_help["CategMonth"] = myconstants.NUMS2MONTH[one_month_num]
+
+        df_res = df_res.append(df_help)
+
+    df_res.reset_index(drop=True)
+    df_res["CategKey"] = df_res["CategKey"] + df_res["CategMonth"]
+
+    return df_res
+
+
 def append_categories(row, p_is_found=False):
     if row.ProjectType in myconstants.SERVICE_TYPES:
         if row.IS_Product_type_SAP == myconstants.SAP_IS_TYPE_NAME:
@@ -108,10 +131,24 @@ def load_parameter_table(tablename):
     parameter_df.dropna(how='all', inplace=True)
     unique_key_field = myconstants.PARAMETERS_ALL_TABLES[tablename][1]
 
+    if tablename == myconstants.PROJECTS_LIST_ADD_INFO:
+        # Для таблицы PROJECTS_LIST_ADD_INFO (ProjectsAddInfo.xlsx)
+        # создадим составной ключ, который должен быть уникальным
+        field_part1 = myconstants.PROJECTS_LIST_ADD_UNIQ_KEY_FIELD1
+        field_part2 = myconstants.PROJECTS_LIST_ADD_UNIQ_KEY_FIELD2
+        parameter_df[unique_key_field] = parameter_df[field_part1] + " -> " + parameter_df[field_part2]
+
+    # Если указано, что есть поле с кодом "проекта", то подменим его коротким значением
+    project_name_field = myconstants.PARAMETERS_ALL_TABLES[tablename][2]
+    project_new_id_field = myconstants.PARAMETERS_ALL_TABLES[tablename][3]
+    if project_name_field and project_new_id_field:
+        parameter_df[project_new_id_field] = parameter_df[project_name_field].str[0:5]
+
     # Уберём строки, у которых ключевое поле - пустая строка
     parameter_df[unique_key_field].fillna("", inplace=True)
     parameter_df = parameter_df[parameter_df[unique_key_field] != ""]
 
+    # Проверим на наличие дубликатов
     if parameter_df.duplicated([unique_key_field]).sum() > 0:
         report_str = ""
         counter = 0
@@ -129,7 +166,7 @@ def load_parameter_table(tablename):
             f"Необходимо избавиться от повторов!\n"
             f"{myconstants.TEXT_LINES_SEPARATOR}"
         )
-    
+
     return parameter_df
 
 
@@ -410,7 +447,7 @@ def prepare_data(
         # 1. получим все уникальные месяцы:
         months_list = data_df["FDate"].unique()
         # 2. получим все уникальные проекты:
-        add_projects = projects_list_add_info[myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST[myconstants.PROJECTS_LIST_ADD_INFO_RENAME_KEY_COLUMN]].values
+        add_projects = projects_list_add_info[myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST[myconstants.PROJECTS_LIST_ADD_INFO_RAW_KEY_COLUMN]].values
         # 3. возьмём одну строчку из данных и заполним её "пустыми" значениями:
         one_row = data_df.loc[0]
         for idx, elm_type in enumerate(data_df.dtypes):
@@ -447,8 +484,7 @@ def prepare_data(
 
         data_df['Northern'] = data_df['Northern'].fillna(False)
 
-    data_df["ShortProject"] = data_df["Project"].str[:5]
-    projects_list_add_info["Project4AddInfo"] = projects_list_add_info["Project4AddInfo"].str[:5]
+    data_df["ShortProject"] = data_df["Project"].str[0:5]
 
     data_df["FDate"] = data_df["FDate"].apply(lambda param: udata_2_date(param))
     ui_handle.add_text_to_log_box(f"Обновлён формат данных даты первого дня месяца (всего строк обработанных данных: {data_df.shape[0]})")
@@ -560,7 +596,7 @@ def prepare_data(
     data_df["Division"] = data_df[["ShortDivisionName", "DivisionRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
     ui_handle.add_text_to_log_box(f"Все подразделения заполнены (всего строк обработанных данных: {data_df.shape[0]})")
 
-    data_df = data_df.merge(p_fns_subst_df, left_on="Project", right_on="ProjectNum", how="left")
+    data_df = data_df.merge(p_fns_subst_df, left_on="ShortProject", right_on="ProjectNum", how="left")
     data_df["FNRaw"] = data_df[["RealFNName", "FNRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
     data_df["FNRaw"] = data_df["FNRaw"].fillna("")
     data_df = data_df.merge(fns_names_df, left_on="FNRaw", right_on="FullFNName", how="left")
@@ -616,7 +652,7 @@ def prepare_data(
     data_df = data_df.merge(projects_types_descr_df, left_on="ProjectType", right_on="ProjectTypeName", how="left")
     ui_handle.add_text_to_log_box(f"Уточнены типы проектов (всего строк обработанных данных: {data_df.shape[0]})")
 
-    data_df = data_df.merge(projects_sub_types_df, left_on="Project", right_on="ProjectName", how="left")
+    data_df = data_df.merge(projects_sub_types_df, left_on="ShortProject", right_on="ID.ProjectFromName", how="left")
     data_df["ProjectSubType"] = \
         data_df[["ProjectType", "ProjectSubTypePart"]].apply(
             lambda param: param[0] + myconstants.OTHER_PROJECT_SUB_TYPE if pd.isna(param[1]) else param[1], axis=1)
@@ -627,6 +663,7 @@ def prepare_data(
     data_df["IS_Service_type"] = data_df["IS_Service_type"].fillna("")
     data_df["IS_Product_type"] = data_df["IS_Product_type"].fillna("")
     data_df["IS_Product_type_SAP"] = data_df["IS_Product_type"].apply(lambda x: "SAP" if x == "SAP" else "notSAP")
+    data_df["ISys_SAP"] = data_df["IS_Product_type"].apply(lambda x: "SAP" if x == "SAP" else "")
 
     # Возможны пропуски в некоторых колонках. Поставим там признак, чтобы бросался в глаза в отчёте:
     data_df[myconstants.COLUMNS_FILLNA] = data_df[myconstants.COLUMNS_FILLNA].fillna(myconstants.FILLNA_STRING)
@@ -654,10 +691,18 @@ def prepare_data(
     data_df["CommonCateg_SAP"].fillna(myconstants.UNKNOWN_CATEGORY_NAME, inplace=True)
     data_df["CommonCateg_notSAP"].fillna(myconstants.UNKNOWN_CATEGORY_NAME, inplace=True)
 
-    data_df["CombinedUCateg4ThisFN"] = data_df[["UCateg4ThisFN", "CommonCateg_SAP", "CommonCateg_notSAP"]].apply(
-        lambda data: data.CommonCateg if data.UCateg4ThisFN == "" else data.UCateg4ThisFN, axis=1
-    )
     ui_handle.add_text_to_log_box(f"Добавлены категории пользователей (всего строк обработанных данных: {data_df.shape[0]})")
+
+    # Преобразуем структуру ставок категорий
+    categories_costs = transform_categories_costs(categories_costs)
+
+    # Подставим ставки для категорий помесячно:
+    data_df["categ_fn_month_key"] = data_df["UCateg4ThisFN"] + data_df["FN"] + data_df["Month"]
+    data_df = data_df.merge(categories_costs, left_on="categ_fn_month_key", right_on="CategKey", how="left")
+    data_df["CategHCost"].fillna(0, inplace=True)
+    data_df["CategMCost"].fillna(0, inplace=True)
+
+    ui_handle.add_text_to_log_box(f"Добавлены ставки для категорий из таблицы со ставками (всего строк обработанных данных: {data_df.shape[0]})")
 
     if p_delete_pers_data:
         data_df = data_df[data_df["ProjectSubTypePersData"] != 1]
