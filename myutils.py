@@ -590,6 +590,7 @@ def test_internet_data_version(ui):
 
             if params_on_internet_curr_ver > params_on_internet_last_ver:
                 ui.UpdateParametersFromInternet.setVisible(True)
+                ui.UpdateParametersFromInternet.setToolTip(f"Параметры:\nДоступна для загрузки версия: {params_on_internet_curr_ver}")
 
             # Проверим версию отчётных форм
             reports_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_REPORTS_NAME, myconstants.LAST_INTERNET_REPORTS_VERSION)
@@ -597,6 +598,7 @@ def test_internet_data_version(ui):
 
             if reports_on_internet_curr_ver > reports_on_internet_last_ver:
                 ui.UpdateReportsFromInternet.setVisible(True)
+                ui.UpdateReportsFromInternet.setToolTip(f"Формы отчётов:\nДоступна для загрузки версия: {reports_on_internet_curr_ver}")
 
         # Списки e-mail можно обновлять всегда ...если есть права.
         # Проверим возможность обновлять почтовые адреса для данного пользователя
@@ -607,6 +609,7 @@ def test_internet_data_version(ui):
 
             if emails_on_internet_curr_ver > emails_on_internet_last_ver:
                 ui.UpdateParameterEMails.setVisible(True)
+                ui.UpdateParameterEMails.setToolTip(f"Электронная почта пользователей:\nДоступна для загрузки версия: {emails_on_internet_curr_ver}")
 
 
 def test_user_access_2_download_emails(ui):
