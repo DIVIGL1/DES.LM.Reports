@@ -569,7 +569,8 @@ def test_internet_data_version(ui):
     if rs.ok:
         versions_info = json.loads(rs.content)
         # Проверим необходимость обновления программы
-        if versions_info.get("common version", {"version": float("-inf")})["version"] > myconstants.COMMON_VERSION:
+        version_in_internet = versions_info.get("common version", {"version": float("-inf")})["version"]
+        if version_in_internet > myconstants.COMMON_VERSION:
             time.sleep(2)
             ui.parent.setWindowTitle(f"DES.LM.Reporter ({myconstants.APP_VERSION} [{myconstants.COMMON_VERSION}]) - НЕОБХОДИМО ОБНОВИТЬ ПРОГРАММУ")
             ui.add_text_to_log_box("")
@@ -580,20 +581,24 @@ def test_internet_data_version(ui):
             ui.add_text_to_log_box("Скорее всего, достаточно будет обновить только exe-файл.")
             ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
 
-        # Проверим версию параметров
-        params_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_PARAMS_NAME, myconstants.LAST_INTERNET_PARAMS_VERSION)
-        params_on_internet_curr_ver = versions_info.get("params", {"version": float("-inf")})["version"]
+        # Если внутренняя версия (целая часть) не равна чем то что указано в Интернете,
+        # то обновлять параметры и отчёты нельзя. Если равна, то можно.
+        if int(version_in_internet // 1) == myconstants.COMMON_VERSION:
+            # Проверим версию параметров
+            params_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_PARAMS_NAME, myconstants.LAST_INTERNET_PARAMS_VERSION)
+            params_on_internet_curr_ver = versions_info.get("params", {"version": float("-inf")})["version"]
 
-        if params_on_internet_curr_ver > params_on_internet_last_ver:
-            ui.UpdateParametersFromInternet.setVisible(True)
+            if params_on_internet_curr_ver > params_on_internet_last_ver:
+                ui.UpdateParametersFromInternet.setVisible(True)
 
-        # Проверим версию отчётных форм
-        reports_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_REPORTS_NAME, myconstants.LAST_INTERNET_REPORTS_VERSION)
-        reports_on_internet_curr_ver = versions_info.get("reports", {"version": float("-inf")})["version"]
+            # Проверим версию отчётных форм
+            reports_on_internet_last_ver = load_param(myconstants.LAST_INTERNET_REPORTS_NAME, myconstants.LAST_INTERNET_REPORTS_VERSION)
+            reports_on_internet_curr_ver = versions_info.get("reports", {"version": float("-inf")})["version"]
 
-        if reports_on_internet_curr_ver > reports_on_internet_last_ver:
-            ui.UpdateReportsFromInternet.setVisible(True)
+            if reports_on_internet_curr_ver > reports_on_internet_last_ver:
+                ui.UpdateReportsFromInternet.setVisible(True)
 
+        # Списки e-mail можно обновлять всегда ...если есть права.
         # Проверим возможность обновлять почтовые адреса для данного пользователя
         if test_user_access_2_download_emails(ui):
             # Проверим версию списка почтовых адресов
