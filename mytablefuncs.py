@@ -136,7 +136,7 @@ def load_parameter_table(tablename):
         # создадим составной ключ, который должен быть уникальным
         field_part1 = myconstants.PROJECTS_LIST_ADD_UNIQ_KEY_FIELD1
         field_part2 = myconstants.PROJECTS_LIST_ADD_UNIQ_KEY_FIELD2
-        parameter_df[unique_key_field] = parameter_df[field_part1] + " -> " + parameter_df[field_part2]
+        parameter_df[unique_key_field] = parameter_df[field_part1] + " -> " + parameter_df[field_part2].str[0:5]
 
     # Если указано, что есть поле с кодом "проекта", то подменим его коротким значением
     project_name_field = myconstants.PARAMETERS_ALL_TABLES[tablename][2]
@@ -556,7 +556,7 @@ def prepare_data(
     ui_handle.add_text_to_log_box(f"Добавлена доп информация по проектам.")
 
     if p_only_projects_with_add_info:
-        data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how="inner")
+        data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="ID_P_AddInfo", how="inner")
         if data_df.shape[0] == 0:
             ui_handle.add_text_to_log_box(
                 f"\n\n\n" +
@@ -568,7 +568,7 @@ def prepare_data(
             )
             return None
     else:
-        data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="Project4AddInfo", how="left")
+        data_df = data_df.merge(projects_list_add_info, left_on="ShortProject", right_on="ID_P_AddInfo", how="left")
 
     if p_curr_month_half:
         sCurrMonth = f"{dt.datetime.now().year}-{dt.datetime.now().month:0{2}}-01"
@@ -596,7 +596,7 @@ def prepare_data(
     data_df["Division"] = data_df[["ShortDivisionName", "DivisionRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
     ui_handle.add_text_to_log_box(f"Все подразделения заполнены (всего строк обработанных данных: {data_df.shape[0]})")
 
-    data_df = data_df.merge(p_fns_subst_df, left_on="ShortProject", right_on="ProjectNum", how="left")
+    data_df = data_df.merge(p_fns_subst_df, left_on="ShortProject", right_on="ID.ProjectNum", how="left")
     data_df["FNRaw"] = data_df[["RealFNName", "FNRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
     data_df["FNRaw"] = data_df["FNRaw"].fillna("")
     data_df = data_df.merge(fns_names_df, left_on="FNRaw", right_on="FullFNName", how="left")
@@ -688,8 +688,8 @@ def prepare_data(
 
     data_df["UCateg4ThisFN"].fillna(myconstants.UNKNOWN_CATEGORY_NAME, inplace=True)
     data_df["UCateg4ThisFN_WasFound"].fillna(myconstants.CATEGORY_WAS_NOT_FOUND, inplace=True)
-    data_df["CommonCateg_SAP"].fillna(myconstants.UNKNOWN_CATEGORY_NAME, inplace=True)
-    data_df["CommonCateg_notSAP"].fillna(myconstants.UNKNOWN_CATEGORY_NAME, inplace=True)
+    data_df["CommonCateg_SAP"].fillna("", inplace=True)
+    data_df["CommonCateg_notSAP"].fillna("", inplace=True)
 
     ui_handle.add_text_to_log_box(f"Добавлены категории пользователей (всего строк обработанных данных: {data_df.shape[0]})")
 

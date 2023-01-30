@@ -143,6 +143,7 @@ RESULT_DATA_COLUMNS = [
     "CommonCateg_notSAP",
     "CategHCost",
     "CategMCost",
+    "BOSS_NAME",
 ]
 
 COLUMNS_TO_SET_ZERO_IF_NULL = [
@@ -399,7 +400,7 @@ LAST_INTERNET_REPORTS_VERSION = 0
 LAST_INTERNET_EMAILS_NAME = "Скачанная версия электронных адресов из Интернет"
 LAST_INTERNET_EMAILS_VERSION = 0
 
-EMAIL_INFO_COLUMNS = ["manager_email", "Personal_email", "user_email", "boss_email"]
+EMAIL_INFO_COLUMNS = ["manager_email", "Personal_email", "user_email", "boss_email", "BOSS_NAME"]
 
 PARAMETER_STR_YEAR = "YEAR"
 PARAMETER_STR_MONTH1 = "MONTH1"
@@ -537,5 +538,5 @@ UNKNOWN_CATEGORY_NAME = " - категория не указана - "
 CATEGORY_WAS_NOT_FOUND = "-"
 CATEGORY_WAS_FOUND = "+"
 
-COMMON_VERSION = 3  # Должно быть целым
-APP_VERSION = "v:10.012.290123.13"
+COMMON_VERSION = 4  # Должно быть целым
+APP_VERSION = "v:10.016.300123.22"
