@@ -5,6 +5,7 @@
 import os
 import sys
 import datetime
+import logging
 from functools import partial
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -550,7 +551,11 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
         if os.path.isfile(myconstants.START_PARAMETERS_FILE_4_DEVELOPER):
             self.add_text_to_log_box("[ используются настройки разработчика ]")
-            self.add_text_to_log_box("")
+
+        if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
+            self.add_text_to_log_box("[ logging = DEBUG ]")
+
+        self.add_text_to_log_box("")
 
         self.add_text_to_log_box("> " + myconstants.PARAMETER_WAITING_USER_ACTION)
         self.statusBar.showMessage(myconstants.PARAMETER_WAITING_USER_ACTION)
@@ -662,6 +667,10 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
             if os.path.isfile(myconstants.START_PARAMETERS_FILE_4_DEVELOPER):
                 self.add_text_to_log_box("[ используются настройки разработчика ]")
+
+            if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
+                self.add_text_to_log_box("[ logging = DEBUG ]")
+
             self.add_text_to_log_box("")
 
             self.add_text_to_log_box("> " + myconstants.PARAMETER_WAITING_USER_ACTION)

@@ -1,5 +1,5 @@
 import shutil
-import time
+import logging
 import warnings
 
 import pythoncom
@@ -12,6 +12,7 @@ from myexcelclass import MyExcel
 
 class reportCreator(object):
     report_creation_in_process = False
+
     def __init__(self, parent, *args):
         super(reportCreator, self).__init__(*args)
         self.parent = parent
@@ -136,10 +137,10 @@ def send_df_2_xls(report_parameters):
     else:
         ui_handle.add_text_to_log_box(f"{num_poz}. Сохранены формулы (возможно медленное открытие и больше размер файла).")
         num_poz += 1
-            
+
     ui_handle.add_text_to_log_box(f"{num_poz}. Округление до: {myconstants.ROUND_FTE_VALUE}-го знака после запятой")
     num_poz += 1
-            
+
     # В случае наличия в специальной парке файлов с секретными данными и если
     # в них есть какие-то не нулевые значения, то нужно удалять лист с данными:
     test_result = check_for_commercial_data_in_user_files()

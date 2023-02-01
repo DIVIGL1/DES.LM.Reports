@@ -14,6 +14,7 @@ import requests
 import socket
 import struct
 import base64
+import logging
 from cryptography.fernet import Fernet
 
 import myconstants
@@ -378,6 +379,7 @@ def get_data_using_url(mainwindow=None, year=None, month1=1, month2=None, create
 
     from iCodes import get_des_lm_url
     data = get_des_lm_url()
+
     if data["ret_code"] != 1:
         # Либо код устарел, либо что-то с Интернетом:
         if mainwindow is not None:
@@ -392,6 +394,11 @@ def get_data_using_url(mainwindow=None, year=None, month1=1, month2=None, create
         url_fact_per_month = data["url_fact_per_month"]
         data = get_des_lm_url_parameters(year=year, month1=month1, month2=month2)
 
+        # Принудительно отключим режим DEBUG (если он включен) чтобы не "светить" API
+        logging.debug(' get_data_using_url: Data request to DES.LM.')
+        logging.debug(' get_data_using_url: Logging is stopped.')
+        logging.disable(logging.CRITICAL)
+
         thread1 = threading.Thread(target=get_one_url_data, args=(url_plan, data, "plan", mainwindow), daemon=True)
         thread2 = threading.Thread(target=get_one_url_data, args=(url_fact_per_month, data, "fact", mainwindow), daemon=True)
         threads = [thread1, thread2]
@@ -401,6 +408,10 @@ def get_data_using_url(mainwindow=None, year=None, month1=1, month2=None, create
 
         for one_thread in threads:
             one_thread.join()
+
+        # Восстановим уровень логирования
+        logging.disable(logging.NOTSET)
+        logging.debug(' get_data_using_url: Logging is resumed.')
 
         text_2_main_window(mainwindow, "         Объединяем данные в один файл...")
         df = dfs["plan"].append(dfs["fact"])
@@ -564,7 +575,17 @@ def test_internet_data_version(ui):
         return
 
     url = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/inform"
+
+    # Принудительно отключим режим DEBUG (если он включен) чтобы не "светить" API
+    logging.debug(' test_internet_data_version: Data request to Internet AccessCodes.')
+    logging.debug(' test_internet_data_version: Logging is stopped.')
+    logging.disable(logging.CRITICAL)
+
     rs = requests.get(url)
+
+    # Восстановим уровень логирования
+    logging.disable(logging.NOTSET)
+    logging.debug(' test_internet_data_version: Logging is resumed.')
 
     if rs.ok:
         versions_info = json.loads(rs.content)
@@ -614,7 +635,18 @@ def test_internet_data_version(ui):
 
 def test_user_access_2_download_emails(ui):
     url_user_4_emails = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/data4"
+
+    # Принудительно отключим режим DEBUG (если он включен) чтобы не "светить" API
+    logging.debug(' test_user_access_2_download_emails: Data request to Internet data4.')
+    logging.debug(' test_user_access_2_download_emails: Logging is stopped.')
+    logging.disable(logging.CRITICAL)
+
     rs = requests.get(url_user_4_emails)
+
+    # Восстановим уровень логирования
+    logging.disable(logging.NOTSET)
+    logging.debug(' test_user_access_2_download_emails: Logging is resumed.')
+
     if rs.ok:
         # Прочитаем ключ
         crypter = get_common_crypter(ui)
@@ -634,7 +666,17 @@ def test_user_access_2_download_emails(ui):
 @thread
 def get_internet_data(ui, stype):
     url = "https://raw.githubusercontent.com/iCodes/AccessCodes/main/inform"
+
+    # Принудительно отключим режим DEBUG (если он включен) чтобы не "светить" API
+    logging.debug(' get_internet_data: Data request to Internet inform.')
+    logging.debug(' get_internet_data: Logging is stopped.')
+    logging.disable(logging.CRITICAL)
+
     rs = requests.get(url)
+
+    # Восстановим уровень логирования
+    logging.disable(logging.NOTSET)
+    logging.debug(' get_internet_data: Logging is resumed.')
 
     if rs.ok:
         import pandas as pd
@@ -653,7 +695,18 @@ def get_internet_data(ui, stype):
                 ui.UpdateParametersFromInternet.setEnabled(False)
                 ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
                 ui.add_text_to_log_box("Начата загрузка параметров...")
+
+                # Принудительно отключим режим DEBUG (если он включен) чтобы не "светить" API
+                logging.debug(' get_internet_data: Data request to Internet data1.')
+                logging.debug(' get_internet_data: Logging is stopped.')
+                logging.disable(logging.CRITICAL)
+
                 rs = requests.get(url_data)
+
+                # Восстановим уровень логирования
+                logging.disable(logging.NOTSET)
+                logging.debug(' get_internet_data: Logging is resumed.')
+
                 if rs.ok:
                     # Обработаем строку полученную из Интернета
                     from_internet = json.loads(crypter.decrypt(rs.content).decode())
@@ -696,7 +749,18 @@ def get_internet_data(ui, stype):
                 ui.UpdateReportsFromInternet.setEnabled(False)
                 ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
                 ui.add_text_to_log_box("Начата загрузка шаблонов отчётов...")
+
+                # Принудительно отключим режим DEBUG (если он включен) чтобы не "светить" API
+                logging.debug(' get_internet_data: Data request to Internet data2.')
+                logging.debug(' get_internet_data: Logging is stopped.')
+                logging.disable(logging.CRITICAL)
+
                 rs = requests.get(url_data)
+
+                # Восстановим уровень логирования
+                logging.disable(logging.NOTSET)
+                logging.debug(' get_internet_data: Logging is resumed.')
+
                 if rs.ok:
                     # Обработаем строку полученную из Интернета
                     from_internet = json.loads(crypter.decrypt(rs.content).decode())
@@ -733,7 +797,18 @@ def get_internet_data(ui, stype):
                 ui.UpdateParameterEMails.setEnabled(False)
                 ui.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
                 ui.add_text_to_log_box("Начата загрузка электронных адресов...")
+
+                # Принудительно отключим режим DEBUG (если он включен) чтобы не "светить" API
+                logging.debug(' get_internet_data: Data request to Internet data3.')
+                logging.debug(' get_internet_data: Logging is stopped.')
+                logging.disable(logging.CRITICAL)
+
                 rs = requests.get(url_data)
+
+                # Восстановим уровень логирования
+                logging.disable(logging.NOTSET)
+                logging.debug(' get_internet_data: Logging is resumed.')
+
                 if rs.ok:
                     # Обработаем строку полученную из Интернета
                     from_internet = json.loads(crypter.decrypt(rs.content).decode())

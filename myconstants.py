@@ -383,7 +383,7 @@ PARAMETERS_ALL_TABLES = {
     VIP_TABLE: ("Таблица списка VIP", "FIO_VIP", "", ""),
     PORTFEL_TABLE: ("Таблица списка портфелей проектов", "ID_DES.LM_project", "Full_Project_name", "ID_DES.LM_project"),
     ISDOGNAME_TABLE: ("Таблица наименований ИС из контракта", "ID_DES.LM_project", "DESLM_Project", "ID_DES.LM_project"),
-    PROJECTS_LIST_ADD_INFO: ("Таблица наименований ИС из контракта", "P_AddInfo_U_Key", PROJECTS_LIST_ADD_INFO_RAW_KEY_COLUMN, "ID_P_AddInfo"),
+    PROJECTS_LIST_ADD_INFO: ("Таблица с дополнительной информацией о контрактах", "P_AddInfo_U_Key", PROJECTS_LIST_ADD_INFO_RAW_KEY_COLUMN, "ID_P_AddInfo"),
     YEARS_LIST_TABLE: ("Таблица годов, по которым можно формировать отчёт", "Years4Period", "", ""),
     MONTHS_LIST_TABLE: ("Таблица периодов (месяцев), по которым можно формировать отчёт", "DataPeriodName", "", ""),
     USERS_CATEGS_LIST: ("Таблица с перечнем категорий сотрудников", "CategUserName", "", ""),
@@ -538,5 +538,5 @@ UNKNOWN_CATEGORY_NAME = " - категория не указана - "
 CATEGORY_WAS_NOT_FOUND = "-"
 CATEGORY_WAS_FOUND = "+"
 
-COMMON_VERSION = 4  # Должно быть целым
-APP_VERSION = "v:10.016.300123.22"
+COMMON_VERSION = 5  # Должно быть целым
+APP_VERSION = "v:11.002.010223.3"

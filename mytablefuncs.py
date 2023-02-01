@@ -1,5 +1,6 @@
 import pandas as pd
 import datetime as dt
+import logging
 import os
 
 import myconstants
@@ -101,9 +102,11 @@ def check_for_commercial_data_in_user_files():
         if os.path.isfile(full_file_path):
             test_df = pd.read_excel(full_file_path, engine='openpyxl')
             test_df.dropna(how='all', inplace=True)
+            test_df.fillna(0, inplace=True)
             if (test_df.select_dtypes(include='number') != 0).sum().sum() != 0:
                 ret_value = f"{myconstants.TEXT_LINES_SEPARATOR}\n" + \
-                            f"В таблице {one_table} в колонке присутствуют числовые значения.\n" + \
+                            f"{myconstants.PARAMETERS_ALL_TABLES[one_table][0]}\n" \
+                            f"содержит числовые значения - это ставки, суммы выручки или расхода.\n" + \
                             f"Для исключения случайного распространения конфиденциальной информации\n" + \
                             f"при пересылке файла, в отчете будет принудительно удалена закладка\n" + \
                             f"с исходными данными, а формулы в отчете будут переведены в значения.\n" + \
@@ -638,97 +641,108 @@ def prepare_data(
     projects_list_add_info.rename(columns = myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST, inplace = True)
     projects_list_add_info.fillna(0.00, inplace = True)
 
-    data_df = data_df.merge(emails_df, left_on="JustUserName", right_on="FIO_4_email", how="left")
-    emails_df = emails_df[["FIO_4_email", "user_email"]].rename(columns={"FIO_4_email": "mngr_FIO", "user_email": "manager_email"})
-    data_df = data_df.merge(emails_df, left_on="ProjectManager", right_on="mngr_FIO", how="left")
-    data_df[myconstants.EMAIL_INFO_COLUMNS] = data_df[myconstants.EMAIL_INFO_COLUMNS].fillna("")
+    # Начало проверки на ошибки исполнения при формировании отчёта
+    try:
+        data_df = data_df.merge(emails_df, left_on="JustUserName", right_on="FIO_4_email", how="left")
+        emails_df = emails_df[["FIO_4_email", "user_email"]].rename(columns={"FIO_4_email": "mngr_FIO", "user_email": "manager_email"})
+        data_df = data_df.merge(emails_df, left_on="ProjectManager", right_on="mngr_FIO", how="left")
+        data_df[myconstants.EMAIL_INFO_COLUMNS] = data_df[myconstants.EMAIL_INFO_COLUMNS].fillna("")
 
-    data_df[myconstants.COLUMNS_TO_SET_ZERO_IF_NULL] = data_df[myconstants.COLUMNS_TO_SET_ZERO_IF_NULL].fillna(0.00)
+        data_df[myconstants.COLUMNS_TO_SET_ZERO_IF_NULL] = data_df[myconstants.COLUMNS_TO_SET_ZERO_IF_NULL].fillna(0.00)
 
-    data_df["ProjectType"] = \
-        data_df[["Project", "ProjectType"]].apply(
-            lambda param: "S" if param[0].find(myconstants.FACT_IS_PLAN_MARKER) >= 0 else param[1], axis=1)
+        data_df["ProjectType"] = \
+            data_df[["Project", "ProjectType"]].apply(
+                lambda param: "S" if param[0].find(myconstants.FACT_IS_PLAN_MARKER) >= 0 else param[1], axis=1)
 
-    data_df = data_df.merge(projects_types_descr_df, left_on="ProjectType", right_on="ProjectTypeName", how="left")
-    ui_handle.add_text_to_log_box(f"Уточнены типы проектов (всего строк обработанных данных: {data_df.shape[0]})")
+        data_df = data_df.merge(projects_types_descr_df, left_on="ProjectType", right_on="ProjectTypeName", how="left")
+        ui_handle.add_text_to_log_box(f"Уточнены типы проектов (всего строк обработанных данных: {data_df.shape[0]})")
 
-    data_df = data_df.merge(projects_sub_types_df, left_on="ShortProject", right_on="ID.ProjectFromName", how="left")
-    data_df["ProjectSubType"] = \
-        data_df[["ProjectType", "ProjectSubTypePart"]].apply(
-            lambda param: param[0] + myconstants.OTHER_PROJECT_SUB_TYPE if pd.isna(param[1]) else param[1], axis=1)
+        data_df = data_df.merge(projects_sub_types_df, left_on="ShortProject", right_on="ID.ProjectFromName", how="left")
+        data_df["ProjectSubType"] = \
+            data_df[["ProjectType", "ProjectSubTypePart"]].apply(
+                lambda param: param[0] + myconstants.OTHER_PROJECT_SUB_TYPE if pd.isna(param[1]) else param[1], axis=1)
 
-    data_df = data_df.merge(portfolio_df, left_on="ShortProject", right_on="ID_DES.LM_project", how="left")
-    data_df["Portfolio"] = data_df["Portfolio"].fillna("")
-    data_df["Contract"] = data_df["Contract"].fillna("")
-    data_df["IS_Service_type"] = data_df["IS_Service_type"].fillna("")
-    data_df["IS_Product_type"] = data_df["IS_Product_type"].fillna("")
-    data_df["IS_Product_type_SAP"] = data_df["IS_Product_type"].apply(lambda x: "SAP" if x == "SAP" else "notSAP")
-    data_df["ISys_SAP"] = data_df["IS_Product_type"].apply(lambda x: "SAP" if x == "SAP" else "")
+        data_df = data_df.merge(portfolio_df, left_on="ShortProject", right_on="ID_DES.LM_project", how="left")
+        data_df["Portfolio"] = data_df["Portfolio"].fillna("")
+        data_df["Contract"] = data_df["Contract"].fillna("")
+        data_df["IS_Service_type"] = data_df["IS_Service_type"].fillna("")
+        data_df["IS_Product_type"] = data_df["IS_Product_type"].fillna("")
+        data_df["IS_Product_type_SAP"] = data_df["IS_Product_type"].apply(lambda x: "SAP" if x == "SAP" else "notSAP")
+        data_df["ISys_SAP"] = data_df["IS_Product_type"].apply(lambda x: "SAP" if x == "SAP" else "")
 
-    # Возможны пропуски в некоторых колонках. Поставим там признак, чтобы бросался в глаза в отчёте:
-    data_df[myconstants.COLUMNS_FILLNA] = data_df[myconstants.COLUMNS_FILLNA].fillna(myconstants.FILLNA_STRING)
+        # Возможны пропуски в некоторых колонках. Поставим там признак, чтобы бросался в глаза в отчёте:
+        data_df[myconstants.COLUMNS_FILLNA] = data_df[myconstants.COLUMNS_FILLNA].fillna(myconstants.FILLNA_STRING)
 
-    data_df = data_df.merge(is_dog_name_df, left_on="ShortProject", right_on="ID_DES.LM_project", how="left", suffixes=("", "_will_dropped"))
-    data_df["ISDogName"].fillna("", inplace=True)
-    
-    for one_type in myconstants.NO_CONTRACT_TYPES:
-        data_df.loc[data_df["ProjectType"] == one_type, "Contract"] = myconstants.NO_CONTRACT_TEXT
-    for one_type in myconstants.NO_PORTFOLIO_TYPES:
-        data_df.loc[data_df["ProjectType"] == one_type, "Portfolio"] = myconstants.NO_PORTFOLIO_TEXT
-    
-    data_df = data_df.merge(projects_sub_types_descr_df, left_on="ProjectSubType", right_on="ProjectSubTypeName", how="left")
-    data_df["ProjectSubTypeDescription"].fillna("", inplace=True)
-    ui_handle.add_text_to_log_box(f"... и типы ПОДпроектов (всего строк обработанных данных: {data_df.shape[0]})")
+        data_df = data_df.merge(is_dog_name_df, left_on="ShortProject", right_on="ID_DES.LM_project", how="left", suffixes=("", "_will_dropped"))
+        data_df["ISDogName"].fillna("", inplace=True)
 
-    # Добавляем категории пользователей
-    users_categs_list.fillna("", inplace=True)
-    data_df = data_df.merge(users_categs_list, left_on="JustUserName", right_on="CategUserName", how="left")
-    data_df["UCateg4ThisFN"] = data_df.apply(lambda data: append_categories(data), axis=1)
-    data_df["UCateg4ThisFN_WasFound"] = data_df.apply(lambda data: append_categories(data, True), axis=1)
+        for one_type in myconstants.NO_CONTRACT_TYPES:
+            data_df.loc[data_df["ProjectType"] == one_type, "Contract"] = myconstants.NO_CONTRACT_TEXT
+        for one_type in myconstants.NO_PORTFOLIO_TYPES:
+            data_df.loc[data_df["ProjectType"] == one_type, "Portfolio"] = myconstants.NO_PORTFOLIO_TEXT
 
-    data_df["UCateg4ThisFN"].fillna(myconstants.UNKNOWN_CATEGORY_NAME, inplace=True)
-    data_df["UCateg4ThisFN_WasFound"].fillna(myconstants.CATEGORY_WAS_NOT_FOUND, inplace=True)
-    data_df["CommonCateg_SAP"].fillna("", inplace=True)
-    data_df["CommonCateg_notSAP"].fillna("", inplace=True)
+        data_df = data_df.merge(projects_sub_types_descr_df, left_on="ProjectSubType", right_on="ProjectSubTypeName", how="left")
+        data_df["ProjectSubTypeDescription"].fillna("", inplace=True)
+        ui_handle.add_text_to_log_box(f"... и типы ПОДпроектов (всего строк обработанных данных: {data_df.shape[0]})")
 
-    ui_handle.add_text_to_log_box(f"Добавлены категории пользователей (всего строк обработанных данных: {data_df.shape[0]})")
+        # Добавляем категории пользователей
+        users_categs_list.fillna("", inplace=True)
+        data_df = data_df.merge(users_categs_list, left_on="JustUserName", right_on="CategUserName", how="left")
+        data_df["UCateg4ThisFN"] = data_df.apply(lambda data: append_categories(data), axis=1)
+        data_df["UCateg4ThisFN_WasFound"] = data_df.apply(lambda data: append_categories(data, True), axis=1)
 
-    # Преобразуем структуру ставок категорий
-    categories_costs = transform_categories_costs(categories_costs)
+        data_df["UCateg4ThisFN"].fillna(myconstants.UNKNOWN_CATEGORY_NAME, inplace=True)
+        data_df["UCateg4ThisFN_WasFound"].fillna(myconstants.CATEGORY_WAS_NOT_FOUND, inplace=True)
+        data_df["CommonCateg_SAP"].fillna("", inplace=True)
+        data_df["CommonCateg_notSAP"].fillna("", inplace=True)
 
-    # Подставим ставки для категорий помесячно:
-    data_df["categ_fn_month_key"] = data_df["UCateg4ThisFN"] + data_df["FN"] + data_df["Month"]
-    data_df = data_df.merge(categories_costs, left_on="categ_fn_month_key", right_on="CategKey", how="left")
-    data_df["CategHCost"].fillna(0, inplace=True)
-    data_df["CategMCost"].fillna(0, inplace=True)
+        ui_handle.add_text_to_log_box(f"Добавлены категории пользователей (всего строк обработанных данных: {data_df.shape[0]})")
 
-    ui_handle.add_text_to_log_box(f"Добавлены ставки для категорий из таблицы со ставками (всего строк обработанных данных: {data_df.shape[0]})")
+        # Преобразуем структуру ставок категорий
+        categories_costs = transform_categories_costs(categories_costs)
 
-    if p_delete_pers_data:
-        data_df = data_df[data_df["ProjectSubTypePersData"] != 1]
-        ui_handle.add_text_to_log_box(f"Исключены персональные данные (всего строк обработанных данных: {data_df.shape[0]})")
+        # Подставим ставки для категорий помесячно:
+        data_df["categ_fn_month_key"] = data_df["UCateg4ThisFN"] + data_df["FN"] + data_df["Month"]
+        data_df = data_df.merge(categories_costs, left_on="categ_fn_month_key", right_on="CategKey", how="left")
+        data_df["CategHCost"].fillna(0, inplace=True)
+        data_df["CategMCost"].fillna(0, inplace=True)
 
-    if p_delete_vip:
-        vip_list = vip_df["FIO_VIP"].to_list()
-        for one_vip in vip_list:
-            data_df = data_df[data_df["JustUserName"] != one_vip]
-        ui_handle.add_text_to_log_box(f"Исключены VIP (всего строк обработанных данных: {data_df.shape[0]})")
+        ui_handle.add_text_to_log_box(f"Добавлены ставки для категорий из таблицы со ставками (всего строк обработанных данных: {data_df.shape[0]})")
 
-    if p_delete_not_prod_units:
-        data_df = data_df[data_df["pNotProductUnit"] != 1]
-        ui_handle.add_text_to_log_box(f"Исключены не производственные подразделения (всего строк обработанных данных: {data_df.shape[0]})")
+        if p_delete_pers_data:
+            data_df = data_df[data_df["ProjectSubTypePersData"] != 1]
+            ui_handle.add_text_to_log_box(f"Исключены персональные данные (всего строк обработанных данных: {data_df.shape[0]})")
 
-    if p_delete_vacation:
-        vacancy_text = myconstants.VACANCY_NAME_TEXT
-        vacancy_text = vacancy_text.lower()
-        data_df["User"] = \
-            data_df["User"].apply(
-                lambda param: vacancy_text if param.replace(" ", "").lower()[:len(vacancy_text)] == vacancy_text else param)
-        
-        data_df = data_df[data_df["User"] != vacancy_text]
-        ui_handle.add_text_to_log_box(f"Удалены вакансии (всего строк обработанных данных: {data_df.shape[0]})")
+        if p_delete_vip:
+            vip_list = vip_df["FIO_VIP"].to_list()
+            for one_vip in vip_list:
+                data_df = data_df[data_df["JustUserName"] != one_vip]
+            ui_handle.add_text_to_log_box(f"Исключены VIP (всего строк обработанных данных: {data_df.shape[0]})")
 
-    add_combine_columns(data_df)
-    ui_handle.add_text_to_log_box(f"Добавлены необходимые производные столбцы (конкатенация) (всего строк данных: {data_df.shape[0]})")
-    
-    return data_df[myconstants.RESULT_DATA_COLUMNS]
+        if p_delete_not_prod_units:
+            data_df = data_df[data_df["pNotProductUnit"] != 1]
+            ui_handle.add_text_to_log_box(f"Исключены не производственные подразделения (всего строк обработанных данных: {data_df.shape[0]})")
+
+        if p_delete_vacation:
+            vacancy_text = myconstants.VACANCY_NAME_TEXT
+            vacancy_text = vacancy_text.lower()
+            data_df["User"] = \
+                data_df["User"].apply(
+                    lambda param: vacancy_text if param.replace(" ", "").lower()[:len(vacancy_text)] == vacancy_text else param)
+
+            data_df = data_df[data_df["User"] != vacancy_text]
+            ui_handle.add_text_to_log_box(f"Удалены вакансии (всего строк обработанных данных: {data_df.shape[0]})")
+
+        add_combine_columns(data_df)
+        ui_handle.add_text_to_log_box(f"Добавлены необходимые производные столбцы (конкатенация) (всего строк данных: {data_df.shape[0]})")
+
+        return data_df[myconstants.RESULT_DATA_COLUMNS]
+
+    except Exception as err:
+        ui_handle.add_text_to_log_box("")
+        ui_handle.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+        ui_handle.add_text_to_log_box(f"При формировании отчёта возникла ошибка...")
+        ui_handle.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+        ui_handle.add_text_to_log_box("")
+        logging.error(err, exc_info=True)
+        return
