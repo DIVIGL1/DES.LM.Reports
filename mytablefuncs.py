@@ -16,6 +16,8 @@ def is_structure_correct(check_df, check_name):
     global USER_FILES_STRUCT
     if USER_FILES_STRUCT is None:
         USER_FILES_STRUCT = load_parameter_table(myconstants.USER_FILES_STRUCT_TABLE)
+    if type(USER_FILES_STRUCT) == str:
+        return True
 
     df_struct = USER_FILES_STRUCT[USER_FILES_STRUCT["UserTable"] + myconstants.EXCEL_FILES_ENDS == check_name]
     if df_struct.shape[0] == 0:
@@ -147,7 +149,18 @@ def load_parameter_table(tablename):
         section = get_parameter_value(myconstants.PARAMETERS_SECTION_NAME)
         full_file_path = os.path.join(os.path.join(section, tablename))
 
-    parameter_df = pd.read_excel(full_file_path, engine='openpyxl')
+    if os.path.isfile(full_file_path):
+        parameter_df = pd.read_excel(full_file_path, engine='openpyxl')
+    else:
+        return (
+                f"\n" +
+                f"{myconstants.TEXT_LINES_SEPARATOR}\n" +
+                f"{myconstants.PARAMETERS_ALL_TABLES[tablename][0]}\n" +
+                f"Не найдена!\n" +
+                f"\n"
+                f"Необходимо восстановить структуру таблицы.\n"
+                f"{myconstants.TEXT_LINES_SEPARATOR}"
+        )
 
     if tablename != myconstants.USER_FILES_STRUCT_TABLE:
         if not is_structure_correct(parameter_df, tablename):
@@ -156,7 +169,6 @@ def load_parameter_table(tablename):
                     f"{myconstants.TEXT_LINES_SEPARATOR}\n" +
                     f"{myconstants.PARAMETERS_ALL_TABLES[tablename][0]}\n" +
                     f"Нарушена структура данных!\n" +
-                    f"Сформировать отчёт невозможно.\n"
                     f"\n"
                     f"Необходимо восстановить структуру таблицы.\n"
                     f"{myconstants.TEXT_LINES_SEPARATOR}"
