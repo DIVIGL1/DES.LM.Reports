@@ -31,7 +31,7 @@ class reportCreator(object):
         return self.reports_list[num]
     
     def create_report(self, p_dont_clear_log_box=False):
-        ret_value = True
+        ret_value = None
 
         if self.report_creation_in_process or self.parent.drag_and_prop_in_process:
             ret_value = False
@@ -62,7 +62,7 @@ class reportCreator(object):
                     if not p_dont_clear_log_box:
                         self.parent.mainwindow.ui.clear_log_box()
 
-                    send_df_2_xls(self.parent.report_parameters)
+                    ret_value = send_df_2_xls(self.parent.report_parameters)
 
         return ret_value
 

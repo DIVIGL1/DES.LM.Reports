@@ -745,4 +745,5 @@ def prepare_data(
         ui_handle.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
         ui_handle.add_text_to_log_box("")
         logging.error(err, exc_info=True)
-        return
+
+        return False
