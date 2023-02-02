@@ -739,9 +739,30 @@ def get_internet_data(ui, stype):
                                 vff_year = filename.split("(")[1].split(")")[0]
                                 ui.add_text_to_log_box(f"   Таблица с искусственными FTE за {vff_year} год")
                             else:
-                                with open(os.path.join(files_location_save_to, filename), 'wb') as hfile:
+                                save_downloaded_file_to = os.path.join(files_location_save_to, filename)
+                                with open(save_downloaded_file_to, 'wb') as hfile:
                                     hfile.write(from_internet[filename])
                                 ui.add_text_to_log_box(f"   {myconstants.PARAMETERS_ALL_TABLES[filename][0]}")
+
+                                if filename in myconstants.USER_FILES_LIST:
+                                    # Если это пользовательский файл, то надо проверить
+                                    # в папке пользовательских файлов.
+                                    user_files_dir = get_parameter_value(myconstants.USER_PARAMETERS_SECTION_NAME)
+                                    dest_file_path = os.path.join(user_files_dir, filename)
+                                    if not os.path.isfile(dest_file_path):
+                                        dest_file_path = os.path.join(user_files_dir, myconstants.USER_FILES_EXCLUDE_PREFFIX + filename)
+                                        if not os.path.isfile(dest_file_path):
+                                            dest_file_path = ""
+
+                                    if dest_file_path:
+                                        # Если он там есть то загрузим его и проверим на пустоту.
+                                        test_df = pd.read_excel(dest_file_path, engine='openpyxl')
+                                        test_df.dropna(how='all', inplace=True)
+                                        if test_df.shape[0] == 0:
+                                            # Если он пустой, то заменим его на пришедший, на тот
+                                            # случай если изменилась структура.
+                                            shutil.copy(save_downloaded_file_to, dest_file_path)
+
                         else:
                             if myconstants.VIRTUAL_FTE_FILE_NAME.lower().split("(")[0] in filename.lower():
                                 # Если это файл с виртуальными FTE, то его надо скопировать в пользовательскую папку
