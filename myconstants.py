@@ -324,6 +324,7 @@ MONTHS_LIST_TABLE = "DataPeriods.xlsx"
 USERS_CATEGS_LIST = "UCategories.xlsx"
 CATEGORIES_TYPES = "CategoriesTypes.xlsx"
 CATEGORIES_COSTS = "CCosts.xlsx"
+USER_FILES_STRUCT_TABLE = "UserTablesStruct.xlsx"
 
 
 PROJECTS_LIST_ADD_INFO_RAW_KEY_COLUMN = "Наименование проекта (только текст)"
@@ -389,6 +390,7 @@ PARAMETERS_ALL_TABLES = {
     USERS_CATEGS_LIST: ("Таблица с перечнем категорий сотрудников", "CategUserName", "", ""),
     CATEGORIES_TYPES: ("Таблица с перечнем типов категорий сотрудников", "CategName4Type", "", ""),
     CATEGORIES_COSTS: ("Таблица со списком ставок для каждой категории сотрудников", "CategKey", "", ""),
+    USER_FILES_STRUCT_TABLE: ("Таблица со структурой пользовательских данных", "UserTable", "", ""),
 }
 
 LAST_INTERNET_PARAMS_NAME = "Скачанная версия справочников из Интернет"
@@ -539,4 +541,4 @@ CATEGORY_WAS_NOT_FOUND = "-"
 CATEGORY_WAS_FOUND = "+"
 
 COMMON_VERSION = 5  # Должно быть целым
-APP_VERSION = "v:11.002.010223.3"
+APP_VERSION = "v:11.005.010223.3"
