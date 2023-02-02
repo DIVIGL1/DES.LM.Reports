@@ -89,7 +89,8 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.set_status_bar_text("Начато формирование отчёта...")
         self.parent.parent.reporter.create_report(p_dont_clear_log_box=p_dont_clear_log_box)
 
-    def open_last_report(self):
+    @staticmethod
+    def open_last_report():
         if load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "") != "":
             # Открываем последний сгенерированный отчёт.
             last_report_filename = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT)
@@ -1127,6 +1128,9 @@ class MyWindow(QtWidgets.QMainWindow):
         self.get_internet_data_ag = animatedGifLabel("download_process")
         self.ui.statusBar.addPermanentWidget(self.get_internet_data_ag)
 
+        self.get_warning_ag = animatedGifLabel("warning_ag")
+        self.ui.statusBar.addPermanentWidget(self.get_warning_ag)
+
         self.communicate = Communicate()
         self.communicate.commander.connect(lambda command: self.communication_handler(command))
         test_internet_data_version(self.ui)
@@ -1139,6 +1143,7 @@ class MyWindow(QtWidgets.QMainWindow):
             "report_preparation_ag",
             "waiting_user_action_ag",
             "get_internet_data_ag",
+            "get_warning_ag"
         ]
 
         for element in ag_list:
