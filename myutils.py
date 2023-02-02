@@ -547,6 +547,22 @@ def test_access_key(mainwindow):
         mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
         return
 
+    if data["ret_code"] == -10:
+        # Не удалось прочитать json
+        action.setText(f"Пользовательский код: [{get_user_code()}]")
+        action.setToolTip("Не удалось прочитать\nданные полученные из Интернет")
+        pict = "key"
+        mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
+        return
+
+    if data["ret_code"] == -11:
+        # Структура ссылок изменилась, необходимо обновить её.
+        action.setText(f"Пользовательский код: [{get_user_code()}]")
+        action.setToolTip("Изменилась структура ссылок\nПопросите её обновить")
+        pict = "key"
+        mainwindow.ui.setup_one_action(action=action, pict=pict, menu=menu, toolbar=toolbar)
+        return
+
 
 def get_common_crypter(ui):
     # Прочитаем ключ
