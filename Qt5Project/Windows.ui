@@ -1136,6 +1136,10 @@
     <addaction name="WHours"/>
     <addaction name="UCostsSelector"/>
     <addaction name="separator"/>
+    <addaction name="CategoriesTypes"/>
+    <addaction name="UCategories"/>
+    <addaction name="CCosts"/>
+    <addaction name="separator"/>
     <addaction name="ShortDivisionNames"/>
     <addaction name="ShortFNNames"/>
     <addaction name="separator"/>
@@ -2077,6 +2081,66 @@
    </property>
    <property name="toolTip">
     <string notr="true">Загрузить обновление отчётов</string>
+   </property>
+   <property name="statusTip">
+    <string notr="true"/>
+   </property>
+   <property name="whatsThis">
+    <string notr="true"/>
+   </property>
+   <property name="shortcut">
+    <string notr="true"/>
+   </property>
+  </action>
+  <action name="CategoriesTypes">
+   <property name="text">
+    <string notr="true">Типы категорий</string>
+   </property>
+   <property name="iconText">
+    <string notr="true">Типы категорий</string>
+   </property>
+   <property name="toolTip">
+    <string notr="true">Типы категорий</string>
+   </property>
+   <property name="statusTip">
+    <string notr="true"/>
+   </property>
+   <property name="whatsThis">
+    <string notr="true"/>
+   </property>
+   <property name="shortcut">
+    <string notr="true"/>
+   </property>
+  </action>
+  <action name="UCategories">
+   <property name="text">
+    <string notr="true">Категории специалистов</string>
+   </property>
+   <property name="iconText">
+    <string notr="true">Категории специалистов</string>
+   </property>
+   <property name="toolTip">
+    <string notr="true">Категории специалистов</string>
+   </property>
+   <property name="statusTip">
+    <string notr="true"/>
+   </property>
+   <property name="whatsThis">
+    <string notr="true"/>
+   </property>
+   <property name="shortcut">
+    <string notr="true"/>
+   </property>
+  </action>
+  <action name="CCosts">
+   <property name="text">
+    <string notr="true">Ставки по категориям</string>
+   </property>
+   <property name="iconText">
+    <string notr="true">Ставки по категориям</string>
+   </property>
+   <property name="toolTip">
+    <string notr="true">Ставки по категориям</string>
    </property>
    <property name="statusTip">
     <string notr="true"/>
