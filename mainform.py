@@ -399,6 +399,9 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         #----------------------------------
         section = myconstants.PARAMETERS_SECTION_NAME
         self.WHours.triggered.connect(lambda: self.menu_action("OpenExcel", section, "WHours"))
+        self.UCategories.triggered.connect(lambda: self.menu_action("OpenExcel", section, "UCategories"))
+        self.CategoriesTypes.triggered.connect(lambda: self.menu_action("OpenExcel", section, "CategoriesTypes"))
+        self.CCosts.triggered.connect(lambda: self.menu_action("OpenExcel", section, "CCosts"))
         self.ShortDivisionNames.triggered.connect(lambda: self.menu_action("OpenExcel", section, "ShortDivisionNames"))
         self.ShortFNNames.triggered.connect(lambda: self.menu_action("OpenExcel", section, "ShortFNNames"))
         self.FNSusbst.triggered.connect(lambda: self.menu_action("OpenExcel", section, "FNSusbst"))
