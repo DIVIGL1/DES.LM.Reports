@@ -194,6 +194,10 @@ def load_parameter_table(tablename):
     parameter_df[unique_key_field].fillna("", inplace=True)
     parameter_df = parameter_df[parameter_df[unique_key_field] != ""]
 
+    for one_field_name in myconstants.DATA_TRANSFORMATION.keys():
+        if one_field_name in parameter_df.columns:
+            parameter_df = parameter_df.astype({one_field_name: myconstants.DATA_TRANSFORMATION[one_field_name]})
+
     # Проверим на наличие дубликатов
     if parameter_df.duplicated([unique_key_field]).sum() > 0:
         report_str = ""
