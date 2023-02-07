@@ -16,7 +16,7 @@ _tmp_DownLoadEmails
 _tmp_DownLoadReports
 debug.logs
 
-debug.cfg
+*.cfg
 
 ReportsPrepared
 RawData
