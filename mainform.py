@@ -53,14 +53,17 @@ class Communicate(QObject):
 
 
 class QtMainWindow(myQt_form.Ui_MainWindow):
-    closeApp = pyqtSignal()
-    exit_in_process = None
-    parent = None
-    model = None
-    text_info_year = None
-    text_info_period = None
-    status_text = ""
-    previous_status_text = ""
+
+    def __init__(self):
+        self.closeApp = pyqtSignal()
+        self.edit_pads_dict = None
+        self.exit_in_process = None
+        self.parent = None
+        self.model = None
+        self.text_info_year = None
+        self.text_info_period = None
+        self.status_text = ""
+        self.previous_status_text = ""
 
     def setup_reports_list(self, reports_list=None):
         if reports_list is None:
@@ -447,6 +450,9 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             "Parameters4admin": [
                 self.EditReportForm,
                 self.WHours,
+                self.CategoriesTypes,
+                self.UCategories,
+                self.CCosts,
                 self.ShortDivisionNames,
                 self.ShortFNNames,
                 self.FNSusbst,
@@ -811,6 +817,9 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 # Наличие в это же время "заблокированного" файла нас не интересует.
                 try:
                     os.rename(user_file_path, user_excluded_file_path)
+                    self.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+                    self.add_text_to_log_box("Пользовательский файл отключен.")
+                    self.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
                 except:
                     self.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
                     self.add_text_to_log_box("Не удалось отключить пользовательский файл.")
@@ -821,6 +830,9 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 # Переименуем его.
                 try:
                     os.rename(user_excluded_file_path, user_file_path)
+                    self.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
+                    self.add_text_to_log_box("Пользовательский файл подключен.")
+                    self.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
                 except:
                     self.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
                     self.add_text_to_log_box("Не удалось подключить пользовательский файл.")
