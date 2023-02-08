@@ -228,8 +228,11 @@ NUMS2MONTH = {
     "12": "дек",
 }
 
+YEAR_FIELD_IN_USERS_COST = "UCYear"
+YEAR_FIELD_IN_CATEGS_COST = "CCYear"
 DATA_TRANSFORMATION = {
-    "UCYear": int,
+    YEAR_FIELD_IN_USERS_COST: int,
+    YEAR_FIELD_IN_CATEGS_COST: int,
 }
 
 MONTHS_STR_NUMS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
@@ -310,7 +313,7 @@ MEANOURSPERMONTH_DEFVALUE = 1973 / 12
 MEANOURSPERMONTH_VALUE = MEANOURSPERMONTH_DEFVALUE
 
 MONTH_WORKING_HOURS_TABLE = "WHours.xlsx"
-COSTS_TABLE = "UCosts.xlsx"
+USERS_COST_TABLE = "UCosts.xlsx"
 DIVISIONS_NAMES_TABLE = "ShortDivisionNames.xlsx"
 FNS_NAMES_TABLE = "ShortFNNames.xlsx"
 P_FN_SUBST_TABLE = "FNSusbst.xlsx"
@@ -327,7 +330,7 @@ YEARS_LIST_TABLE = "Years4Periods.xlsx"
 MONTHS_LIST_TABLE = "DataPeriods.xlsx"
 USERS_CATEGS_LIST = "UCategories.xlsx"
 CATEGORIES_TYPES = "CategoriesTypes.xlsx"
-CATEGORIES_COSTS = "CCosts.xlsx"
+CATEGORIES_COST_TABLE = "CCosts.xlsx"
 USER_FILES_STRUCT_TABLE = "UserTablesStruct.xlsx"
 
 
@@ -383,7 +386,7 @@ PARAMETERS_ALL_TABLES = {
     PROJECTS_SUB_TYPES_TABLE: ("Таблица с наименованиями подтипов проектов", "ID.ProjectFromName", "ProjectName", "ID.ProjectFromName"),
     PROJECTS_TYPES_DESCR: ("Таблица с расшифровкой типов (букв) проектов", "ProjectTypeName", "", ""),
     PROJECTS_SUB_TYPES_DESCR: ("Таблица с расшифровок подтипов проектов", "ProjectSubTypeName", "", ""),
-    COSTS_TABLE: ("Таблица часовых ставок", "CostUserName", "", ""),
+    USERS_COST_TABLE: ("Таблица часовых ставок", "UserCostKey", "", ""),
     EMAILS_TABLE: ("Таблица адресов электронной почты", "FIO_4_email", "", ""),
     VIP_TABLE: ("Таблица списка VIP", "FIO_VIP", "", ""),
     PORTFEL_TABLE: ("Таблица списка портфелей проектов", "ID_DES.LM_project", "Full_Project_name", "ID_DES.LM_project"),
@@ -393,7 +396,7 @@ PARAMETERS_ALL_TABLES = {
     MONTHS_LIST_TABLE: ("Таблица периодов (месяцев), по которым можно формировать отчёт", "DataPeriodName", "", ""),
     USERS_CATEGS_LIST: ("Таблица с перечнем категорий сотрудников", "CategUserName", "", ""),
     CATEGORIES_TYPES: ("Таблица с перечнем типов категорий сотрудников", "CategName4Type", "", ""),
-    CATEGORIES_COSTS: ("Таблица со списком ставок для каждой категории сотрудников", "CategKey", "", ""),
+    CATEGORIES_COST_TABLE: ("Таблица со списком ставок для каждой категории сотрудников", "CategKey", "", ""),
     USER_FILES_STRUCT_TABLE: ("Таблица со структурой пользовательских данных", "UserTable", "", ""),
 }
 
@@ -419,7 +422,7 @@ MONTHS_LIST_TABLE_PARAM_COLUMNS = ["StartMonth", "EndMonth"]
 
 PARAMETERS_FOR_GETTING_DATA_FOR_URL ={
         "name": "period",
-        "reportParameterType":"PERIOD",
+        "reportParameterType": "PERIOD",
         "inputValue": (
                 f"{PARAMETER_STR_YEAR}-{PARAMETER_STR_MONTH1}-{PARAMETER_STR_FIRST_REPORT_DAY}" +
                 "T00:00:00.000+03:00-" +
@@ -429,9 +432,9 @@ PARAMETERS_FOR_GETTING_DATA_FOR_URL ={
 }
 
 
-USER_FILES_LIST = [COSTS_TABLE, PROJECTS_LIST_ADD_INFO, EMAILS_TABLE]
+USER_FILES_LIST = [USERS_COST_TABLE, PROJECTS_LIST_ADD_INFO, EMAILS_TABLE]
 USER_FILES_EXCLUDE_PREFFIX = "excluded__"
-USER_FILES_4_COMMERCIAL_DATA_TEST = [COSTS_TABLE, PROJECTS_LIST_ADD_INFO]
+USER_FILES_4_COMMERCIAL_DATA_TEST = [USERS_COST_TABLE, PROJECTS_LIST_ADD_INFO]
 
 FACT_IS_PLAN_MARKER = "(факт=плану)"
 FACT_FILLER = "(факт=1)"
@@ -544,5 +547,5 @@ UNKNOWN_CATEGORY_NAME = " - категория не указана - "
 CATEGORY_WAS_NOT_FOUND = "-"
 CATEGORY_WAS_FOUND = "+"
 
-COMMON_VERSION = 5  # Должно быть целым
-APP_VERSION = "v:11.012.070223.23"
+COMMON_VERSION = 6  # Должно быть целым
+APP_VERSION = "v:11.013.080223.23"

@@ -227,9 +227,10 @@ def load_raw_data(raw_file, p_virtual_FTE, ui_handle):
     if type(df_raw) == str:
         return df_raw
 
+    # Определим год данных в отчёте
+    data_year = str(df_raw["Дата"][0]).split(".")[1]
+    ui_handle.parent.parent.report_parameters.year_of_raw_data = int(data_year)
     if p_virtual_FTE:
-        # Определим год данных в отчёте
-        data_year = str(df_raw["Дата"][0]).split(".")[1]
         ui_handle.add_text_to_log_box(f"Проверяем наличие файла с искусственными FTE за {data_year} год.")
         # Проверим наличие файла:
         vff_name = myconstants.VIRTUAL_FTE_FILE_NAME.replace("YEAR", data_year)
@@ -395,6 +396,8 @@ def prepare_data(
     if type(data_df) == str:
         ui_handle.add_text_to_log_box(data_df)
         return None
+    year_of_data = ui_handle.parent.parent.report_parameters.year_of_raw_data
+
     month_hours_df = load_parameter_table(myconstants.MONTH_WORKING_HOURS_TABLE)
     if type(month_hours_df) == str:
         ui_handle.add_text_to_log_box(month_hours_df)
@@ -423,10 +426,13 @@ def prepare_data(
     if type(projects_sub_types_descr_df) == str:
         ui_handle.add_text_to_log_box(projects_sub_types_descr_df)
         return None
-    costs_df = load_parameter_table(myconstants.COSTS_TABLE)
-    if type(costs_df) == str:
-        ui_handle.add_text_to_log_box(costs_df)
+    users_costs_df = load_parameter_table(myconstants.USERS_COST_TABLE)
+    if type(users_costs_df) == str:
+        ui_handle.add_text_to_log_box(users_costs_df)
         return None
+
+    users_costs_df = users_costs_df[users_costs_df[myconstants.YEAR_FIELD_IN_USERS_COST] == year_of_data]
+
     emails_df = load_parameter_table(myconstants.EMAILS_TABLE)
     if type(emails_df) == str:
         ui_handle.add_text_to_log_box(emails_df)
@@ -455,10 +461,12 @@ def prepare_data(
     if type(categories_types) == str:
         ui_handle.add_text_to_log_box(categories_types)
         return None
-    categories_costs = load_parameter_table(myconstants.CATEGORIES_COSTS)
+    categories_costs = load_parameter_table(myconstants.CATEGORIES_COST_TABLE)
     if type(categories_costs) == str:
         ui_handle.add_text_to_log_box(categories_costs)
         return None
+
+    categories_costs = categories_costs[categories_costs[myconstants.YEAR_FIELD_IN_CATEGS_COST] == year_of_data]
 
     if not p_only_projects_with_add_info:
         # Если нет отметки, что нужно выбрать только определённые проекты
@@ -658,11 +666,11 @@ def prepare_data(
         # Отмечено, что нужно выбрать только определённые группы пользователей.
         # Наименование столбца содержащего признаки для фильтрации:
         group_field_name = myconstants.GROUP_COLUMNS_STARTER + ui_handle.comboBoxSelectUsers.currentText()
-        costs_df[group_field_name] = costs_df[group_field_name].fillna("").astype(str).replace(r'\s+', '', regex=True)
+        users_costs_df[group_field_name] = users_costs_df[group_field_name].fillna("").astype(str).replace(r'\s+', '', regex=True)
 
-        costs_df = costs_df[costs_df[group_field_name] != ""]
-        costs_df = costs_df[["CostUserName"] + myconstants.COSTS_DATA_COLUMNS]
-        data_df = data_df.merge(costs_df, left_on="JustUserName", right_on="CostUserName", how="inner")
+        users_costs_df = users_costs_df[users_costs_df[group_field_name] != ""]
+        users_costs_df = users_costs_df[["CostUserName"] + myconstants.COSTS_DATA_COLUMNS]
+        data_df = data_df.merge(users_costs_df, left_on="JustUserName", right_on="CostUserName", how="inner")
         if data_df.shape[0] == 0:
             ui_handle.add_text_to_log_box(
                 f"\n\n\n" +
@@ -683,7 +691,7 @@ def prepare_data(
                 f"{myconstants.TEXT_LINES_SEPARATOR}"
             )
 
-        data_df = data_df.merge(costs_df, left_on="JustUserName", right_on="CostUserName", how="left")
+        data_df = data_df.merge(users_costs_df, left_on="JustUserName", right_on="CostUserName", how="left")
 
     projects_list_add_info.rename(columns = myconstants.PROJECTS_LIST_ADD_INFO_RENAME_COLUMNS_LIST, inplace = True)
     projects_list_add_info.fillna(0.00, inplace = True)

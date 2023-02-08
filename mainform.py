@@ -278,7 +278,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
     def setup_combobox_select_users(self):
         self.comboBoxSelectUsers.clear()
-        df = load_parameter_table(myconstants.COSTS_TABLE)
+        df = load_parameter_table(myconstants.USERS_COST_TABLE)
         if type(df) == str:
             self.add_text_to_log_box(df)
             return None
@@ -594,7 +594,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             one_of_2_files_exists = (user_file_exist or user_file_locked)
 
             # Если рассматриваемый файл - это ставки пользователей, то:
-            if one_file == myconstants.COSTS_TABLE:
+            if one_file == myconstants.USERS_COST_TABLE:
                 self.UserUCosts.setEnabled(one_of_2_files_exists)
                 self.UCostsSwitcher.setEnabled(one_of_2_files_exists)
 

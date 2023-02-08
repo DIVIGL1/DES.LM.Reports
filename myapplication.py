@@ -209,6 +209,7 @@ class MyReportParameters:
         self.raw_file_name = None
         self.report_file_name = None
         self.report_prepared_name = None
+        self.year_of_raw_data = None
 
     def update(self, raw_file_name, report_file_name):
         self.slasterror = ""
