@@ -124,11 +124,11 @@ def check_for_commercial_data_in_user_files():
             test_df.fillna(0, inplace=True)
             if (test_df.select_dtypes(include='number') != 0).sum().sum() != 0:
                 ret_value = f"{myconstants.TEXT_LINES_SEPARATOR}\n" + \
-                            f"{myconstants.PARAMETERS_ALL_TABLES[one_table][0]}\n" \
-                            f"содержит числовые значения - это ставки, суммы выручки или расхода.\n" + \
-                            f"Для исключения случайного распространения конфиденциальной информации\n" + \
-                            f"при пересылке файла, в отчете будет принудительно удалена закладка\n" + \
-                            f"с исходными данными, а формулы в отчете будут переведены в значения.\n" + \
+                            f"{myconstants.PARAMETERS_ALL_TABLES[one_table][0]}:\n" \
+                            f"   Содержит числовые значения - это ставки, суммы выручки или расхода.\n" + \
+                            f"   Для исключения случайного распространения конфиденциальной информации\n" + \
+                            f"   при пересылке файла, в отчете будет принудительно удалена закладка\n" + \
+                            f"   с исходными данными, а формулы в отчете будут переведены в значения.\n" + \
                             f"{myconstants.TEXT_LINES_SEPARATOR}"
                 break
 
@@ -177,12 +177,31 @@ def load_parameter_table(tablename):
     parameter_df.dropna(how='all', inplace=True)
     unique_key_field = myconstants.PARAMETERS_ALL_TABLES[tablename][1]
 
+    for one_field_name in myconstants.DATA_TRANSFORMATION.keys():
+        if one_field_name in parameter_df.columns:
+            parameter_df = parameter_df.astype({one_field_name: myconstants.DATA_TRANSFORMATION[one_field_name]})
+
     if tablename == myconstants.PROJECTS_LIST_ADD_INFO:
         # Для таблицы PROJECTS_LIST_ADD_INFO (ProjectsAddInfo.xlsx)
         # создадим составной ключ, который должен быть уникальным
         field_part1 = myconstants.PROJECTS_LIST_ADD_UNIQ_KEY_FIELD1
         field_part2 = myconstants.PROJECTS_LIST_ADD_UNIQ_KEY_FIELD2
         parameter_df[unique_key_field] = parameter_df[field_part1] + " -> " + parameter_df[field_part2].str[0:5]
+
+    if tablename == myconstants.USERS_COST_TABLE:
+        # Для таблицы USERS_COST_TABLE (UCosts.xlsx)
+        # создадим составной ключ, который должен быть уникальным (ФИО + ГОД)
+        field_part1 = myconstants.USERS_COST_TABLE_UNIQ_KEY_FIELD1
+        field_part2 = myconstants.USERS_COST_TABLE_UNIQ_KEY_FIELD2
+        parameter_df[unique_key_field] = parameter_df[field_part1].astype(str) + " -> " + parameter_df[field_part2].astype(str)
+
+    if tablename == myconstants.CATEGORIES_COST_TABLE:
+        # Для таблицы CATEGORIES_COST_TABLE (CCosts.xlsx)
+        # создадим составной ключ, который должен быть уникальным (Категория + ФН + ГОД)
+        field_part1 = myconstants.CATEGS_COST_TABLE_UNIQ_KEY_FIELD1
+        field_part2 = myconstants.CATEGS_COST_TABLE_UNIQ_KEY_FIELD2
+        field_part3 = myconstants.CATEGS_COST_TABLE_UNIQ_KEY_FIELD3
+        parameter_df[unique_key_field] = parameter_df[field_part1].astype(str) + " -> " + parameter_df[field_part2].astype(str) + " -> " + parameter_df[field_part3].astype(str)
 
     # Если указано, что есть поле с кодом "проекта", то подменим его коротким значением
     project_name_field = myconstants.PARAMETERS_ALL_TABLES[tablename][2]
@@ -193,10 +212,6 @@ def load_parameter_table(tablename):
     # Уберём строки, у которых ключевое поле - пустая строка
     parameter_df[unique_key_field].fillna("", inplace=True)
     parameter_df = parameter_df[parameter_df[unique_key_field] != ""]
-
-    for one_field_name in myconstants.DATA_TRANSFORMATION.keys():
-        if one_field_name in parameter_df.columns:
-            parameter_df = parameter_df.astype({one_field_name: myconstants.DATA_TRANSFORMATION[one_field_name]})
 
     # Проверим на наличие дубликатов
     if parameter_df.duplicated([unique_key_field]).sum() > 0:
