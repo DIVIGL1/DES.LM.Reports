@@ -61,6 +61,9 @@ class MyExcel:
 
     def save_report(self):
         self.oexcel.Calculation = self.save_excel_calc_status
+        for curr_sheet_name in self.get_sheets_list():
+            if curr_sheet_name[-1] == myconstants.REPLACE_EQ_SHEET_MARKER:
+                self.work_book.Sheets[curr_sheet_name].Cells.Replace(What="=", Replacement="=", FormulaVersion=1)
         if self.report_parameters.p_save_without_formulas:
             for curr_sheet_name in self.get_sheets_list():
                 if curr_sheet_name not in myconstants.SHEETS_DONT_DELETE_FORMULAS:
