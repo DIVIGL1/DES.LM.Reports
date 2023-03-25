@@ -313,6 +313,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             (self.LoadDataFromDESLM, "download", True, False),
             ("", "----------------------------"),
             (self.EditReportForm, "edit_report_template", True, show_on_tool_bar),
+            (self.OpenLastReport, "last_report", True, True),
             (self.EditRawFile, "edit_raw", True, show_on_tool_bar),
             (self.MoveRawFile2Archive, "archive", True, True),
             ("", "----------------------------"),
