@@ -1,4 +1,5 @@
 import win32com.client
+import logging
 import myconstants
 import myutils
 
@@ -87,14 +88,17 @@ class MyExcel:
 
     def __del__(self):
         if self.not_ready:
+            logging.debug(' MyExcel.__del__: do nothing.')
             pass
         else:
             if not self.report_prepared:
+                logging.debug(' MyExcel.__del__: not self.report_prepared.')
                 self.oexcel.Calculation = self.save_excel_calc_status
                 self.work_book.Close()
                 myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
             else:
                 # Отчёт был подготовлен. Закончим его обработку.
+                logging.debug(' MyExcel.__del__: Report was prepared.')
                 report_prepared_name = self.report_parameters.report_prepared_name
                 self.report_parameters.parent.mainwindow.set_status_bar_text("Отчёт сформирован. Идёт сохранение...")
                 self.report_parameters.parent.mainwindow.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
@@ -103,7 +107,9 @@ class MyExcel:
                 # -----------------------------------
                 # Произведём пересчёт ячеек иначе, если не сработают формулы
                 # используемые для проставления признаков скрываемых/удаляемых строк/столбцов.
+                logging.debug(' MyExcel.__del__: Recalculating.')
                 self.oexcel.Calculate()
+                logging.debug(' MyExcel.__del__: Ready to hide and delete rows and columns.')
                 self.hide_and_delete_rows_and_columns()
 
                 # Скроем вспомогательные листы:
@@ -130,8 +136,11 @@ class MyExcel:
         self.oexcel.DisplayAlerts = self.save_DisplayAlerts
 
     def hide_and_delete_rows_and_columns(self):
+        logging.debug(' MyExcel.__del__.hide_and_delete_rows_and_columns. Entered the procedure.')
         for curr_sheet_name in self.get_sheets_list():
+            logging.debug(' MyExcel.__del__.hide_and_delete_rows_and_columns. Iterating over sheets:')
             if curr_sheet_name not in myconstants.SHEETS_DONT_DELETE_FORMULAS:
+                logging.debug(f' MyExcel.__del__.hide_and_delete_rows_and_columns. Sheet: {curr_sheet_name}')
                 row_counter = 0
                 p_found_first_row = False
                 last_row_4_test = myconstants.PARAMETER_MAX_ROWS_TEST_IN_REPORT
@@ -139,6 +148,7 @@ class MyExcel:
                     self.work_book.Sheets[curr_sheet_name].Range(self.work_book.Sheets[curr_sheet_name].Cells(1, 1), self.work_book.Sheets[curr_sheet_name].Cells(last_row_4_test, 1)).Value
 
                 # Ищем первый признак 'delete'
+                logging.debug(f' MyExcel.__del__.hide_and_delete_rows_and_columns. Looking for DELETE_ROW_MARKER')
                 for row_counter in range(len(range_from_excel)):
                     row_del_flag_value = range_from_excel[row_counter][0]
                     if row_del_flag_value is None:
@@ -151,7 +161,10 @@ class MyExcel:
                             p_found_first_row = True
                             break
 
-                if p_found_first_row:
+                if not p_found_first_row:
+                    logging.debug(f' MyExcel.__del__.hide_and_delete_rows_and_columns. p_found_first_row == False')
+                else:
+                    logging.debug(f' MyExcel.__del__.hide_and_delete_rows_and_columns. p_found_first_row == True')
                     first_row_with_del = row_counter + 1
                     last_row_with_del = row_counter
                     while last_row_with_del < len(range_from_excel):
@@ -163,13 +176,18 @@ class MyExcel:
                     self.work_book.Sheets[curr_sheet_name].Range(self.work_book.Sheets[curr_sheet_name].Cells(
                         first_row_with_del, 1), self.work_book.Sheets[curr_sheet_name].Cells(last_row_with_del, 1)).Rows.EntireRow.Delete()
         # -----------------------------------
-                if curr_sheet_name not in [myconstants.RAW_DATA_SHEET_NAME, myconstants.UNIQE_LISTS_SHEET_NAME, myconstants.SETTINGS_SHEET_NAME]:
+                if curr_sheet_name in [myconstants.RAW_DATA_SHEET_NAME, myconstants.UNIQE_LISTS_SHEET_NAME, myconstants.SETTINGS_SHEET_NAME]:
+                    logging.debug(f' MyExcel.__del__.hide_and_delete_rows_and_columns. UnProcessing sheet.')
+                else:
+                    logging.debug(f' MyExcel.__del__.hide_and_delete_rows_and_columns. Hiding rows.')
                     # Скрываем строки с признаком 'hide'
                     for curr_row in range(1, myconstants.NUM_ROWS_FOR_HIDE + 1):
                         cell_value = self.work_book.Sheets[curr_sheet_name].Cells(curr_row, 1).Value
                         if type(cell_value) == str and cell_value is not None and cell_value.replace(" ", "") == myconstants.HIDE_MARKER:
                             pass
                             self.work_book.Sheets[curr_sheet_name].Rows(curr_row).Hidden = True
+
+                    logging.debug(f' MyExcel.__del__.hide_and_delete_rows_and_columns. Hiding columns.')
                     # Скрываем столбцы с признаком 'hide'
                     for curr_col in range(1, myconstants.NUM_COLUMNS_FOR_HIDE + 1):
                         cell_value = self.work_book.Sheets[curr_sheet_name].Cells(1, curr_col).Value
