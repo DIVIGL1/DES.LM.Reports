@@ -61,30 +61,50 @@ class MyExcel:
         return [one_sheet.Name for one_sheet in self.work_book.Sheets]
 
     def save_report(self):
+        logging.debug(' MyExcel.save_report: Let`s recalc.')
         self.oexcel.Calculation = self.save_excel_calc_status
         for curr_sheet_name in self.get_sheets_list():
             if curr_sheet_name[-1] == myconstants.REPLACE_EQ_SHEET_MARKER:
                 self.work_book.Sheets[curr_sheet_name].Cells.Replace(What="=", Replacement="=", FormulaVersion=1)
+        logging.debug(f' MyExcel.save_report: Save without formulas == {self.report_parameters.p_save_without_formulas}.')
         if self.report_parameters.p_save_without_formulas:
             for curr_sheet_name in self.get_sheets_list():
+                logging.debug(f' MyExcel.save_report: Replace formulas with values on sheet {curr_sheet_name}.')
                 if curr_sheet_name not in myconstants.SHEETS_DONT_DELETE_FORMULAS:
+                    logging.debug(f' MyExcel.save_report: stage 1.')
                     column1 = self.work_book.Sheets[curr_sheet_name].UsedRange.Column
+                    logging.debug(f' MyExcel.save_report: stage 2.')
                     column2 = self.work_book.Sheets[curr_sheet_name].UsedRange.Columns(self.work_book.Sheets[curr_sheet_name].UsedRange.Columns.Count).Column
-                    
+
+                    logging.debug(f' MyExcel.save_report: stage 3.')
                     row1 = self.work_book.Sheets[curr_sheet_name].UsedRange.Row
+                    logging.debug(f' MyExcel.save_report: stage 4.')
                     row2 = self.work_book.Sheets[curr_sheet_name].UsedRange.Rows(self.work_book.Sheets[curr_sheet_name].UsedRange.Rows.Count).Row
                     
+                    logging.debug(f' MyExcel.save_report: stage 5.')
                     cell1 = self.work_book.Sheets[curr_sheet_name].Cells(row1 + 3, column1).Address
+                    logging.debug(f' MyExcel.save_report: stage 6.')
                     cell2 = self.work_book.Sheets[curr_sheet_name].Cells(row2, column2).Address
-                    
+
+                    logging.debug(f' MyExcel.save_report: stage 7. cell1 = {cell1}  cell2 = {cell2}')
                     self.work_book.Sheets[curr_sheet_name].Range(cell1, cell2).Value = self.work_book.Sheets[curr_sheet_name].Range(cell1, cell2).Value
-            
+                    logging.debug(f' MyExcel.save_report: End processing sheet {curr_sheet_name}.')
+                else:
+                    logging.debug(f' MyExcel.save_report: No need to replace formulas for sheet {curr_sheet_name}.')
+
+            logging.debug(f' MyExcel.save_report: Delete raw data sheet == {self.report_parameters.p_delete_rawdata_sheet}.')
             if self.report_parameters.p_delete_rawdata_sheet:
                 for one_sheet_name in myconstants.DELETE_SHEETS_LIST_IF_NO_FORMULAS:
+                    logging.debug(f' MyExcel.save_report: Sheet {one_sheet_name}.')
                     if one_sheet_name in self.get_sheets_list():
+                        logging.debug(f' MyExcel.save_report: Deleting sheet {one_sheet_name}.')
                         self.work_book.Sheets[one_sheet_name].Delete()
+                    else:
+                        logging.debug(f' MyExcel.save_report: Sheet {one_sheet_name} no need to delete.')
 
+        logging.debug(' MyExcel.save_report: Before call Excel.save().')
         self.work_book.Save()
+        logging.debug(' MyExcel.save_report: After call Excel.save().')
 
     def __del__(self):
         if self.not_ready:
@@ -111,15 +131,19 @@ class MyExcel:
                 self.oexcel.Calculate()
                 logging.debug(' MyExcel.__del__: Ready to hide and delete rows and columns.')
                 self.hide_and_delete_rows_and_columns()
+                logging.debug(' MyExcel.__del__: Hide_and_delete_rows_and_columns was processed.')
 
                 # Скроем вспомогательные листы:
+                logging.debug(' MyExcel.__del__: Hiding some sheets.')
                 if myconstants.UNIQE_LISTS_SHEET_NAME in self.get_sheets_list():
                     self.work_book.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME].Visible = False
                 
                 if myconstants.SETTINGS_SHEET_NAME in self.get_sheets_list():
                     self.work_book.Sheets[myconstants.SETTINGS_SHEET_NAME].Visible = False
 
+                logging.debug(' MyExcel.__del__: Let`s save report.')
                 self.save_report()
+                logging.debug(' MyExcel.__del__: Report was saved.')
 
                 self.report_parameters.parent.mainwindow.add_text_to_log_box("Отчёт сохранён.")
                 myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, report_prepared_name)
@@ -139,7 +163,7 @@ class MyExcel:
         logging.debug(' MyExcel.__del__.hide_and_delete_rows_and_columns. Entered the procedure.')
         for curr_sheet_name in self.get_sheets_list():
             logging.debug(' MyExcel.__del__.hide_and_delete_rows_and_columns. Iterating over sheets:')
-            if curr_sheet_name not in myconstants.SHEETS_DONT_DELETE_FORMULAS:
+            if curr_sheet_name not in myconstants.SHEETS_DONT_DELETE_FORMULAS and curr_sheet_name[-1] != "-":
                 logging.debug(f' MyExcel.__del__.hide_and_delete_rows_and_columns. Sheet: {curr_sheet_name}')
                 row_counter = 0
                 p_found_first_row = False
@@ -196,3 +220,4 @@ class MyExcel:
                         else:
                             pass
         # -----------------------------------
+        logging.debug(f' MyExcel.__del__.hide_and_delete_rows_and_columns. End of function.')
