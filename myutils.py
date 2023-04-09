@@ -416,6 +416,7 @@ def get_data_using_url(mainwindow=None, year=None, month1=1, month2=None, create
         text_2_main_window(mainwindow, "         Объединяем данные в один файл...")
         df = dfs["plan"].append(dfs["fact"])
         df.drop_duplicates(inplace=True)
+        df["Пользователь"] = df["Пользователь"] + " "
 
         df.fillna("", inplace=True)
         df.replace(myconstants.BOOLEAN_VALUES_SUBST, inplace=True)
@@ -431,9 +432,6 @@ def get_data_using_url(mainwindow=None, year=None, month1=1, month2=None, create
 
         only_filename = f"{cdt.year:04}-{cdt.month:02}-{cdt.day:02} {cdt.hour:02}-{cdt.minute:02}-{cdt.second:02}  DES.LM.Reports ({data_in_file_period})" + myconstants.EXCEL_FILES_ENDS
         filename = os.path.join(get_download_dir(), only_filename)
-
-        # with open(filename, "wb") as file:
-        #     file.write(rs.content)
 
         text_2_main_window(mainwindow, "         Сохраняем загруженные данные...")
         df.to_excel(filename, engine='openpyxl', index=False)
