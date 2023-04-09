@@ -74,7 +74,9 @@ class MyExcel:
                     logging.debug(f' MyExcel.save_report: stage 1.')
                     column1 = self.work_book.Sheets[curr_sheet_name].UsedRange.Column
                     logging.debug(f' MyExcel.save_report: stage 2.')
+                    logging.debug(f' MyExcel.save_report: stage 7. self.work_book.Sheets[curr_sheet_name].UsedRange.Columns.Count = {self.work_book.Sheets[curr_sheet_name].UsedRange.Columns.Count}')
                     column2 = self.work_book.Sheets[curr_sheet_name].UsedRange.Columns(self.work_book.Sheets[curr_sheet_name].UsedRange.Columns.Count).Column
+                    logging.debug(f' MyExcel.save_report: stage 7. column2 = {column2}')
 
                     logging.debug(f' MyExcel.save_report: stage 3.')
                     row1 = self.work_book.Sheets[curr_sheet_name].UsedRange.Row
