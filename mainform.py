@@ -98,7 +98,10 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             # Открываем последний сгенерированный отчёт.
             last_report_filename = load_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT)
             if last_report_filename:
-                open_file_in_application(last_report_filename)
+                if os.path.isfile(last_report_filename):
+                    open_file_in_application(last_report_filename)
+                else:
+                    print(f"Report file is missing: {last_report_filename}")
 
     def open_report_form(self):
         # Открываем шаблон отчётной формы:
@@ -566,6 +569,9 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
             self.add_text_to_log_box("[ logging = DEBUG ]")
 
+        if os.path.isfile("_tmp_DUP.txt"):
+            self.add_text_to_log_box("[ загрузка настроек, emails и отчётов блокируется]")
+
         self.add_text_to_log_box("")
 
         self.add_text_to_log_box("> " + myconstants.PARAMETER_WAITING_USER_ACTION)
@@ -681,6 +687,9 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
 
             if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
                 self.add_text_to_log_box("[ logging = DEBUG ]")
+
+            if os.path.isfile("_tmp_DUP.txt"):
+                self.add_text_to_log_box("[ загрузка настроек, emails и отчётов блокируется]")
 
             self.add_text_to_log_box("")
 

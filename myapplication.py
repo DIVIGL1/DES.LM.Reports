@@ -121,7 +121,7 @@ class MyApplication:
     report_automation_in_process = False
 
     def __init__(self):
-        myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
+        # myutils.save_param(myconstants.PARAMETER_FILENAME_OF_LAST_REPORT, "")
 
         # Проверим наличие необходимых папок и если их нет, то создадим
         for one_section_name, _ in myconstants.REQUIRED_SYSTEM_SECTIONS:
