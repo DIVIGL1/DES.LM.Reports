@@ -229,6 +229,18 @@ class Ui_MainWindow(object):
 "будут исключены из отчета.")
         self.checkBoxDeleteVIP.setStatusTip("")
         self.checkBoxDeleteVIP.setWhatsThis("")
+        self.checkBoxDeleteVIP.setStyleSheet("QCheckBox::indicator {\n"
+"    border: 1px solid rgb(100, 100, 100);\n"
+"    width: 10px;\n"
+"    height: 10px;\n"
+"    border-radius: 0px;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"    border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: rgb(55, 55, 55);\n"
+"}\n"
+"")
         self.checkBoxDeleteVIP.setText("Убрать VIP")
         self.checkBoxDeleteVIP.setChecked(True)
         self.checkBoxDeleteVIP.setObjectName("checkBoxDeleteVIP")
@@ -248,6 +260,18 @@ class Ui_MainWindow(object):
         self.checkBoxCurrMonthAHalf.setWhatsThis("")
         self.checkBoxCurrMonthAHalf.setAccessibleName("")
         self.checkBoxCurrMonthAHalf.setAccessibleDescription("")
+        self.checkBoxCurrMonthAHalf.setStyleSheet("QCheckBox::indicator {\n"
+"    border: 1px solid rgb(100, 100, 100);\n"
+"    width: 10px;\n"
+"    height: 10px;\n"
+"    border-radius: 0px;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"    border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: rgb(55, 55, 55);\n"
+"}\n"
+"")
         self.checkBoxCurrMonthAHalf.setText("Текущий месяц 50%")
         self.checkBoxCurrMonthAHalf.setChecked(True)
         self.checkBoxCurrMonthAHalf.setObjectName("checkBoxCurrMonthAHalf")
@@ -267,6 +291,18 @@ class Ui_MainWindow(object):
         self.checkBoxDeleteNotProduct.setWhatsThis("")
         self.checkBoxDeleteNotProduct.setAccessibleName("")
         self.checkBoxDeleteNotProduct.setAccessibleDescription("")
+        self.checkBoxDeleteNotProduct.setStyleSheet("QCheckBox::indicator {\n"
+"    border: 1px solid rgb(100, 100, 100);\n"
+"    width: 10px;\n"
+"    height: 10px;\n"
+"    border-radius: 0px;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"    border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: rgb(55, 55, 55);\n"
+"}\n"
+"")
         self.checkBoxDeleteNotProduct.setText("Оставить только производство")
         self.checkBoxDeleteNotProduct.setChecked(True)
         self.checkBoxDeleteNotProduct.setObjectName("checkBoxDeleteNotProduct")
@@ -281,6 +317,18 @@ class Ui_MainWindow(object):
         self.checkBoxOnlyProjectsWithAdd.setWhatsThis("")
         self.checkBoxOnlyProjectsWithAdd.setAccessibleName("")
         self.checkBoxOnlyProjectsWithAdd.setAccessibleDescription("")
+        self.checkBoxOnlyProjectsWithAdd.setStyleSheet("QCheckBox::indicator {\n"
+"    border: 1px solid rgb(100, 100, 100);\n"
+"    width: 10px;\n"
+"    height: 10px;\n"
+"    border-radius: 0px;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"    border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: rgb(55, 55, 55);\n"
+"}\n"
+"")
         self.checkBoxOnlyProjectsWithAdd.setText("Оставить только проекты с доп иформацией")
         self.checkBoxOnlyProjectsWithAdd.setChecked(False)
         self.checkBoxOnlyProjectsWithAdd.setObjectName("checkBoxOnlyProjectsWithAdd")
@@ -299,6 +347,18 @@ class Ui_MainWindow(object):
 "то это проект попадаёт в отчёт только если установлен этот параметр\n"
 "(используется не во всех отчётах)")
         self.checkBoxAddProjectsWithAdd.setStatusTip("")
+        self.checkBoxAddProjectsWithAdd.setStyleSheet("QCheckBox::indicator {\n"
+"    border: 1px solid rgb(100, 100, 100);\n"
+"    width: 10px;\n"
+"    height: 10px;\n"
+"    border-radius: 0px;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"    border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: rgb(55, 55, 55);\n"
+"}\n"
+"")
         self.checkBoxAddProjectsWithAdd.setText("... и включить все строки из файла в отчёт")
         self.checkBoxAddProjectsWithAdd.setObjectName("checkBoxAddProjectsWithAdd")
         self.verticalLayout.addWidget(self.checkBoxAddProjectsWithAdd)
@@ -307,6 +367,18 @@ class Ui_MainWindow(object):
         self.checkBoxSelectUsers.setWhatsThis("")
         self.checkBoxSelectUsers.setAccessibleName("")
         self.checkBoxSelectUsers.setAccessibleDescription("")
+        self.checkBoxSelectUsers.setStyleSheet("QCheckBox::indicator {\n"
+"    border: 1px solid rgb(100, 100, 100);\n"
+"    width: 10px;\n"
+"    height: 10px;\n"
+"    border-radius: 0px;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"    border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: rgb(55, 55, 55);\n"
+"}\n"
+"")
         self.checkBoxSelectUsers.setText("Выбрать только людей из группы")
         self.checkBoxSelectUsers.setObjectName("checkBoxSelectUsers")
         self.verticalLayout.addWidget(self.checkBoxSelectUsers)
@@ -336,6 +408,18 @@ class Ui_MainWindow(object):
         self.checkBoxDeleteWithoutFact.setWhatsThis("")
         self.checkBoxDeleteWithoutFact.setAccessibleName("")
         self.checkBoxDeleteWithoutFact.setAccessibleDescription("")
+        self.checkBoxDeleteWithoutFact.setStyleSheet("QCheckBox::indicator {\n"
+"    border: 1px solid rgb(100, 100, 100);\n"
+"    width: 10px;\n"
+"    height: 10px;\n"
+"    border-radius: 0px;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"    border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: rgb(55, 55, 55);\n"
+"}\n"
+"")
         self.checkBoxDeleteWithoutFact.setText("Удалить строки с нулевым фактом")
         self.checkBoxDeleteWithoutFact.setChecked(True)
         self.checkBoxDeleteWithoutFact.setObjectName("checkBoxDeleteWithoutFact")
@@ -353,6 +437,18 @@ class Ui_MainWindow(object):
         self.checkBoxDelPDn.setWhatsThis("")
         self.checkBoxDelPDn.setAccessibleName("")
         self.checkBoxDelPDn.setAccessibleDescription("")
+        self.checkBoxDelPDn.setStyleSheet("QCheckBox::indicator {\n"
+"    border: 1px solid rgb(100, 100, 100);\n"
+"    width: 10px;\n"
+"    height: 10px;\n"
+"    border-radius: 0px;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"    border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: rgb(55, 55, 55);\n"
+"}\n"
+"")
         self.checkBoxDelPDn.setText("Удалить проекты с ПерсДанными")
         self.checkBoxDelPDn.setChecked(True)
         self.checkBoxDelPDn.setObjectName("checkBoxDelPDn")
@@ -370,11 +466,52 @@ class Ui_MainWindow(object):
         self.checkBoxDeleteVac.setWhatsThis("")
         self.checkBoxDeleteVac.setAccessibleName("")
         self.checkBoxDeleteVac.setAccessibleDescription("")
-        self.checkBoxDeleteVac.setText("Удалить данные о вакансиях из отчёта")
+        self.checkBoxDeleteVac.setStyleSheet("QCheckBox::indicator {\n"
+"    border: 1px solid rgb(100, 100, 100);\n"
+"    width: 10px;\n"
+"    height: 10px;\n"
+"    border-radius: 0px;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"    border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: rgb(55, 55, 55);\n"
+"}\n"
+"")
+        self.checkBoxDeleteVac.setText("Удалить данные о \"Вакансиях\" из отчёта")
         self.checkBoxDeleteVac.setChecked(True)
         self.checkBoxDeleteVac.setObjectName("checkBoxDeleteVac")
         self.verticalLayout.addWidget(self.checkBoxDeleteVac)
+        self.checkBoxDeletePodr = QtWidgets.QCheckBox(self.layoutWidget)
+        self.checkBoxDeletePodr.setStyleSheet("QCheckBox::indicator {\n"
+"    border: 1px solid rgb(100, 100, 100);\n"
+"    width: 10px;\n"
+"    height: 10px;\n"
+"    border-radius: 0px;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"    border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: rgb(55, 55, 55);\n"
+"}\n"
+"")
+        self.checkBoxDeletePodr.setText("Удалить данные о \"Подрядчиках\" из отчёта")
+        self.checkBoxDeletePodr.setChecked(True)
+        self.checkBoxDeletePodr.setObjectName("checkBoxDeletePodr")
+        self.verticalLayout.addWidget(self.checkBoxDeletePodr)
         self.checkBoxDistributeABH = QtWidgets.QCheckBox(self.layoutWidget)
+        self.checkBoxDistributeABH.setStyleSheet("QCheckBox::indicator {\n"
+"    border: 1px solid rgb(100, 100, 100);\n"
+"    width: 10px;\n"
+"    height: 10px;\n"
+"    border-radius: 0px;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"    border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: rgb(55, 55, 55);\n"
+"}\n"
+"")
         self.checkBoxDistributeABH.setObjectName("checkBoxDistributeABH")
         self.verticalLayout.addWidget(self.checkBoxDistributeABH)
         self.checkBoxAddVFTE = QtWidgets.QCheckBox(self.layoutWidget)
@@ -391,6 +528,18 @@ class Ui_MainWindow(object):
         self.checkBoxAddVFTE.setWhatsThis("")
         self.checkBoxAddVFTE.setAccessibleName("")
         self.checkBoxAddVFTE.setAccessibleDescription("")
+        self.checkBoxAddVFTE.setStyleSheet("QCheckBox::indicator {\n"
+"    border: 1px solid rgb(100, 100, 100);\n"
+"    width: 10px;\n"
+"    height: 10px;\n"
+"    border-radius: 0px;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"    border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: rgb(55, 55, 55);\n"
+"}\n"
+"")
         self.checkBoxAddVFTE.setText("Добавить к данным искусственные FTE")
         self.checkBoxAddVFTE.setChecked(True)
         self.checkBoxAddVFTE.setObjectName("checkBoxAddVFTE")
@@ -412,6 +561,18 @@ class Ui_MainWindow(object):
         self.checkBoxSaveWithOutFotmulas.setWhatsThis("")
         self.checkBoxSaveWithOutFotmulas.setAccessibleName("")
         self.checkBoxSaveWithOutFotmulas.setAccessibleDescription("")
+        self.checkBoxSaveWithOutFotmulas.setStyleSheet("QCheckBox::indicator {\n"
+"    border: 1px solid rgb(100, 100, 100);\n"
+"    width: 10px;\n"
+"    height: 10px;\n"
+"    border-radius: 0px;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"    border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: rgb(55, 55, 55);\n"
+"}\n"
+"")
         self.checkBoxSaveWithOutFotmulas.setText("Сохранить только значения (без формул)")
         self.checkBoxSaveWithOutFotmulas.setChecked(True)
         self.checkBoxSaveWithOutFotmulas.setObjectName("checkBoxSaveWithOutFotmulas")
@@ -434,6 +595,18 @@ class Ui_MainWindow(object):
         self.checkBoxDelRawData.setWhatsThis("")
         self.checkBoxDelRawData.setAccessibleName("")
         self.checkBoxDelRawData.setAccessibleDescription("")
+        self.checkBoxDelRawData.setStyleSheet("QCheckBox::indicator {\n"
+"    border: 1px solid rgb(100, 100, 100);\n"
+"    width: 10px;\n"
+"    height: 10px;\n"
+"    border-radius: 0px;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"    border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: rgb(55, 55, 55);\n"
+"}\n"
+"")
         self.checkBoxDelRawData.setText("Удалить лист с данными в файле отчета")
         self.checkBoxDelRawData.setChecked(True)
         self.checkBoxDelRawData.setObjectName("checkBoxDelRawData")
@@ -456,15 +629,22 @@ class Ui_MainWindow(object):
         self.checkBoxOpenExcel.setWhatsThis("")
         self.checkBoxOpenExcel.setAccessibleName("")
         self.checkBoxOpenExcel.setAccessibleDescription("")
+        self.checkBoxOpenExcel.setStyleSheet("QCheckBox::indicator {\n"
+"    border: 1px solid rgb(100, 100, 100);\n"
+"    width: 10px;\n"
+"    height: 10px;\n"
+"    border-radius: 0px;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"    border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: rgb(55, 55, 55);\n"
+"}\n"
+"")
         self.checkBoxOpenExcel.setText("Сразу открыть в Excel полученный отчет")
         self.checkBoxOpenExcel.setChecked(True)
         self.checkBoxOpenExcel.setObjectName("checkBoxOpenExcel")
         self.verticalLayout.addWidget(self.checkBoxOpenExcel)
-        self.line = QtWidgets.QFrame(self.layoutWidget)
-        self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.line.setObjectName("line")
-        self.verticalLayout.addWidget(self.line)
         self.leftBox.addLayout(self.verticalLayout)
         self.layoutWidget3 = QtWidgets.QWidget(self.VerticalSplitter)
         self.layoutWidget3.setObjectName("layoutWidget3")
@@ -504,6 +684,11 @@ class Ui_MainWindow(object):
         self.plainTextEdit.setObjectName("plainTextEdit")
         self.rightBox.addWidget(self.plainTextEdit)
         self.gridLayout.addWidget(self.VerticalSplitter, 0, 0, 1, 1)
+        self.line = QtWidgets.QFrame(self.centralwidget)
+        self.line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line.setObjectName("line")
+        self.gridLayout.addWidget(self.line, 1, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QtWidgets.QMenuBar(MainWindow)
         self.menuBar.setGeometry(QtCore.QRect(0, 0, 816, 21))

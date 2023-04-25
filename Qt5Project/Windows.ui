@@ -458,6 +458,20 @@
               <property name="whatsThis">
                <string notr="true"/>
               </property>
+              <property name="styleSheet">
+               <string notr="true">QCheckBox::indicator {
+    border: 1px solid rgb(100, 100, 100);
+    width: 10px;
+    height: 10px;
+    border-radius: 0px;
+    background-color: rgb(255, 255, 255);
+}
+QCheckBox::indicator:checked {
+    border: 1px solid rgb(0, 0, 0);
+    background-color: rgb(55, 55, 55);
+}
+</string>
+              </property>
               <property name="text">
                <string notr="true">Убрать VIP</string>
               </property>
@@ -494,6 +508,20 @@
               </property>
               <property name="accessibleDescription">
                <string notr="true"/>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QCheckBox::indicator {
+    border: 1px solid rgb(100, 100, 100);
+    width: 10px;
+    height: 10px;
+    border-radius: 0px;
+    background-color: rgb(255, 255, 255);
+}
+QCheckBox::indicator:checked {
+    border: 1px solid rgb(0, 0, 0);
+    background-color: rgb(55, 55, 55);
+}
+</string>
               </property>
               <property name="text">
                <string notr="true">Текущий месяц 50%</string>
@@ -533,6 +561,20 @@
             <property name="accessibleDescription">
              <string notr="true"/>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QCheckBox::indicator {
+    border: 1px solid rgb(100, 100, 100);
+    width: 10px;
+    height: 10px;
+    border-radius: 0px;
+    background-color: rgb(255, 255, 255);
+}
+QCheckBox::indicator:checked {
+    border: 1px solid rgb(0, 0, 0);
+    background-color: rgb(55, 55, 55);
+}
+</string>
+            </property>
             <property name="text">
              <string notr="true">Оставить только производство</string>
             </property>
@@ -561,6 +603,20 @@
             </property>
             <property name="accessibleDescription">
              <string notr="true"/>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QCheckBox::indicator {
+    border: 1px solid rgb(100, 100, 100);
+    width: 10px;
+    height: 10px;
+    border-radius: 0px;
+    background-color: rgb(255, 255, 255);
+}
+QCheckBox::indicator:checked {
+    border: 1px solid rgb(0, 0, 0);
+    background-color: rgb(55, 55, 55);
+}
+</string>
             </property>
             <property name="text">
              <string notr="true">Оставить только проекты с доп иформацией</string>
@@ -596,6 +652,20 @@
             <property name="statusTip">
              <string notr="true"/>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QCheckBox::indicator {
+    border: 1px solid rgb(100, 100, 100);
+    width: 10px;
+    height: 10px;
+    border-radius: 0px;
+    background-color: rgb(255, 255, 255);
+}
+QCheckBox::indicator:checked {
+    border: 1px solid rgb(0, 0, 0);
+    background-color: rgb(55, 55, 55);
+}
+</string>
+            </property>
             <property name="text">
              <string notr="true">... и включить все строки из файла в отчёт</string>
             </property>
@@ -625,6 +695,20 @@
             </property>
             <property name="accessibleDescription">
              <string notr="true"/>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QCheckBox::indicator {
+    border: 1px solid rgb(100, 100, 100);
+    width: 10px;
+    height: 10px;
+    border-radius: 0px;
+    background-color: rgb(255, 255, 255);
+}
+QCheckBox::indicator:checked {
+    border: 1px solid rgb(0, 0, 0);
+    background-color: rgb(55, 55, 55);
+}
+</string>
             </property>
             <property name="text">
              <string notr="true">Выбрать только людей из группы</string>
@@ -678,6 +762,20 @@
             <property name="accessibleDescription">
              <string notr="true"/>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QCheckBox::indicator {
+    border: 1px solid rgb(100, 100, 100);
+    width: 10px;
+    height: 10px;
+    border-radius: 0px;
+    background-color: rgb(255, 255, 255);
+}
+QCheckBox::indicator:checked {
+    border: 1px solid rgb(0, 0, 0);
+    background-color: rgb(55, 55, 55);
+}
+</string>
+            </property>
             <property name="text">
              <string notr="true">Удалить строки с нулевым фактом</string>
             </property>
@@ -712,6 +810,20 @@
             </property>
             <property name="accessibleDescription">
              <string notr="true"/>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QCheckBox::indicator {
+    border: 1px solid rgb(100, 100, 100);
+    width: 10px;
+    height: 10px;
+    border-radius: 0px;
+    background-color: rgb(255, 255, 255);
+}
+QCheckBox::indicator:checked {
+    border: 1px solid rgb(0, 0, 0);
+    background-color: rgb(55, 55, 55);
+}
+</string>
             </property>
             <property name="text">
              <string notr="true">Удалить проекты с ПерсДанными</string>
@@ -748,8 +860,46 @@
             <property name="accessibleDescription">
              <string notr="true"/>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QCheckBox::indicator {
+    border: 1px solid rgb(100, 100, 100);
+    width: 10px;
+    height: 10px;
+    border-radius: 0px;
+    background-color: rgb(255, 255, 255);
+}
+QCheckBox::indicator:checked {
+    border: 1px solid rgb(0, 0, 0);
+    background-color: rgb(55, 55, 55);
+}
+</string>
+            </property>
             <property name="text">
-             <string notr="true">Удалить данные о вакансиях из отчёта</string>
+             <string notr="true">Удалить данные о &quot;Вакансиях&quot; из отчёта</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBoxDeletePodr">
+            <property name="styleSheet">
+             <string notr="true">QCheckBox::indicator {
+    border: 1px solid rgb(100, 100, 100);
+    width: 10px;
+    height: 10px;
+    border-radius: 0px;
+    background-color: rgb(255, 255, 255);
+}
+QCheckBox::indicator:checked {
+    border: 1px solid rgb(0, 0, 0);
+    background-color: rgb(55, 55, 55);
+}
+</string>
+            </property>
+            <property name="text">
+             <string notr="true">Удалить данные о &quot;Подрядчиках&quot; из отчёта</string>
             </property>
             <property name="checked">
              <bool>true</bool>
@@ -758,6 +908,20 @@
           </item>
           <item>
            <widget class="QCheckBox" name="checkBoxDistributeABH">
+            <property name="styleSheet">
+             <string notr="true">QCheckBox::indicator {
+    border: 1px solid rgb(100, 100, 100);
+    width: 10px;
+    height: 10px;
+    border-radius: 0px;
+    background-color: rgb(255, 255, 255);
+}
+QCheckBox::indicator:checked {
+    border: 1px solid rgb(0, 0, 0);
+    background-color: rgb(55, 55, 55);
+}
+</string>
+            </property>
             <property name="text">
              <string>Распределить АВН на ТСДП</string>
             </property>
@@ -790,6 +954,20 @@
             </property>
             <property name="accessibleDescription">
              <string notr="true"/>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QCheckBox::indicator {
+    border: 1px solid rgb(100, 100, 100);
+    width: 10px;
+    height: 10px;
+    border-radius: 0px;
+    background-color: rgb(255, 255, 255);
+}
+QCheckBox::indicator:checked {
+    border: 1px solid rgb(0, 0, 0);
+    background-color: rgb(55, 55, 55);
+}
+</string>
             </property>
             <property name="text">
              <string notr="true">Добавить к данным искусственные FTE</string>
@@ -829,6 +1007,20 @@
             </property>
             <property name="accessibleDescription">
              <string notr="true"/>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QCheckBox::indicator {
+    border: 1px solid rgb(100, 100, 100);
+    width: 10px;
+    height: 10px;
+    border-radius: 0px;
+    background-color: rgb(255, 255, 255);
+}
+QCheckBox::indicator:checked {
+    border: 1px solid rgb(0, 0, 0);
+    background-color: rgb(55, 55, 55);
+}
+</string>
             </property>
             <property name="text">
              <string notr="true">Сохранить только значения (без формул)</string>
@@ -870,6 +1062,20 @@
             <property name="accessibleDescription">
              <string notr="true"/>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QCheckBox::indicator {
+    border: 1px solid rgb(100, 100, 100);
+    width: 10px;
+    height: 10px;
+    border-radius: 0px;
+    background-color: rgb(255, 255, 255);
+}
+QCheckBox::indicator:checked {
+    border: 1px solid rgb(0, 0, 0);
+    background-color: rgb(55, 55, 55);
+}
+</string>
+            </property>
             <property name="text">
              <string notr="true">Удалить лист с данными в файле отчета</string>
             </property>
@@ -910,18 +1116,25 @@
             <property name="accessibleDescription">
              <string notr="true"/>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QCheckBox::indicator {
+    border: 1px solid rgb(100, 100, 100);
+    width: 10px;
+    height: 10px;
+    border-radius: 0px;
+    background-color: rgb(255, 255, 255);
+}
+QCheckBox::indicator:checked {
+    border: 1px solid rgb(0, 0, 0);
+    background-color: rgb(55, 55, 55);
+}
+</string>
+            </property>
             <property name="text">
              <string notr="true">Сразу открыть в Excel полученный отчет</string>
             </property>
             <property name="checked">
              <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="Line" name="line">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
             </property>
            </widget>
           </item>
@@ -1011,6 +1224,13 @@
         </item>
        </layout>
       </widget>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
      </widget>
     </item>
    </layout>
