@@ -144,6 +144,7 @@ RESULT_DATA_COLUMNS = [
     "CategHCost",
     "CategMCost",
     "BOSS_NAME",
+    "pPodryadchik",
 ]
 
 COLUMNS_TO_SET_ZERO_IF_NULL = [
@@ -478,6 +479,7 @@ NO_PORTFOLIO_TYPES = ["А", "S", "В", "И", "Н"]
 NO_CONTRACT_TEXT = "Не предусмотрен"
 NO_PORTFOLIO_TEXT = "Не предусмотрен"
 VACANCY_NAME_TEXT = "Вакансия"
+PODRYADCHIK_NAME_TEXT = "Подрядчик"
 FIRED_NAME_TEXT = "(Уволен) "
 TEXT_LINES_SEPARATOR = "-" * 110
 PARAMETER_FILENAME_OF_LAST_REPORT = "Последний сформированный отчёт"
@@ -493,6 +495,7 @@ PARAMETER_SAVED_VALUE_SELECT_USERS = "Выбрать только людей и�
 PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT = "Удалять строки не содержащие факта (факт=0)?"
 PARAMETER_SAVED_VALUE_DELETE_PERSDATA = "Удалять проекты с персональными данными?"
 PARAMETER_SAVED_VALUE_DELETE_VAC = "Удалять ли вакансии из отчёта?"
+PARAMETER_SAVED_VALUE_DELETE_PODR = "Удалять ли подрядчиков из отчёта?"
 PARAMETER_SAVED_VALUE_ADD_VFTE = "Добавить к списку сырых данных искусственные FTE?"
 PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS = "Сохранять отчёт без формул?"
 PARAMETER_SAVED_VALUE_DEL_RAWSHEET = "Удалить лист с исходными данными?"
@@ -517,6 +520,7 @@ PARAMETER_SAVED_VALUE_SELECT_USERS_DEFVALUE = False
 PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT_DEFVALUE = False
 PARAMETER_SAVED_VALUE_DELETE_PERSDATA_DEFVALUE = False
 PARAMETER_SAVED_VALUE_DELETE_VAC_DEFVALUE = True
+PARAMETER_SAVED_VALUE_DELETE_PODR_DEFVALUE = True
 PARAMETER_SAVED_VALUE_ADD_VFTE_DEFVALUE = False
 PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS_DEFVALUE = True
 PARAMETER_SAVED_VALUE_DEL_RAWSHEET_DEFVALUE = False
