@@ -134,6 +134,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_EMPTYFACT, self.checkBoxDeleteWithoutFact.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, self.checkBoxDelPDn.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, self.checkBoxDeleteVac.isChecked())
+        save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_PODR, self.checkBoxDeletePodr.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE, self.checkBoxAddVFTE.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_SAVE_WITHOUT_FORMULAS, self.checkBoxSaveWithOutFotmulas.isChecked())
         save_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DEL_RAWSHEET, self.checkBoxDelRawData.isChecked())
@@ -196,6 +197,8 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA, myconstants.PARAMETER_SAVED_VALUE_DELETE_PERSDATA_DEFVALUE))
         self.checkBoxDeleteVac.setChecked(
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC, myconstants.PARAMETER_SAVED_VALUE_DELETE_VAC_DEFVALUE))
+        self.checkBoxDeletePodr.setChecked(
+            load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_DELETE_PODR, myconstants.PARAMETER_SAVED_VALUE_DELETE_PODR_DEFVALUE))
         self.checkBoxAddVFTE.setChecked(
             load_param(s_preff + myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE, myconstants.PARAMETER_SAVED_VALUE_ADD_VFTE_DEFVALUE))
         self.checkBoxSaveWithOutFotmulas.setChecked(
