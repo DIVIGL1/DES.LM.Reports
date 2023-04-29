@@ -92,6 +92,7 @@ def send_df_2_xls(report_parameters):
     p_curr_month_half = report_parameters.p_curr_month_half
     p_delete_pers_data = report_parameters.p_delete_pers_data
     p_delete_vacation = report_parameters.p_delete_vacation
+    p_delete_podryadchik = report_parameters.p_delete_podryadchik
     p_virtual_FTE = report_parameters.p_virtual_FTE
     p_save_without_formulas = report_parameters.p_save_without_formulas
     p_delete_rawdata_sheet = report_parameters.p_delete_rawdata_sheet
@@ -186,6 +187,7 @@ def send_df_2_xls(report_parameters):
             p_curr_month_half,
             p_delete_pers_data,
             p_delete_vacation,
+            p_delete_podryadchik,
             p_virtual_FTE,
             ui_handle
         )

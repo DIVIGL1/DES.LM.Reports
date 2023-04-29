@@ -333,8 +333,8 @@ def udata_2_date(data):
     return ret_date
 
 
-def calc_fact_fte(FactHours, Northern, CHour, NHour, Project, PlanFTE):
-    if Project.find(myconstants.FACT_IS_PLAN_MARKER) >= 0:
+def calc_fact_fte(FactHours, Northern, CHour, NHour, Project, PlanFTE, pFactEqPlan):
+    if Project.find(myconstants.FACT_IS_PLAN_MARKER) >= 0 or pFactEqPlan:
         fact_fte = PlanFTE
     else:
         month_hours = NHour if Northern else CHour
@@ -379,7 +379,10 @@ def add_combine_columns(df):
     df["Pdr_User_ProjSubType"] = df["Division"] + "#" + df["User"] + "#" + df["ProjectSubType"]
     df["Pdr_User_ProjSubType_Month"] = df["Division"] + "#" + df["User"] + "#" + df["ProjectSubType"] + "#" + df["Month"]
 
-    df["pVacasia"] = df["User"].apply(lambda param: True if param.replace(" ", "").lower()[:8] == myconstants.VACANCY_NAME_TEXT.lower() else False)
+    # Сформируем признак того, что этот пользователь - это так обозначена вакансия
+    priznak_len = len(myconstants.VACANCY_NAME_TEXT)
+    priznak_lower = myconstants.VACANCY_NAME_TEXT.lower()
+    df["pVacasia"] = df["User"].apply(lambda param: True if param.replace(" ", "").lower()[:priznak_len] == priznak_lower else False)
 
     df["Portfolio_Month"] = df["Portfolio"] + "#" + df["Month"]
     df["IS_Service_type_Month"] = df["IS_Service_type"] + "#" + df["Month"]
@@ -404,6 +407,7 @@ def prepare_data(
         p_curr_month_half,
         p_delete_pers_data,
         p_delete_vacation,
+        p_delete_podryadchik,
         p_virtual_FTE,
         ui_handle
 ):
@@ -513,6 +517,11 @@ def prepare_data(
         ui_handle.add_text_to_log_box(myconstants.TEXT_LINES_SEPARATOR)
         return None
 
+    # Сформируем признак того, что этот пользователь обозначен как подрядчик
+    priznak_len = len(myconstants.PODRYADCHIK_NAME_TEXT)
+    priznak_lower = myconstants.PODRYADCHIK_NAME_TEXT.lower()
+    data_df["pPodryadchik"] = data_df["User"].apply(lambda param: True if param.replace(" ", "").lower()[:priznak_len] == priznak_lower else False)
+
     if p_add_all_projects_with_add_info and p_delete_without_fact:
         # Эта обработка осуществляется только в случае если "чекнуты" оба checkboxes!
         # Мы должны добавить строку для каждого проекта,
@@ -581,7 +590,7 @@ def prepare_data(
     data_df["PlanFTE"] = data_df["PlanFTE"].fillna(0)
     # Получим не округлённый FTE
     data_df["FactFTEUnRounded"] = \
-        data_df[["FactHours", "Northern", "CHour", "NHour", "Project", "PlanFTE"]].apply(
+        data_df[["FactHours", "Northern", "CHour", "NHour", "Project", "PlanFTE", "pPodryadchik"]].apply(
             lambda param: calc_fact_fte(*param), axis=1)
     # Получим округлённый FTE
     data_df["FactFTE"] = data_df["FactFTEUnRounded"].apply(lambda x: round(x, myconstants.ROUND_FTE_VALUE))
@@ -794,14 +803,24 @@ def prepare_data(
             ui_handle.add_text_to_log_box(f"Исключены не производственные подразделения (всего строк обработанных данных: {data_df.shape[0]})")
 
         if p_delete_vacation:
-            vacancy_text = myconstants.VACANCY_NAME_TEXT
-            vacancy_text = vacancy_text.lower()
+            priznak_text = myconstants.VACANCY_NAME_TEXT
+            priznak_text = priznak_text.lower()
             data_df["User"] = \
                 data_df["User"].apply(
-                    lambda param: vacancy_text if param.replace(" ", "").lower()[:len(vacancy_text)] == vacancy_text else param)
+                    lambda param: priznak_text if param.replace(" ", "").lower()[:len(priznak_text)] == priznak_text else param)
 
-            data_df = data_df[data_df["User"] != vacancy_text]
-            ui_handle.add_text_to_log_box(f"Удалены вакансии (всего строк обработанных данных: {data_df.shape[0]})")
+            data_df = data_df[data_df["User"] != priznak_text]
+            ui_handle.add_text_to_log_box(f"Удалены ВАКАНСИИ (всего строк обработанных данных: {data_df.shape[0]})")
+
+        if p_delete_podryadchik:
+            priznak_text = myconstants.PODRYADCHIK_NAME_TEXT
+            priznak_text = priznak_text.lower()
+            data_df["User"] = \
+                data_df["User"].apply(
+                    lambda param: priznak_text if param.replace(" ", "").lower()[:len(priznak_text)] == priznak_text else param)
+
+            data_df = data_df[data_df["User"] != priznak_text]
+            ui_handle.add_text_to_log_box(f"Удалены ПОДРЯДЧИКИ (всего строк обработанных данных: {data_df.shape[0]})")
 
         add_combine_columns(data_df)
         ui_handle.add_text_to_log_box(f"Добавлены необходимые производные столбцы (конкатенация) (всего строк данных: {data_df.shape[0]})")

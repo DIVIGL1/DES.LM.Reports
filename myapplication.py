@@ -202,6 +202,7 @@ class MyReportParameters:
         self.p_curr_month_half = None
         self.p_delete_pers_data = None
         self.p_delete_vacation = None
+        self.p_delete_podryadchik = None
         self.p_virtual_FTE = None
         self.p_save_without_formulas = None
         self.p_delete_rawdata_sheet = None
@@ -237,6 +238,7 @@ class MyReportParameters:
         self.p_curr_month_half = self.parent.mainwindow.ui.checkBoxCurrMonthAHalf.isChecked()
         self.p_delete_pers_data = self.parent.mainwindow.ui.checkBoxDelPDn.isChecked()
         self.p_delete_vacation = self.parent.mainwindow.ui.checkBoxDeleteVac.isChecked()
+        self.p_delete_podryadchik = self.parent.mainwindow.ui.checkBoxDeletePodr.isChecked()
         self.p_virtual_FTE = self.parent.mainwindow.ui.checkBoxAddVFTE.isChecked()
         self.p_save_without_formulas = self.parent.mainwindow.ui.checkBoxSaveWithOutFotmulas.isChecked()
         self.p_delete_rawdata_sheet = self.parent.mainwindow.ui.checkBoxDelRawData.isChecked()
