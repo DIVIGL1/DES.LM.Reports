@@ -813,13 +813,7 @@ def prepare_data(
             ui_handle.add_text_to_log_box(f"Удалены ВАКАНСИИ (всего строк обработанных данных: {data_df.shape[0]})")
 
         if p_delete_podryadchik:
-            priznak_text = myconstants.PODRYADCHIK_NAME_TEXT
-            priznak_text = priznak_text.lower()
-            data_df["User"] = \
-                data_df["User"].apply(
-                    lambda param: priznak_text if param.replace(" ", "").lower()[:len(priznak_text)] == priznak_text else param)
-
-            data_df = data_df[data_df["User"] != priznak_text]
+            data_df = data_df[data_df["pPodryadchik"] == False]
             ui_handle.add_text_to_log_box(f"Удалены ПОДРЯДЧИКИ (всего строк обработанных данных: {data_df.shape[0]})")
 
         add_combine_columns(data_df)
