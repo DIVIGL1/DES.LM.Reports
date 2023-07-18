@@ -145,7 +145,19 @@ class Ui_MainWindow(object):
         self.radioButtonDD1.setWhatsThis("")
         self.radioButtonDD1.setAccessibleName("")
         self.radioButtonDD1.setAccessibleDescription("")
-        self.radioButtonDD1.setText("только копировать")
+        self.radioButtonDD1.setStyleSheet("QRadioButton::indicator {\n"
+"    border: 1px solid rgb(100, 100, 100);\n"
+"    width: 10px;\n"
+"    height: 10px;\n"
+"    border-radius: 5px;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QRadioButton::indicator:checked {\n"
+"    border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: rgb(55, 55, 55);\n"
+"}\n"
+"")
+        self.radioButtonDD1.setText("скопировать файл")
         self.radioButtonDD1.setChecked(True)
         self.radioButtonDD1.setObjectName("radioButtonDD1")
         self.verticalLayout.addWidget(self.radioButtonDD1)
@@ -157,7 +169,19 @@ class Ui_MainWindow(object):
         self.radioButtonDD2.setWhatsThis("")
         self.radioButtonDD2.setAccessibleName("")
         self.radioButtonDD2.setAccessibleDescription("")
-        self.radioButtonDD2.setText("... и проверять структуру данных")
+        self.radioButtonDD2.setStyleSheet("QRadioButton::indicator {\n"
+"    border: 1px solid rgb(100, 100, 100);\n"
+"    width: 10px;\n"
+"    height: 10px;\n"
+"    border-radius: 5px;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QRadioButton::indicator:checked {\n"
+"    border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: rgb(55, 55, 55);\n"
+"}\n"
+"")
+        self.radioButtonDD2.setText("... а также проверять структуру данных")
         self.radioButtonDD2.setObjectName("radioButtonDD2")
         self.verticalLayout.addWidget(self.radioButtonDD2)
         self.radioButtonDD3 = QtWidgets.QRadioButton(self.layoutWidget)
@@ -170,7 +194,19 @@ class Ui_MainWindow(object):
         self.radioButtonDD3.setWhatsThis("")
         self.radioButtonDD3.setAccessibleName("")
         self.radioButtonDD3.setAccessibleDescription("")
-        self.radioButtonDD3.setText("... и переименовывать результат")
+        self.radioButtonDD3.setStyleSheet("QRadioButton::indicator {\n"
+"    border: 1px solid rgb(100, 100, 100);\n"
+"    width: 10px;\n"
+"    height: 10px;\n"
+"    border-radius: 5px;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QRadioButton::indicator:checked {\n"
+"    border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: rgb(55, 55, 55);\n"
+"}\n"
+"")
+        self.radioButtonDD3.setText("... а также переименовывать результат")
         self.radioButtonDD3.setObjectName("radioButtonDD3")
         self.verticalLayout.addWidget(self.radioButtonDD3)
         self.radioButtonDD4 = QtWidgets.QRadioButton(self.layoutWidget)
@@ -184,7 +220,19 @@ class Ui_MainWindow(object):
         self.radioButtonDD4.setWhatsThis("")
         self.radioButtonDD4.setAccessibleName("")
         self.radioButtonDD4.setAccessibleDescription("")
-        self.radioButtonDD4.setText("... и переименовывать источник")
+        self.radioButtonDD4.setStyleSheet("QRadioButton::indicator {\n"
+"    border: 1px solid rgb(100, 100, 100);\n"
+"    width: 10px;\n"
+"    height: 10px;\n"
+"    border-radius: 5px;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}\n"
+"QRadioButton::indicator:checked {\n"
+"    border: 1px solid rgb(0, 0, 0);\n"
+"    background-color: rgb(55, 55, 55);\n"
+"}\n"
+"")
+        self.radioButtonDD4.setText("... а также переименовывать источник")
         self.radioButtonDD4.setObjectName("radioButtonDD4")
         self.verticalLayout.addWidget(self.radioButtonDD4)
         self.line_2 = QtWidgets.QFrame(self.layoutWidget)
