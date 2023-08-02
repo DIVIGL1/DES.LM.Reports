@@ -145,6 +145,7 @@ RESULT_DATA_COLUMNS = [
     "CategMCost",
     "BOSS_NAME",
     "pPodryadchik",
+    "SupportLevel",
 ]
 
 COLUMNS_TO_SET_ZERO_IF_NULL = [
