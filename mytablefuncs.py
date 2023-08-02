@@ -769,6 +769,7 @@ def prepare_data(
         data_df = data_df.merge(users_categs_list, left_on="JustUserName", right_on="CategUserName", how="left")
         data_df["UCateg4ThisFN"] = data_df.apply(lambda data: append_categories(data), axis=1)
         data_df["UCateg4ThisFN_WasFound"] = data_df.apply(lambda data: append_categories(data, True), axis=1)
+        data_df["SupportLevel"].fillna("???", inplace=True)
 
         data_df["UCateg4ThisFN"].fillna(myconstants.UNKNOWN_CATEGORY_NAME, inplace=True)
         data_df["UCateg4ThisFN_WasFound"].fillna(myconstants.CATEGORY_WAS_NOT_FOUND, inplace=True)
