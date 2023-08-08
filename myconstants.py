@@ -266,6 +266,7 @@ COSTS_DATA_COLUMNS = [
 
 RAW_DATA_DROP_COLUMNS = ["MVZ", "KoBo", "Unnamed15", "Unnamed16"]
 SHEETS_DONT_DELETE_FORMULAS = ["ИсходныеДанные", "УникальныеСписки", "Настройки"]
+FLAG_DONT_DELETE_FORMULAS_ON_THE_SHEET = "_(f)"
 DELETE_SHEETS_LIST_IF_NO_FORMULAS = ["ИсходныеДанные", "УникальныеСписки"]
 DONT_REPLACE_ENTER = ["Month", "Northern", "FDate", "KoBo", "PlanFTE"]
 COLUMNS_FILLNA = ["Division", "FN", "Portfolio"]
@@ -565,4 +566,4 @@ CATEGORY_WAS_FOUND = "+"
 REPLACE_EQ_SHEET_MARKER = "+"
 
 COMMON_VERSION = 6  # Должно быть целым
-APP_VERSION = "v:11.023.030823.01"
+APP_VERSION = "v:11.023.080823.05"

@@ -70,29 +70,37 @@ class MyExcel:
         if self.report_parameters.p_save_without_formulas:
             for curr_sheet_name in self.get_sheets_list():
                 logging.debug(f' MyExcel.save_report: Replace formulas with values on sheet {curr_sheet_name}.')
-                if curr_sheet_name not in myconstants.SHEETS_DONT_DELETE_FORMULAS:
-                    logging.debug(f' MyExcel.save_report: stage 1.')
-                    column1 = self.work_book.Sheets[curr_sheet_name].UsedRange.Column
-                    logging.debug(f' MyExcel.save_report: stage 2.')
-                    logging.debug(f' MyExcel.save_report: stage 7. self.work_book.Sheets[curr_sheet_name].UsedRange.Columns.Count = {self.work_book.Sheets[curr_sheet_name].UsedRange.Columns.Count}')
-                    column2 = self.work_book.Sheets[curr_sheet_name].UsedRange.Columns(self.work_book.Sheets[curr_sheet_name].UsedRange.Columns.Count).Column
-                    logging.debug(f' MyExcel.save_report: stage 7. column2 = {column2}')
-
-                    logging.debug(f' MyExcel.save_report: stage 3.')
-                    row1 = self.work_book.Sheets[curr_sheet_name].UsedRange.Row
-                    logging.debug(f' MyExcel.save_report: stage 4.')
-                    row2 = self.work_book.Sheets[curr_sheet_name].UsedRange.Rows(self.work_book.Sheets[curr_sheet_name].UsedRange.Rows.Count).Row
-                    
-                    logging.debug(f' MyExcel.save_report: stage 5.')
-                    cell1 = self.work_book.Sheets[curr_sheet_name].Cells(row1 + 3, column1).Address
-                    logging.debug(f' MyExcel.save_report: stage 6.')
-                    cell2 = self.work_book.Sheets[curr_sheet_name].Cells(row2, column2).Address
-
-                    logging.debug(f' MyExcel.save_report: stage 7. cell1 = {cell1}  cell2 = {cell2}')
-                    self.work_book.Sheets[curr_sheet_name].Range(cell1, cell2).Value = self.work_book.Sheets[curr_sheet_name].Range(cell1, cell2).Value
-                    logging.debug(f' MyExcel.save_report: End processing sheet {curr_sheet_name}.')
+                # Если в конце имени листа стоит признак того, что на этом листе не надо стирать формулы,
+                # то необходимо сохранить формулы, а имя листа слегка поправить, убрав из имени признак:
+                if curr_sheet_name[-len(myconstants.FLAG_DONT_DELETE_FORMULAS_ON_THE_SHEET):] != myconstants.FLAG_DONT_DELETE_FORMULAS_ON_THE_SHEET:
+                    self.work_book.Sheets[curr_sheet_name].Name = curr_sheet_name[:-len(myconstants.FLAG_DONT_DELETE_FORMULAS_ON_THE_SHEET)]
+                    logging.debug(f' MyExcel.save_report: No need to replace formulas for especial sheet {curr_sheet_name}. Name of sheet changed')
                 else:
-                    logging.debug(f' MyExcel.save_report: No need to replace formulas for sheet {curr_sheet_name}.')
+                    # Если название листа не входит в список тех на которых необходимо
+                    # сохранить формулы, то нужно заменить формулы значениями:
+                    if curr_sheet_name not in myconstants.SHEETS_DONT_DELETE_FORMULAS:
+                        logging.debug(f' MyExcel.save_report: stage 1.')
+                        column1 = self.work_book.Sheets[curr_sheet_name].UsedRange.Column
+                        logging.debug(f' MyExcel.save_report: stage 2.')
+                        logging.debug(f' MyExcel.save_report: stage 7. self.work_book.Sheets[curr_sheet_name].UsedRange.Columns.Count = {self.work_book.Sheets[curr_sheet_name].UsedRange.Columns.Count}')
+                        column2 = self.work_book.Sheets[curr_sheet_name].UsedRange.Columns(self.work_book.Sheets[curr_sheet_name].UsedRange.Columns.Count).Column
+                        logging.debug(f' MyExcel.save_report: stage 7. column2 = {column2}')
+
+                        logging.debug(f' MyExcel.save_report: stage 3.')
+                        row1 = self.work_book.Sheets[curr_sheet_name].UsedRange.Row
+                        logging.debug(f' MyExcel.save_report: stage 4.')
+                        row2 = self.work_book.Sheets[curr_sheet_name].UsedRange.Rows(self.work_book.Sheets[curr_sheet_name].UsedRange.Rows.Count).Row
+
+                        logging.debug(f' MyExcel.save_report: stage 5.')
+                        cell1 = self.work_book.Sheets[curr_sheet_name].Cells(row1 + 3, column1).Address
+                        logging.debug(f' MyExcel.save_report: stage 6.')
+                        cell2 = self.work_book.Sheets[curr_sheet_name].Cells(row2, column2).Address
+
+                        logging.debug(f' MyExcel.save_report: stage 7. cell1 = {cell1}  cell2 = {cell2}')
+                        self.work_book.Sheets[curr_sheet_name].Range(cell1, cell2).Value = self.work_book.Sheets[curr_sheet_name].Range(cell1, cell2).Value
+                        logging.debug(f' MyExcel.save_report: End processing sheet {curr_sheet_name}.')
+                    else:
+                        logging.debug(f' MyExcel.save_report: No need to replace formulas for sheet {curr_sheet_name}.')
 
             logging.debug(f' MyExcel.save_report: Delete raw data sheet == {self.report_parameters.p_delete_rawdata_sheet}.')
             if self.report_parameters.p_delete_rawdata_sheet:
