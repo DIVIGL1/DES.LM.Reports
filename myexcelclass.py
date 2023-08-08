@@ -72,7 +72,7 @@ class MyExcel:
                 logging.debug(f' MyExcel.save_report: Replace formulas with values on sheet {curr_sheet_name}.')
                 # Если в конце имени листа стоит признак того, что на этом листе не надо стирать формулы,
                 # то необходимо сохранить формулы, а имя листа слегка поправить, убрав из имени признак:
-                if curr_sheet_name[-len(myconstants.FLAG_DONT_DELETE_FORMULAS_ON_THE_SHEET):] != myconstants.FLAG_DONT_DELETE_FORMULAS_ON_THE_SHEET:
+                if curr_sheet_name[-len(myconstants.FLAG_DONT_DELETE_FORMULAS_ON_THE_SHEET):] == myconstants.FLAG_DONT_DELETE_FORMULAS_ON_THE_SHEET:
                     self.work_book.Sheets[curr_sheet_name].Name = curr_sheet_name[:-len(myconstants.FLAG_DONT_DELETE_FORMULAS_ON_THE_SHEET)]
                     logging.debug(f' MyExcel.save_report: No need to replace formulas for especial sheet {curr_sheet_name}. Name of sheet changed')
                 else:
@@ -111,6 +111,14 @@ class MyExcel:
                         self.work_book.Sheets[one_sheet_name].Delete()
                     else:
                         logging.debug(f' MyExcel.save_report: Sheet {one_sheet_name} no need to delete.')
+        else:
+            for curr_sheet_name in self.get_sheets_list():
+                # Для листов в конце имени листа стоит признак того,
+                # что на этом листе не надо стирать формулы нужно поправить имя,
+                # даже если формулы заменять на значения не надо:
+                if curr_sheet_name[-len(myconstants.FLAG_DONT_DELETE_FORMULAS_ON_THE_SHEET):] == myconstants.FLAG_DONT_DELETE_FORMULAS_ON_THE_SHEET:
+                    self.work_book.Sheets[curr_sheet_name].Name = curr_sheet_name[:-len(myconstants.FLAG_DONT_DELETE_FORMULAS_ON_THE_SHEET)]
+                    logging.debug(f' MyExcel.save_report: For especial sheet {curr_sheet_name} name was changed.')
 
         logging.debug(' MyExcel.save_report: Before call Excel.save().')
         self.work_book.Save()
