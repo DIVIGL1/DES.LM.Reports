@@ -201,14 +201,18 @@ def send_df_2_xls(report_parameters):
                 # Что-то пошло не так.
                 ret_value = False
             else:
-                ui_handle.add_text_to_log_box("Начинаем перенос строк в Excel:")
                 data_sheet = oexcel.work_book.Sheets[myconstants.RAW_DATA_SHEET_NAME]
                 ulist_sheet = oexcel.work_book.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME]
 
+                ui_handle.add_text_to_log_box("Уберём данные из шаблона отчёта, если они там были:")
+                data_sheet.Range(data_sheet.Cells(2, 1), data_sheet.Cells(100_000, 500)).ClearContents()
+                ulist_sheet.Range(ulist_sheet.Cells(2, 1), ulist_sheet.Cells(100_000, 10)).ClearContents()
+
+                ui_handle.add_text_to_log_box("Начинаем перенос строк в Excel:")
                 data_array = report_df.to_numpy()
                 data_sheet.Range(data_sheet.Cells(2, 1), data_sheet.Cells(len(data_array) + 1, len(data_array[0]))).Value = data_array
 
-                ui_handle.add_text_to_log_box("Строки в Excel скопированы.")
+                ui_handle.add_text_to_log_box("Строки в шаблон скопированы.")
                 ui_handle.add_text_to_log_box("Формируем списки с уникальными значениями.")
 
                 # Заполним списки уникальными значениями
