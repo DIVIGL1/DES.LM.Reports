@@ -151,22 +151,27 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         # До того как кликнули, была выделена непрерывная линия.
         # Проверим, не пришёлся ли клик внутрь этой линии.
         # Он такой может быть только один.
-        click_located = None
-        if min_month == (clicked_mnth - 1) and self.toolbar_months[clicked_mnth - 1].isChecked():
-            # Этот случай просто пропускаем
-            pass
+        if min_month is None:
+            click_located = clicked_mnth - 1
+            min_month = clicked_mnth - 1
+            max_month = clicked_mnth - 1
         else:
-            for num_chk in range(min_month, max_month):
-                if not self.toolbar_months[num_chk].isChecked():
-                    click_located = num_chk
-                    break
+            click_located = None
+            if min_month == (clicked_mnth - 1) and self.toolbar_months[clicked_mnth - 1].isChecked():
+                # Этот случай просто пропускаем
+                pass
+            else:
+                for num_chk in range(min_month, max_month):
+                    if not self.toolbar_months[num_chk].isChecked():
+                        click_located = num_chk
+                        break
 
         # Определимся что с этим делать:
         if click_located is None:
             # Это значит, что клик был не внутри
             pass
         else:
-            min_month = click_located
+            max_month = click_located
 
         for num_chk in range(12):
             self.toolbar_months[num_chk].setChecked(min_month <= num_chk <= max_month)
