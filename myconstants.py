@@ -146,6 +146,7 @@ RESULT_DATA_COLUMNS = [
     "BOSS_NAME",
     "pPodryadchik",
     "SupportLevel",
+    "ServiceShortName",
 ]
 
 COLUMNS_TO_SET_ZERO_IF_NULL = [
@@ -566,4 +567,4 @@ CATEGORY_WAS_FOUND = "+"
 REPLACE_EQ_SHEET_MARKER = "+"
 
 COMMON_VERSION = 6  # Должно быть целым
-APP_VERSION = "v:12.001.090824.22"
+APP_VERSION = "v:12.003.100824.03"
