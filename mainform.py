@@ -62,6 +62,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         self.model = None
         self.text_info_year = None
         self.text_info_period = None
+        self.toolbar_months = None
         self.status_text = ""
         self.previous_status_text = ""
 
@@ -121,6 +122,55 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 self.listViewRawData.currentIndex().data() + myconstants.EXCEL_FILES_ENDS
             )
         open_file_in_application(raw_file_name)
+
+
+    def on_click_tool_bar_check_box1(self): self.on_click_tool_bar_check_boxes(1)
+    def on_click_tool_bar_check_box2(self): self.on_click_tool_bar_check_boxes(2)
+    def on_click_tool_bar_check_box3(self): self.on_click_tool_bar_check_boxes(3)
+    def on_click_tool_bar_check_box4(self): self.on_click_tool_bar_check_boxes(4)
+    def on_click_tool_bar_check_box5(self): self.on_click_tool_bar_check_boxes(5)
+    def on_click_tool_bar_check_box6(self): self.on_click_tool_bar_check_boxes(6)
+    def on_click_tool_bar_check_box7(self): self.on_click_tool_bar_check_boxes(7)
+    def on_click_tool_bar_check_box8(self): self.on_click_tool_bar_check_boxes(8)
+    def on_click_tool_bar_check_box9(self): self.on_click_tool_bar_check_boxes(9)
+    def on_click_tool_bar_check_box10(self): self.on_click_tool_bar_check_boxes(10)
+    def on_click_tool_bar_check_box11(self): self.on_click_tool_bar_check_boxes(11)
+    def on_click_tool_bar_check_box12(self): self.on_click_tool_bar_check_boxes(12)
+
+
+    def on_click_tool_bar_check_boxes(self, clicked_mnth):
+        # Найдём минимальный и максимальный "чекнутый":
+        min_month = None
+        max_month = None
+        for num_chk in range(12):
+            if self.toolbar_months[num_chk].isChecked() and min_month is None:
+                min_month = num_chk
+            if self.toolbar_months[num_chk].isChecked():
+                max_month = num_chk
+
+        # До того как кликнули, была выделена непрерывная линия.
+        # Проверим, не пришёлся ли клик внутрь этой линии.
+        # Он такой может быть только один.
+        click_located = None
+        if min_month == (clicked_mnth - 1) and self.toolbar_months[clicked_mnth - 1].isChecked():
+            # Этот случай просто пропускаем
+            pass
+        else:
+            for num_chk in range(min_month, max_month):
+                if not self.toolbar_months[num_chk].isChecked():
+                    click_located = num_chk
+                    break
+
+        # Определимся что с этим делать:
+        if click_located is None:
+            # Это значит, что клик был не внутри
+            pass
+        else:
+            min_month = click_located
+
+        for num_chk in range(12):
+            self.toolbar_months[num_chk].setChecked(min_month <= num_chk <= max_month)
+
 
     def on_click_checkboxes(self):
         if self.listViewReports.currentIndex().data() is None:
@@ -767,6 +817,9 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 act.setChecked(False)
 
             p2.setChecked(True)
+            for num_month in range(12):
+                self.toolbar_months[num_month].setChecked(month1 <= (num_month + 1) <= month2)
+
             return
         
         if action_type == "LoadDataFromDESLM":
@@ -1112,6 +1165,36 @@ class MyWindow(QtWidgets.QMainWindow):
 
         # ----------------------------------------------------
         self.ui.setupUi(self)
+
+        # ----------------------------------------------------
+        self.ui.toolBarRocket.addSeparator()
+        self.ui.toolbar_months = [None, None, None, None, None, None, None, None, None, None, None, None, ]
+
+        for month_num in range(12, 0, -1):
+            tool_bar_chk_box = QtWidgets.QCheckBox()
+            tool_bar_chk_box.clicked.connect(eval(f"self.ui.on_click_tool_bar_check_box{month_num}"))
+
+            tool_bar_chk_box.setToolTip(myconstants.MONTHS[month_num])
+            tool_bar_chk_box.setStyleSheet(
+                      "QCheckBox::indicator {\n"
+                      "    border: 1px solid rgb(120, 120, 120);\n"
+                      "    width: 12px;\n"
+                      "    height: 12px;\n"
+                      "    border-radius: 0px;\n"
+                      "    background-color: rgb(255, 255, 255);\n"
+                      "}\n"
+                      "QCheckBox::indicator:checked {\n"
+                      "    border: 1px solid rgb(120, 120, 120);\n"
+                      "    background-color: rgb(120, 120, 120);\n"
+                      "}\n"
+                      ""
+            )
+
+            self.ui.toolBarRocket.addWidget(tool_bar_chk_box)
+            self.ui.toolbar_months[month_num - 1] = tool_bar_chk_box
+
+        self.ui.toolBarRocket.addSeparator()
+        # ----------------------------------------------------
         self.ui.text_info_period = QtWidgets.QLabel()
         self.ui.text_info_period.setText("Период: ")
         self.ui.toolBarRocket.addWidget(self.ui.text_info_period)
