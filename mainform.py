@@ -176,6 +176,11 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         for num_chk in range(12):
             self.toolbar_months[num_chk].setChecked(min_month <= num_chk <= max_month)
 
+        self.parent.parent.reporter.month1_parameter = min_month
+        self.parent.parent.reporter.month2_parameter = max_month
+        save_param(myconstants.PARAMETER_SAVED_VALUE_REPORT_START_MONTH, min_month)
+        save_param(myconstants.PARAMETER_SAVED_VALUE_REPORT_END_MONTH, max_month)
+
 
     def on_click_checkboxes(self):
         if self.listViewReports.currentIndex().data() is None:
@@ -579,6 +584,22 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             myconstants.PARAMETER_SAVED_VALUE_LAST_SELECTED_MONTHS_PARAMETERS_NUM_DEFVALUE
         )
 
+        report_month1 = load_param(
+            myconstants.PARAMETER_SAVED_VALUE_REPORT_START_MONTH,
+            myconstants.PARAMETER_SAVED_VALUE_REPORT_START_MONTH_DEFVALUE
+        )
+
+        report_month2 = load_param(
+            myconstants.PARAMETER_SAVED_VALUE_REPORT_END_MONTH,
+            myconstants.PARAMETER_SAVED_VALUE_REPORT_END_MONTH_DEFVALUE
+        )
+
+        for num_month in range(12):
+            self.toolbar_months[num_month].setChecked(report_month1 <= (num_month + 1) <= report_month2)
+
+        self.parent.parent.reporter.month1_parameter = f"{report_month1:02}"
+        self.parent.parent.reporter.month2_parameter = f"{report_month2:02}"
+
         if type(df_parameters_list) == str:
             self.Parameters4DESLM.setVisible(False)
         else:
@@ -591,7 +612,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             saved_action_fnc = None
             for num, period in enumerate(periods_list):
                 action = QtWidgets.QAction(period[0], self.parent)
-                action.setCheckable(True)
+                # action.setCheckable(True)
                 fnc = partial(self.menu_action, "SelectReportPeriodParameter", [num, period], action)
                 if num == parameters_num or saved_action_fnc is None:
                     saved_action_fnc = fnc
@@ -600,7 +621,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 actions.append(action)
 
             self.Parameters4DESLM.addActions(actions)
-            saved_action_fnc()
+            # saved_action_fnc()
         # ------------------------------------------------------------
 
         self.setup_check_boxes()
@@ -817,11 +838,14 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             self.text_info_period.setText(f"Период: {period} ")
 
             save_param(myconstants.PARAMETER_SAVED_VALUE_LAST_SELECTED_MONTHS_PARAMETERS_NUM, p1[0])
+            save_param(myconstants.PARAMETER_SAVED_VALUE_REPORT_START_MONTH, month1)
+            save_param(myconstants.PARAMETER_SAVED_VALUE_REPORT_END_MONTH, month2)
 
             for act in self.Parameters4DESLM.actions():
                 act.setChecked(False)
 
             p2.setChecked(True)
+
             for num_month in range(12):
                 self.toolbar_months[num_month].setChecked(month1 <= (num_month + 1) <= month2)
 
