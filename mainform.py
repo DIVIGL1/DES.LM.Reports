@@ -176,10 +176,10 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         for num_chk in range(12):
             self.toolbar_months[num_chk].setChecked(min_month <= num_chk <= max_month)
 
-        self.parent.parent.reporter.month1_parameter = min_month
-        self.parent.parent.reporter.month2_parameter = max_month
-        save_param(myconstants.PARAMETER_SAVED_VALUE_REPORT_START_MONTH, min_month)
-        save_param(myconstants.PARAMETER_SAVED_VALUE_REPORT_END_MONTH, max_month)
+        self.parent.parent.reporter.month1_parameter = f"{(min_month + 1):02}"
+        self.parent.parent.reporter.month2_parameter = f"{(max_month + 1):02}"
+        save_param(myconstants.PARAMETER_SAVED_VALUE_REPORT_START_MONTH, min_month + 1)
+        save_param(myconstants.PARAMETER_SAVED_VALUE_REPORT_END_MONTH, max_month + 1)
 
 
     def on_click_checkboxes(self):
