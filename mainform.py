@@ -181,6 +181,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         save_param(myconstants.PARAMETER_SAVED_VALUE_REPORT_START_MONTH, min_month + 1)
         save_param(myconstants.PARAMETER_SAVED_VALUE_REPORT_END_MONTH, max_month + 1)
 
+        self.show_period_on_toolbar(min_month + 1, max_month + 1)
 
     def on_click_checkboxes(self):
         if self.listViewReports.currentIndex().data() is None:
@@ -594,6 +595,8 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             myconstants.PARAMETER_SAVED_VALUE_REPORT_END_MONTH_DEFVALUE
         )
 
+        self.show_period_on_toolbar(report_month1, report_month2)
+
         for num_month in range(12):
             self.toolbar_months[num_month].setChecked(report_month1 <= (num_month + 1) <= report_month2)
 
@@ -715,6 +718,14 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
                 else:
                     self.EMailsSwitcher.setText("Отключить пользовательские настройки")
 
+    def show_period_on_toolbar(self, month1, month2):
+        if month1 == month2:
+            period = f"{myconstants.MONTHS[month2]}"
+        else:
+            period = f"{myconstants.MONTHS[month1]}-{myconstants.MONTHS[month2]}"
+
+        self.text_info_period.setText(f"Период: {period} ")
+
     def menu_action(self, action_type, p1="", p2=""):
         if action_type == "CreateReport":
             self.set_status_bar_text("Выбрана функция формирования отчёта")
@@ -830,12 +841,7 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
             month1 = int(month1)
             month2 = int(month2)
 
-            if month1 == month2:
-                period = f"{myconstants.MONTHS[month2]}"
-            else:
-                period = f"{myconstants.MONTHS[month1]}-{myconstants.MONTHS[month2]}"
-
-            self.text_info_period.setText(f"Период: {period} ")
+            self.show_period_on_toolbar(month1, month2)
 
             save_param(myconstants.PARAMETER_SAVED_VALUE_LAST_SELECTED_MONTHS_PARAMETERS_NUM, p1[0])
             save_param(myconstants.PARAMETER_SAVED_VALUE_REPORT_START_MONTH, month1)
