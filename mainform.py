@@ -1486,3 +1486,4 @@ class MyWindow(QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     pass
+
