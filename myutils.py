@@ -228,7 +228,7 @@ def copy_file_as_drop_process(mainwindow, xls_files, create_report=False):
 
             # Определим данные за какой период присутствуют:
             start_month = df_value[myconstants.RAW_DATE_COLUMN_NAME].min()
-            report_year = int(start_month * 10000 - int(start_month) * 10000)
+            report_year = int(str(start_month).split(".")[1])
             start_month = int(start_month)
             end_month = int(df_value[myconstants.RAW_DATE_COLUMN_NAME].max())
 
