@@ -654,6 +654,14 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         if os.path.isfile("_tmp_DUP.txt"):
             self.add_text_to_log_box("[ загрузка настроек, emails и отчётов блокируется]")
 
+        version_settings = load_param(myconstants.LAST_INTERNET_PARAMS_NAME, myconstants.LAST_INTERNET_PARAMS_VERSION)
+        version_reports = load_param(myconstants.LAST_INTERNET_REPORTS_NAME, myconstants.LAST_INTERNET_REPORTS_VERSION)
+        version_emails = load_param(myconstants.LAST_INTERNET_EMAILS_NAME, myconstants.LAST_INTERNET_EMAILS_VERSION)
+        self.add_text_to_log_box("Версии используемых файлов:")
+        self.add_text_to_log_box(f"     перечень настроек: {version_settings}")
+        self.add_text_to_log_box(f"     шаблоны отчётов: {version_reports}")
+        self.add_text_to_log_box(f"     список адресов электронной почты: {version_emails}")
+
         self.add_text_to_log_box("")
 
         self.add_text_to_log_box("> " + myconstants.PARAMETER_WAITING_USER_ACTION)

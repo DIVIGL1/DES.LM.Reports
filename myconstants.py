@@ -430,13 +430,13 @@ PARAMETERS_ALL_TABLES = {
 }
 
 LAST_INTERNET_PARAMS_NAME = "Скачанная версия справочников из Интернет"
-LAST_INTERNET_PARAMS_VERSION = 0
+LAST_INTERNET_PARAMS_VERSION = 0.01
 
 LAST_INTERNET_REPORTS_NAME = "Скачанная версия ФОРМ отчётов из Интернет"
-LAST_INTERNET_REPORTS_VERSION = 0
+LAST_INTERNET_REPORTS_VERSION = 0.01
 
 LAST_INTERNET_EMAILS_NAME = "Скачанная версия электронных адресов из Интернет"
-LAST_INTERNET_EMAILS_VERSION = 0
+LAST_INTERNET_EMAILS_VERSION = 0.01
 
 EMAIL_INFO_COLUMNS = ["manager_email", "Personal_email", "user_email", "boss_email", "BOSS_NAME"]
 
@@ -586,4 +586,4 @@ CATEGORY_WAS_FOUND = "+"
 REPLACE_EQ_SHEET_MARKER = "+"
 
 COMMON_VERSION = 6  # Должно быть целым
-APP_VERSION = "v:12.009.150923.23"
+APP_VERSION = "v:12.010.280923.23"
