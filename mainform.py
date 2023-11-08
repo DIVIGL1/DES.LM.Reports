@@ -1213,25 +1213,42 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.toolBarRocket.addSeparator()
         self.ui.toolbar_months = [None, None, None, None, None, None, None, None, None, None, None, None, ]
 
+        ncurrmonth = datetime.datetime.now().month
         for month_num in range(12, 0, -1):
             tool_bar_chk_box = QtWidgets.QCheckBox()
             tool_bar_chk_box.clicked.connect(eval(f"self.ui.on_click_tool_bar_check_box{month_num}"))
 
             tool_bar_chk_box.setToolTip(myconstants.MONTHS[month_num])
-            tool_bar_chk_box.setStyleSheet(
-                      "QCheckBox::indicator {\n"
-                      "    border: 1px solid rgb(120, 120, 120);\n"
-                      "    width: 12px;\n"
-                      "    height: 12px;\n"
-                      "    border-radius: 0px;\n"
-                      "    background-color: rgb(255, 255, 255);\n"
-                      "}\n"
-                      "QCheckBox::indicator:checked {\n"
-                      "    border: 1px solid rgb(120, 120, 120);\n"
-                      "    background-color: rgb(120, 120, 120);\n"
-                      "}\n"
-                      ""
-            )
+            if month_num == ncurrmonth:
+                tool_bar_chk_box.setStyleSheet(
+                          "QCheckBox::indicator {\n"
+                          "    border: 4px solid rgb(195, 195, 195);\n"
+                          "    width: 12px;\n"
+                          "    height: 12px;\n"
+                          "    border-radius: 0px;\n"
+                          "    background-color: rgb(255, 255, 255);\n"
+                          "}\n"
+                          "QCheckBox::indicator:checked {\n"
+                          "    border: 4px solid rgb(195, 195, 195);\n"
+                          "    background-color: rgb(120, 120, 120);\n"
+                          "}\n"
+                          ""
+                )
+            else:
+                tool_bar_chk_box.setStyleSheet(
+                        "QCheckBox::indicator {\n"
+                        "    border: 1px solid rgb(120, 120, 120);\n"
+                        "    width: 12px;\n"
+                        "    height: 12px;\n"
+                        "    border-radius: 0px;\n"
+                        "    background-color: rgb(255, 255, 255);\n"
+                        "}\n"
+                        "QCheckBox::indicator:checked {\n"
+                        "    border: 1px solid rgb(120, 120, 120);\n"
+                        "    background-color: rgb(120, 120, 120);\n"
+                        "}\n"
+                    ""
+                )
 
             self.ui.toolBarRocket.addWidget(tool_bar_chk_box)
             self.ui.toolbar_months[month_num - 1] = tool_bar_chk_box
