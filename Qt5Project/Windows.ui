@@ -63,6 +63,13 @@
     <property name="bottomMargin">
      <number>5</number>
     </property>
+    <item row="1" column="0">
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="0">
      <widget class="QSplitter" name="VerticalSplitter">
       <property name="toolTip">
@@ -529,7 +536,7 @@ QCheckBox::indicator:checked {
 </string>
               </property>
               <property name="text">
-               <string notr="true">Убрать VIP</string>
+               <string notr="true">Скрыть VIP</string>
               </property>
               <property name="checked">
                <bool>true</bool>
@@ -1282,13 +1289,6 @@ QCheckBox::indicator:checked {
       </widget>
      </widget>
     </item>
-    <item row="1" column="0">
-     <widget class="Line" name="line">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -1484,8 +1484,14 @@ QCheckBox::indicator:checked {
        <string notr="true">Выбран год:</string>
       </property>
      </widget>
+     <widget class="QMenu" name="menu_2">
+      <property name="title">
+       <string>Месяцы</string>
+      </property>
+     </widget>
      <addaction name="DESLM_Year"/>
      <addaction name="separator"/>
+     <addaction name="menu_2"/>
     </widget>
     <addaction name="WaitFileAndCreateReport"/>
     <addaction name="separator"/>

@@ -120,6 +120,20 @@ class MyExcel:
                     self.work_book.Sheets[curr_sheet_name].Name = curr_sheet_name[:-len(myconstants.FLAG_DONT_DELETE_FORMULAS_ON_THE_SHEET)]
                     logging.debug(f' MyExcel.save_report: For especial sheet {curr_sheet_name} name was changed.')
 
+        for curr_sheet_name in self.get_sheets_list():
+            logging.debug(f' MyExcel.save_report: Before Replace marker "{myconstants.MAKE_FORMULAS_MARKER}" with sign "=" on sheet {curr_sheet_name}.')
+            self.work_book.Sheets[curr_sheet_name].Cells.Replace(
+                What=myconstants.MAKE_FORMULAS_MARKER,
+                Replacement="=",
+                LookAt=2,
+                SearchOrder=1,
+                MatchCase=False,
+                SearchFormat=False,
+                ReplaceFormat=False,
+                FormulaVersion=1
+            )
+            logging.debug(f' MyExcel.save_report: After Replace marker "{myconstants.MAKE_FORMULAS_MARKER}" with sign "=" on sheet {curr_sheet_name}.')
+
         logging.debug(' MyExcel.save_report: Before call Excel.save().')
         self.work_book.Save()
         logging.debug(' MyExcel.save_report: After call Excel.save().')

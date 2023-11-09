@@ -33,6 +33,11 @@ class Ui_MainWindow(object):
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setContentsMargins(5, 5, 5, 5)
         self.gridLayout.setObjectName("gridLayout")
+        self.line = QtWidgets.QFrame(self.centralwidget)
+        self.line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line.setObjectName("line")
+        self.gridLayout.addWidget(self.line, 1, 0, 1, 1)
         self.VerticalSplitter = QtWidgets.QSplitter(self.centralwidget)
         self.VerticalSplitter.setToolTip("")
         self.VerticalSplitter.setStatusTip("")
@@ -289,7 +294,7 @@ class Ui_MainWindow(object):
 "    background-color: rgb(55, 55, 55);\n"
 "}\n"
 "")
-        self.checkBoxDeleteVIP.setText("Убрать VIP")
+        self.checkBoxDeleteVIP.setText("Скрыть VIP")
         self.checkBoxDeleteVIP.setChecked(True)
         self.checkBoxDeleteVIP.setObjectName("checkBoxDeleteVIP")
         self.horizontalLayout.addWidget(self.checkBoxDeleteVIP)
@@ -732,11 +737,6 @@ class Ui_MainWindow(object):
         self.plainTextEdit.setObjectName("plainTextEdit")
         self.rightBox.addWidget(self.plainTextEdit)
         self.gridLayout.addWidget(self.VerticalSplitter, 0, 0, 1, 1)
-        self.line = QtWidgets.QFrame(self.centralwidget)
-        self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.line.setObjectName("line")
-        self.gridLayout.addWidget(self.line, 1, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QtWidgets.QMenuBar(MainWindow)
         self.menuBar.setGeometry(QtCore.QRect(0, 0, 816, 21))
@@ -799,6 +799,8 @@ class Ui_MainWindow(object):
         self.DESLM_Year.setAccessibleDescription("")
         self.DESLM_Year.setTitle("Выбран год:")
         self.DESLM_Year.setObjectName("DESLM_Year")
+        self.menu_2 = QtWidgets.QMenu(self.Parameters4DESLM)
+        self.menu_2.setObjectName("menu_2")
         self.menu = QtWidgets.QMenu(self.menuBar)
         self.menu.setToolTip("")
         self.menu.setStatusTip("Меню \'Папки\'")
@@ -1224,6 +1226,7 @@ class Ui_MainWindow(object):
         self.EditSettingsFiles.addAction(self.Settings)
         self.Parameters4DESLM.addAction(self.DESLM_Year.menuAction())
         self.Parameters4DESLM.addSeparator()
+        self.Parameters4DESLM.addAction(self.menu_2.menuAction())
         self.Automation.addAction(self.WaitFileAndCreateReport)
         self.Automation.addSeparator()
         self.Automation.addAction(self.Parameters4DESLM.menuAction())
@@ -1267,6 +1270,7 @@ class Ui_MainWindow(object):
 "С помощью этого параметра можно исключить\n"
 "из отчёта всех «лишних» сотрудников."))
         self.checkBoxDistributeABH.setText(_translate("MainWindow", "Распределить АВН на ТСДП"))
+        self.menu_2.setTitle(_translate("MainWindow", "Месяцы"))
 
 
 if __name__ == "__main__":
