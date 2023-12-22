@@ -120,11 +120,25 @@ class MyExcel:
                     self.work_book.Sheets[curr_sheet_name].Name = curr_sheet_name[:-len(myconstants.FLAG_DONT_DELETE_FORMULAS_ON_THE_SHEET)]
                     logging.debug(f' MyExcel.save_report: For especial sheet {curr_sheet_name} name was changed.')
 
+        # Заменим в названиях код_года на его фактический номер:
+        str_year_of_report = str(self.report_parameters.year_of_raw_data)
+        # А так же заменим маркер на знак равенства:
         for curr_sheet_name in self.get_sheets_list():
             logging.debug(f' MyExcel.save_report: Before Replace marker "{myconstants.MAKE_FORMULAS_MARKER}" with sign "=" on sheet {curr_sheet_name}.')
             self.work_book.Sheets[curr_sheet_name].Cells.Replace(
                 What=myconstants.MAKE_FORMULAS_MARKER,
                 Replacement="=",
+                LookAt=2,
+                SearchOrder=1,
+                MatchCase=False,
+                SearchFormat=False,
+                ReplaceFormat=False,
+                FormulaVersion=1
+            )
+
+            self.work_book.Sheets[curr_sheet_name].Cells.Replace(
+                What=myconstants.REPORT_YEAR_MARKER,
+                Replacement=str_year_of_report,
                 LookAt=2,
                 SearchOrder=1,
                 MatchCase=False,
