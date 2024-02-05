@@ -7,6 +7,7 @@ import sys
 import datetime
 import logging
 from functools import partial
+import platform
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSignal, QObject
@@ -648,11 +649,16 @@ class QtMainWindow(myQt_form.Ui_MainWindow):
         if os.path.isfile(myconstants.START_PARAMETERS_FILE_4_DEVELOPER):
             self.add_text_to_log_box("[ используются настройки разработчика ]")
 
+
         if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
             self.add_text_to_log_box("[ logging = DEBUG ]")
 
         if os.path.isfile("_tmp_DUP.txt"):
             self.add_text_to_log_box("[ загрузка настроек, emails и отчётов блокируется]")
+            self.add_text_to_log_box("")
+            self.add_text_to_log_box(f"Компьютер: {platform.node()}")
+            self.add_text_to_log_box(f"Пользователь: {os.environ.get('USERNAME')}")
+            self.add_text_to_log_box("")
 
         version_settings = load_param(myconstants.LAST_INTERNET_PARAMS_NAME, myconstants.LAST_INTERNET_PARAMS_VERSION)
         version_reports = load_param(myconstants.LAST_INTERNET_REPORTS_NAME, myconstants.LAST_INTERNET_REPORTS_VERSION)
