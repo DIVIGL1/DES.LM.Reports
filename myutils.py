@@ -232,6 +232,7 @@ def copy_file_as_drop_process(mainwindow, xls_files, create_report=False):
             start_month = int(start_month)
             end_month = int(df_value[myconstants.RAW_DATE_COLUMN_NAME].max())
 
+
             if start_month == end_month:
                 data_in_file_period = f"{myconstants.MONTHS[end_month]} {report_year}"
             else:

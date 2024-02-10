@@ -201,6 +201,21 @@ MONTHS = {
     12: "Декабрь",
 }
 
+MONTHS_RP = {
+    1: "Января",
+    2: "Февраля",
+    3: "Марта",
+    4: "Апреля",
+    5: "Мая",
+    6: "Июня",
+    7: "Июля",
+    8: "Августа",
+    9: "Сентября",
+    10: "Октября",
+    11: "Ноября",
+    12: "Декабря",
+}
+
 LONG_MONTHS2NUM = {
     "Январь": 1,
     "Февраль": 2,
@@ -586,8 +601,7 @@ CATEGORY_WAS_FOUND = "+"
 REPLACE_EQ_SHEET_MARKER = "+"
 MAKE_FORMULAS_MARKER = "(MBF)"
 REPORT_YEAR_MARKER = "(YEAR)"
-REPORT_FIRST_MONTH_MARKER = "(YEAR)"
-REPORT_LAST_MONTH_MARKER = "(YEAR)"
+REPORT_MONTHS_PERIOD_MARKER = "(MONTHS_PERIOD)"
 
 COMMON_VERSION = 6  # Должно быть целым
-APP_VERSION = "v:12.017.090224.19"
+APP_VERSION = "v:12.018.100224.07"

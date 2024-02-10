@@ -120,8 +120,6 @@ class MyExcel:
                     self.work_book.Sheets[curr_sheet_name].Name = curr_sheet_name[:-len(myconstants.FLAG_DONT_DELETE_FORMULAS_ON_THE_SHEET)]
                     logging.debug(f' MyExcel.save_report: For especial sheet {curr_sheet_name} name was changed.')
 
-        # Заменим в названиях код_года на его фактический номер:
-        str_year_of_report = str(self.report_parameters.year_of_raw_data)
         # А так же заменим маркер на знак равенства:
         for curr_sheet_name in self.get_sheets_list():
             logging.debug(f' MyExcel.save_report: Before Replace marker "{myconstants.MAKE_FORMULAS_MARKER}" with sign "=" on sheet {curr_sheet_name}.')
@@ -136,6 +134,17 @@ class MyExcel:
                 FormulaVersion=1
             )
 
+            # Заменим в отчёте названиях код_года, начальный и конечный месяц на его фактический номер:
+            str_year_of_report = str(self.report_parameters.year_of_raw_data)
+            n_first_month = self.report_parameters.first_month
+            n_last_month = self.report_parameters.last_month
+
+            if n_first_month == n_last_month:
+                str_last_month_of_report = myconstants.MONTHS[n_first_month]
+            else:
+                str_last_month_of_report = f"с {myconstants.MONTHS_RP[n_first_month]} по {myconstants.MONTHS[n_last_month]}"
+
+            # Сначала ГОД
             self.work_book.Sheets[curr_sheet_name].Cells.Replace(
                 What=myconstants.REPORT_YEAR_MARKER,
                 Replacement=str_year_of_report,
@@ -146,6 +155,19 @@ class MyExcel:
                 ReplaceFormat=False,
                 FormulaVersion=1
             )
+
+            # Теперь месяцы
+            self.work_book.Sheets[curr_sheet_name].Cells.Replace(
+                What=myconstants.REPORT_MONTHS_PERIOD_MARKER,
+                Replacement=str_last_month_of_report,
+                LookAt=2,
+                SearchOrder=1,
+                MatchCase=False,
+                SearchFormat=False,
+                ReplaceFormat=False,
+                FormulaVersion=1
+            )
+
             logging.debug(f' MyExcel.save_report: After Replace marker "{myconstants.MAKE_FORMULAS_MARKER}" with sign "=" on sheet {curr_sheet_name}.')
 
         logging.debug(' MyExcel.save_report: Before call Excel.save().')

@@ -245,6 +245,9 @@ def load_raw_data(raw_file, p_virtual_FTE, ui_handle):
     # Определим год данных в отчёте
     data_year = str(df_raw["Дата"][0]).split(".")[1]
     ui_handle.parent.parent.report_parameters.year_of_raw_data = int(data_year)
+    ui_handle.parent.parent.report_parameters.first_month = int(df_raw[myconstants.RAW_DATE_COLUMN_NAME].min())
+    ui_handle.parent.parent.report_parameters.last_month = int(df_raw[myconstants.RAW_DATE_COLUMN_NAME].max())
+
     if p_virtual_FTE:
         ui_handle.add_text_to_log_box(f"Проверяем наличие файла с искусственными FTE за {data_year} год.")
         # Проверим наличие файла:
