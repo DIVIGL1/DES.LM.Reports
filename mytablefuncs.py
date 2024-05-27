@@ -747,7 +747,7 @@ def prepare_data(
         data_df = data_df.merge(portfolio_df, left_on="ShortProject", right_on="ID_DES.LM_project", how="left")
         data_df["Portfolio"] = data_df["Portfolio"].fillna("")
         data_df["Contract"] = data_df["Contract"].fillna("")
-        data_df["IS_Service_type"] = data_df["IS_Service_type"].fillna("")
+        data_df["IS_Service_type"] = data_df["IS_Service_type"].fillna(myconstants.UNKNOWN_IS_SERVICE_TYPE)
         data_df["IS_Product_type"] = data_df["IS_Product_type"].fillna("")
         data_df["IS_Product_type_SAP"] = data_df["IS_Product_type"].apply(lambda x: "SAP" if x == "SAP" else "notSAP")
         data_df["ISys_SAP"] = data_df["IS_Product_type"].apply(lambda x: "SAP" if x == "SAP" else "")
