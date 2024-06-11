@@ -205,8 +205,8 @@ def send_df_2_xls(report_parameters):
                 ulist_sheet = oexcel.work_book.Sheets[myconstants.UNIQE_LISTS_SHEET_NAME]
 
                 ui_handle.add_text_to_log_box("Уберём данные из шаблона отчёта, если они там были:")
-                data_sheet.Range(data_sheet.Cells(2, 1), data_sheet.Cells(100_000, 500)).ClearContents()
-                ulist_sheet.Range(ulist_sheet.Cells(2, 1), ulist_sheet.Cells(100_000, 10)).ClearContents()
+                # data_sheet.Range(data_sheet.Cells(2, 1), data_sheet.Cells(100, 500)).ClearContents()
+                # ulist_sheet.Range(ulist_sheet.Cells(2, 1), ulist_sheet.Cells(100, 10)).ClearContents()
 
                 ui_handle.add_text_to_log_box("Начинаем перенос строк в Excel:")
                 data_array = report_df.to_numpy()

@@ -147,6 +147,8 @@ RESULT_DATA_COLUMNS = [
     "pPodryadchik",
     "SupportLevel",
     "ServiceShortName",
+    "Pdr_User_ProjSTypeD",
+    "Pdr_User_ProjSTypeD_Month",
 ]
 
 COLUMNS_TO_SET_ZERO_IF_NULL = [
@@ -606,4 +608,4 @@ REPORT_YEAR_MARKER = "(YEAR)"
 REPORT_MONTHS_PERIOD_MARKER = "(MONTHS_PERIOD)"
 
 COMMON_VERSION = 6  # Должно быть целым
-APP_VERSION = "v:12.019.270524.01"
+APP_VERSION = "v:12.020.270611.20"

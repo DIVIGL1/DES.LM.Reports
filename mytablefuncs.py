@@ -376,6 +376,9 @@ def add_combine_columns(df):
     df["Pdr_User_ProjType"] = df["Division"] + "#" + df["User"] + "#" + df["ProjectType"]
     df["Pdr_User_ProjType_Month"] = df["Division"] + "#" + df["User"] + "#" + df["ProjectType"] + "#" + df["Month"]
 
+    df["Pdr_User_ProjSTypeD"] = df["Division"] + "#" + df["User"] + "#" + df["ProjectSubTypeDescription"]
+    df["Pdr_User_ProjSTypeD_Month"] = df["Division"] + "#" + df["User"] + "#" + df["ProjectSubTypeDescription"] + "#" + df["Month"]
+
     df["ProjectSubTypeDescription_Month"] = df["ProjectSubTypeDescription"] + "#" + df["Month"]
 
     df["ProjectSubType_Month"] = df["ProjectSubType"] + "#" + df["Month"]
