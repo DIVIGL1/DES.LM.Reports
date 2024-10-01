@@ -490,6 +490,10 @@ def prepare_data(
     if type(categories_costs) == str:
         ui_handle.add_text_to_log_box(categories_costs)
         return None
+    koeff_r2f = load_parameter_table(myconstants.KOEFF_R2F)
+    if type(categories_costs) == str:
+        ui_handle.add_text_to_log_box(koeff_r2f)
+        return None
 
     categories_costs = categories_costs[categories_costs[myconstants.YEAR_FIELD_IN_CATEGS_COST] == year_of_data]
 
@@ -691,7 +695,12 @@ def prepare_data(
     data_df["FN"] = data_df[["ShortFNName", "FNRaw"]].apply(lambda param: param[1] if pd.isna(param[0]) else param[0], axis=1)
     ui_handle.add_text_to_log_box(f"Данные объединены с таблицей с ФН (всего строк обработанных данных: {data_df.shape[0]})")
 
+    # Добавим коэффициенты приведения
+    data_df = data_df.merge(koeff_r2f, left_on="FN", right_on="FNName4Koeff", how="left")
+
+    # Создадим поле без признака "(Уволен)"
     data_df["JustUserName"] = data_df["User"].apply(lambda param: param.replace(myconstants.FIRED_NAME_TEXT, ""))
+
     if ui_handle.checkBoxSelectUsers.isChecked() and ui_handle.comboBoxSelectUsers.currentText() != "":
         # Отмечено, что нужно выбрать только определённые группы пользователей.
         # Наименование столбца содержащего признаки для фильтрации:

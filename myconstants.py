@@ -149,6 +149,13 @@ RESULT_DATA_COLUMNS = [
     "ServiceShortName",
     "Pdr_User_ProjSTypeD",
     "Pdr_User_ProjSTypeD_Month",
+    "CostKoeffBase1",
+    "CostKoeffBase2",
+    "CostKoeffBase3",
+    "CostKoeffBase4",
+    "CostKoeffBase12",
+    "CostKoeffBase13",
+    "CostKoeffBase14",
 ]
 
 COLUMNS_TO_SET_ZERO_IF_NULL = [
@@ -186,6 +193,23 @@ COLUMNS_TO_SET_ZERO_IF_NULL = [
     "SumPodr10",
     "SumPodr11",
     "SumPodr12",
+    "Data1f",
+    "Data1r",
+    "Data12f",
+    "Data12r",
+    "Data2f",
+    "Data2r",
+    "Data13f",
+    "Data13r",
+    "Data14f",
+    "Data14r",
+    "CostKoeffBase1",
+    "CostKoeffBase2",
+    "CostKoeffBase3",
+    "CostKoeffBase4",
+    "CostKoeffBase12",
+    "CostKoeffBase13",
+    "CostKoeffBase14",
 ]
 
 MONTHS = {
@@ -368,6 +392,7 @@ USERS_CATEGS_LIST = "UCategories.xlsx"
 CATEGORIES_TYPES = "CategoriesTypes.xlsx"
 CATEGORIES_COST_TABLE = "CCosts.xlsx"
 USER_FILES_STRUCT_TABLE = "UserTablesStruct.xlsx"
+KOEFF_R2F = "CalcCost2FNCost.xlsx"
 
 
 PROJECTS_LIST_ADD_INFO_RAW_KEY_COLUMN = "Наименование проекта (только текст)"
@@ -444,6 +469,7 @@ PARAMETERS_ALL_TABLES = {
     CATEGORIES_TYPES: ("Таблица с перечнем типов категорий сотрудников", "CategName4Type", "", ""),
     CATEGORIES_COST_TABLE: ("Таблица со списком ставок для каждой категории сотрудников", "CategKey", "", ""),
     USER_FILES_STRUCT_TABLE: ("Таблица со структурой пользовательских данных", "UserTable", "", ""),
+    KOEFF_R2F: ("Таблица списка коэффициентов приведения", "FNName4Koeff", "", ""),
 }
 
 LAST_INTERNET_PARAMS_NAME = "Скачанная версия справочников из Интернет"
@@ -607,5 +633,5 @@ MAKE_FORMULAS_MARKER = "(MBF)"
 REPORT_YEAR_MARKER = "(YEAR)"
 REPORT_MONTHS_PERIOD_MARKER = "(MONTHS_PERIOD)"
 
-COMMON_VERSION = 6  # Должно быть целым
-APP_VERSION = "v:12.020.270611.20"
+COMMON_VERSION = 7  # Должно быть целым
+APP_VERSION = "v:11.001.240813.01"
